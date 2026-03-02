@@ -7,11 +7,14 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body { font-family: system-ui, -apple-system, Arial; margin: 16px; }
+    h2 { margin: 0 0 12px; }
     .row { display:flex; gap:10px; margin-bottom:12px; flex-wrap: wrap; }
-    button { padding:10px 12px; border-radius:10px; border:1px solid #e5e7eb; background:#fff; }
-    .k { font-size: 12px; opacity: .65; }
+    button { padding:10px 12px; border-radius:10px; border:1px solid #e5e7eb; background:#fff; cursor:pointer; }
+    button.active { border-color:#111827; font-weight:700; }
+    .meta { font-size: 12px; opacity: .7; margin: 6px 0 12px; }
     .grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .card { border:1px solid #e5e7eb; border-radius:12px; padding:12px; }
+    .k { font-size: 12px; opacity: .65; }
     .v { font-size: 22px; font-weight: 700; margin-top: 6px; }
   </style>
 </head>
@@ -19,50 +22,90 @@
   <h2>CRM Dashboard (MVP)</h2>
 
   <div class="row">
-    <button onclick="load('day')">День</button>
-    <button onclick="load('week')">Неделя</button>
-    <button onclick="load('month')">Месяц</button>
+    <button id="btn-day" onclick="load('day')">День</button>
+    <button id="btn-week" onclick="load('week')">Неделя</button>
+    <button id="btn-month" onclick="load('month')">Месяц</button>
   </div>
 
-  <div id="status" class="k"></div>
+  <div id="meta" class="meta">—</div>
   <div class="grid" id="grid"></div>
 
   <script>
     const GAS_URL = "https://script.google.com/macros/s/AKfycbz1oR97zOM8_Rwexewxuw9W9ZLob4s-xb8vAWCSMBy8q6mraxuZRaAwydpKQTA-Rtm4/exec";
 
-    function getVal(d, key) {
+    function setActive(period){
+      ["day","week","month"].forEach(p=>{
+        const el = document.getElementById("btn-"+p);
+        if (!el) return;
+        el.classList.toggle("active", p===period);
+      });
+    }
+
+    function num(d, key, fallback = 0) {
       const v = d?.[key];
-      return (v === undefined || v === null || v === "") ? 0 : v;
+      if (v === undefined || v === null || v === "") return fallback;
+      if (typeof v === "number") return v;
+      const n = Number(String(v).replace(",", "."));
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function asInt(v){ return Math.round(v); }
+
+    function asPct01(v){ // 0.2 -> "20%"
+      const p = Math.round(v * 1000) / 10; // 1 знак
+      return `${p}%`;
+    }
+
+    function formatReportDate(iso){
+      if (!iso) return "—";
+      const dt = new Date(iso);
+      // покажем как локальную дату пользователя
+      return dt.toLocaleString(undefined, { year:"numeric", month:"2-digit", day:"2-digit" });
     }
 
     async function load(period) {
-      document.getElementById('status').textContent = `Загрузка: ${period}...`;
+      setActive(period);
+
+      const meta = document.getElementById('meta');
+      meta.textContent = `Загрузка: ${period}...`;
 
       const res = await fetch(`${GAS_URL}?period=${period}`, { cache: "no-store" });
-
-      // На случай, если GAS возвращает не-JSON, а текст — покажем текст ошибки
       const text = await res.text();
+
       let json;
       try { json = JSON.parse(text); }
       catch (e) {
-        document.getElementById('status').textContent = `Ошибка: ответ не JSON. Открой GAS URL в браузере и пришли первые строки ответа.`;
+        meta.textContent = `Ошибка: ответ не JSON. Открой GAS URL и пришли первые строки ответа.`;
         console.log("RAW RESPONSE:", text);
         return;
       }
 
-      // Поддерживаем оба формата: {data:{...}} и просто {...}
       const d = json.data ?? json;
 
-      document.getElementById('status').textContent = `Данные: ${period}`;
+      const updatedAt = new Date().toLocaleString(undefined, { hour:"2-digit", minute:"2-digit", day:"2-digit", month:"2-digit" });
+      const reportDate = formatReportDate(d["Дата"]);
 
-      // ⚠️ Эти названия KPI зависят от того, как именно у тебя подписаны поля в сводке/JSON
+      meta.textContent = `Период: ${period === "day" ? "День" : period === "week" ? "Неделя" : "Месяц"} • Отчетная дата: ${reportDate} • Обновлено: ${updatedAt}`;
+
+      // KPI под твои реальные ключи
+      const incoming = num(d, "Итого входящие");
+      const closed   = num(d, "Итого закрыто");
+      const success  = num(d, "Успешно реализовано");
+      const waiting  = num(d, "Переведено в ожидание ответа");
+      const reserve  = num(d, "Переведено в оффлайн/резерв");
+      const convCls  = num(d, "Конверсия в закрытие"); // 0..1
+      const shareNew = num(d, "Доля новых");          // 0..1
+      const shareRet = num(d, "Доля возвратных");     // 0..1
+
       const kpis = [
-        ["Входящие", getVal(d, "Итого входящие")],
-        ["Выручка", getVal(d, "Выручка")],
-        ["Успешно", getVal(d, "Успешно реализовано")],
-        ["Нереализовано", getVal(d, "Нереализовано")],
-        ["Ожидание ответа", getVal(d, "Ожидание ответа")],
-        ["Конверсия", getVal(d, "Конверсия")],
+        ["Входящие", asInt(incoming)],
+        ["Закрыто (итого)", asInt(closed)],
+        ["Успешно реализовано", asInt(success)],
+        ["Ожидание ответа", asInt(waiting)],
+        ["В резерв/оффлайн", asInt(reserve)],
+        ["Конверсия в закрытие", asPct01(convCls)],
+        ["Доля новых", asPct01(shareNew)],
+        ["Доля возвратных", asPct01(shareRet)],
       ];
 
       const grid = document.getElementById('grid');
