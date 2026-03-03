@@ -351,7 +351,7 @@
       h1{font-size:22px}
       table{min-width:560px}
       tbody td, thead th{padding:10px 10px}
-      .wrap{height:calc(100vh - (86px + env(safe-area-inset-bottom)));}
+      .wrap{height:calc(100vh - (86px + env(safe-area-inset-bottom))); }
     }
 
     @media (max-width: 420px){
@@ -456,8 +456,8 @@
   </div>
 
 <script>
-/** ====== CONFIG ====== */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxrye_cydruaJsTCyBCWNB9lbio49fy08CMehXAfUntTQTYjJVd6ZcWyjPnC826nsYx/exec";
+/** ====== CONFIG (POST-ONLY) ====== */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw1xBAAO7cK2iJdfekMVyOGCXpJL77X3EV4TYOET6lQoDNTrgxJ1LVFR2l2kOvLHguo/exec";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 const MONTHS_RU = [
@@ -503,6 +503,7 @@ const TG = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp 
 
 init();
 
+/** ====== INIT ====== */
 async function init(){
   wireUI();
   setupTelegram();
@@ -514,14 +515,9 @@ async function init(){
 function setupTelegram(){
   try{
     if (!TG) return;
-
-    // расширяем webapp и делаем более “нативным”
     TG.ready();
     TG.expand();
-
-    // иногда помогает от дергания
     TG.disableVerticalSwipes?.();
-
   }catch(e){
     console.warn("TG setup error", e);
   }
@@ -564,6 +560,66 @@ function setView(v){
   renderAll();
 }
 
+/** ====== POST-ONLY AUTH HELPERS ====== */
+/**
+ * We support two auth inputs:
+ * 1) Telegram WebApp: initData (preferred)
+ * 2) Fallback deep-link: ?code=XXXX (if you implement code-based auth in GAS)
+ */
+function getInitData(){
+  try{ return (TG && TG.initData) ? TG.initData : ""; }catch(e){ return ""; }
+}
+function getCodeFromUrl(){
+  try{
+    const u = new URL(window.location.href);
+    return (u.searchParams.get("code") || "").trim();
+  }catch(e){ return ""; }
+}
+
+async function apiPost(entity){
+  const initData = getInitData();
+  const code = getCodeFromUrl();
+
+  // If your GAS only supports initData, we keep old behavior with the same overlay/error.
+  if (!initData || String(initData).trim().length < 10){
+    const e = new Error("no_init_data");
+    e.code = "no_init_data";
+    e.meta = { hasCode: !!code, tg: !!TG };
+    throw e;
+  }
+
+  const res = await fetch(GAS_URL, {
+    method: "POST",
+    headers: { "Content-Type":"application/json;charset=utf-8" },
+    cache: "no-store",
+    body: JSON.stringify({ entity, initData })
+  });
+
+  const txt = await res.text();
+  let json = null;
+  try{ json = JSON.parse(txt); }catch(e){}
+
+  if (!json || json.ok !== true){
+    const codeErr = (json && json.error) ? String(json.error) : `http_${res.status}`;
+    const err = new Error(codeErr);
+    err.code = codeErr;
+
+    if (codeErr === "not_approved"){
+      err.status = json.status || "NONE";
+    }
+    if (codeErr === "bad_hash"){
+      err.message = "bad_hash (проверь BOT_TOKEN в GAS и открытие MiniApp из Telegram WebApp)";
+    }
+    if (codeErr === "server_error"){
+      err.message = `server_error: ${json.details || ""}`;
+    }
+    err._raw = txt;
+    throw err;
+  }
+
+  return json;
+}
+
 /** ====== DATA LOADING ====== */
 async function loadAll(force){
   setGas("…", "warn");
@@ -585,7 +641,6 @@ async function loadAll(force){
   }catch(err){
     console.error(err);
 
-    // Системные “ожидаемые” ошибки доступа
     if (err && err.code === "no_init_data") {
       setGas("WEB", "bad");
       showOverlay(
@@ -609,7 +664,6 @@ async function loadAll(force){
       return;
     }
 
-    // Любая другая ошибка (bad_hash, server_error, HTTP...)
     setGas("ERR", "bad");
     const msg = (err && (err.message || err.toString())) ? (err.message || err.toString()) : "unknown_error";
     showOverlay("⚠️ Ошибка загрузки", "Не удалось получить данные.\n\nНажми «Проверить снова».", `details=${msg}\nurl=${GAS_URL}`);
@@ -628,7 +682,7 @@ function showOverlay(title, text, debug){
 }
 
 function cacheKey(entity){
-  return `bugatti_plans_auth_v1::${GAS_URL}::${entity}`;
+  return `bugatti_plans_auth_v2_postonly::${GAS_URL}::${entity}`;
 }
 
 async function fetchCached(entity, force){
@@ -640,54 +694,9 @@ async function fetchCached(entity, force){
     }
   }
 
-  const data = await fetchEntity(entity);
+  const data = await apiPost(entity);
   localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
   return data;
-}
-
-async function fetchEntity(entity){
-  // initData MUST come from Telegram WebApp
-  const initData = (TG && TG.initData) ? TG.initData : "";
-  if (!initData || String(initData).trim().length < 10){
-    const e = new Error("no_init_data");
-    e.code = "no_init_data";
-    throw e;
-  }
-
-  const res = await fetch(GAS_URL, {
-    method: "POST",
-    headers: { "Content-Type":"application/json" },
-    cache: "no-store",
-    body: JSON.stringify({ entity, initData })
-  });
-
-  if (!res.ok){
-    throw new Error(`HTTP ${res.status}`);
-  }
-
-  const json = await res.json();
-  console.log("GAS response", entity, json);
-
-  if (!json || json.ok !== true){
-    const code = (json && json.error) ? String(json.error) : "bad_response";
-    const err = new Error(code);
-    err.code = code;
-
-    if (code === "not_approved"){
-      err.code = "not_approved";
-      err.status = json.status || "NONE";
-    }
-    if (code === "bad_hash"){
-      // Подсказка: почти всегда не тот BOT_TOKEN или открыто не из Telegram WebApp
-      err.message = "bad_hash (проверь BOT_TOKEN в GAS и открытие MiniApp из Telegram)";
-    }
-    if (code === "server_error"){
-      err.message = `server_error: ${json.details || ""}`;
-    }
-    throw err;
-  }
-
-  return json;
 }
 
 /** ====== UI BUILD ====== */
