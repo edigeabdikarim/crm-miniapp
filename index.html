@@ -92,8 +92,20 @@
       gap:8px;
       white-space:nowrap;
       box-shadow: 0 8px 30px rgba(0,0,0,.25);
+      user-select:none;
     }
     .pill strong{color:var(--text); font-weight:700}
+    .pillBtn{
+      margin-left:6px;
+      border:1px solid var(--stroke2);
+      background:rgba(10,16,35,.55);
+      color:var(--text);
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:800;
+      cursor:pointer;
+      font-size:12px;
+    }
 
     .dot{
       width:8px;height:8px;border-radius:50%;
@@ -287,7 +299,7 @@
       box-shadow:0 18px 50px rgba(59,130,246,.14);
     }
 
-    /* Overlay “нет доступа / ошибка” */
+    /* Overlay: код доступа / ошибка */
     .overlay{
       position:fixed;
       inset:0;
@@ -344,6 +356,19 @@
       word-break:break-word;
     }
 
+    .inp{
+      width:100%;
+      border:1px solid var(--stroke2);
+      background:rgba(10,16,35,.6);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 12px;
+      font-size:14px;
+      outline:none;
+      margin:10px 0 12px 0;
+      letter-spacing: .3px;
+    }
+
     @media (max-width: 820px){
       .controls{grid-template-columns:1fr 1fr}
       .controls .btn{grid-column:1 / -1}
@@ -369,9 +394,10 @@
         <h1>Планы продаж</h1>
         <div class="sub" id="subtitle"></div>
       </div>
-      <div class="pill" id="gasPill">
+      <div class="pill" id="gasPill" title="Статус подключения">
         <span class="dot" id="gasDot"></span>
         <span>GAS • <strong id="gasStatus">…</strong></span>
+        <button class="pillBtn" id="btnChangeCode" type="button">Код</button>
       </div>
     </div>
 
@@ -442,23 +468,39 @@
     </div>
   </div>
 
-  <!-- Overlay: нет доступа / ошибка -->
-  <div class="overlay" id="overlayNoAccess">
+  <!-- Overlay: ввод кода -->
+  <div class="overlay" id="overlayCode">
     <div class="modal">
-      <h3 id="noAccessTitle">🔒 Доступ ограничен</h3>
-      <p id="noAccessText"></p>
+      <h3 id="codeTitle">🔒 Код доступа</h3>
+      <p id="codeText">Введи код доступа, чтобы загрузить данные.</p>
+      <input class="inp" id="codeInput" placeholder="Например: BUGATTI-2026-..." autocomplete="one-time-code" />
       <div class="row">
-        <button class="btn2 primary" id="btnRetry">Проверить снова</button>
-        <button class="btn2" id="btnCloseOverlay">Закрыть</button>
+        <button class="btn2 primary" id="btnSaveCode" type="button">Сохранить и загрузить</button>
+        <button class="btn2" id="btnCancelCode" type="button">Закрыть</button>
       </div>
-      <div class="mini" id="noAccessDebug"></div>
+      <div class="mini" id="codeDebug"></div>
+    </div>
+  </div>
+
+  <!-- Overlay: ошибка -->
+  <div class="overlay" id="overlayError">
+    <div class="modal">
+      <h3 id="errTitle">⚠️ Ошибка</h3>
+      <p id="errText"></p>
+      <div class="row">
+        <button class="btn2 primary" id="btnRetry" type="button">Проверить снова</button>
+        <button class="btn2" id="btnCloseErr" type="button">Закрыть</button>
+      </div>
+      <div class="mini" id="errDebug"></div>
     </div>
   </div>
 
 <script>
-/** ====== CONFIG (POST-ONLY) ====== */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbw1xBAAO7cK2iJdfekMVyOGCXpJL77X3EV4TYOET6lQoDNTrgxJ1LVFR2l2kOvLHguo/exec";
+/** ====== CONFIG ====== */
+const GAS_URL = "https://script.google.com/macros/s/AKfycby-PihWlqAoz0i6Qi6u8ovRBjYlMTXdwqVsDlBQnSpW2Vr-HTJbE0bT4hlfNLLamA/exec";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+const ACCESS_CODE_STORAGE_KEY = "bugatti_access_code_v1";
 
 const MONTHS_RU = [
   "Январь","Февраль","Март","Апрель","Май","Июнь",
@@ -475,6 +517,8 @@ const subtitle = document.getElementById("subtitle");
 const gasStatus = document.getElementById("gasStatus");
 const gasDot = document.getElementById("gasDot");
 
+const btnChangeCode = document.getElementById("btnChangeCode");
+
 const kpiGrid = document.getElementById("kpiGrid");
 const dailyBody = document.getElementById("dailyBody");
 const monthlyBody = document.getElementById("monthlyBody");
@@ -485,42 +529,45 @@ const monthlySection = document.getElementById("monthlySection");
 const tabDaily = document.getElementById("tabDaily");
 const tabMonthly = document.getElementById("tabMonthly");
 
-const overlayNoAccess = document.getElementById("overlayNoAccess");
-const noAccessTitle = document.getElementById("noAccessTitle");
-const noAccessText  = document.getElementById("noAccessText");
-const noAccessDebug = document.getElementById("noAccessDebug");
+/* overlays */
+const overlayCode = document.getElementById("overlayCode");
+const codeTitle = document.getElementById("codeTitle");
+const codeText  = document.getElementById("codeText");
+const codeInput = document.getElementById("codeInput");
+const codeDebug = document.getElementById("codeDebug");
+const btnSaveCode = document.getElementById("btnSaveCode");
+const btnCancelCode = document.getElementById("btnCancelCode");
+
+const overlayError = document.getElementById("overlayError");
+const errTitle = document.getElementById("errTitle");
+const errText  = document.getElementById("errText");
+const errDebug = document.getElementById("errDebug");
 const btnRetry = document.getElementById("btnRetry");
-const btnCloseOverlay = document.getElementById("btnCloseOverlay");
+const btnCloseErr = document.getElementById("btnCloseErr");
 
 /** ====== STATE ====== */
 let META = null;
 let RAW = [];
 let PLANS = [];
 let activeView = "daily";
-
-/** ====== TELEGRAM ====== */
-const TG = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+let ACCESS_CODE = "";
 
 init();
 
-/** ====== INIT ====== */
 async function init(){
   wireUI();
-  setupTelegram();
+  ACCESS_CODE = (localStorage.getItem(ACCESS_CODE_STORAGE_KEY) || "").trim();
+
+  if (!ACCESS_CODE){
+    openCodeModal("🔒 Код доступа", "Введи код доступа, чтобы загрузить данные.", "");
+    setGas("LOCK", "bad");
+    subtitle.innerHTML = `<span class="muted">Нужен код доступа</span>`;
+    return;
+  }
+
   await loadAll(false);
   buildSelectors();
   renderAll();
-}
-
-function setupTelegram(){
-  try{
-    if (!TG) return;
-    TG.ready();
-    TG.expand();
-    TG.disableVerticalSwipes?.();
-  }catch(e){
-    console.warn("TG setup error", e);
-  }
 }
 
 function wireUI(){
@@ -539,15 +586,37 @@ function wireUI(){
     renderAll();
   });
 
-  btnRetry.addEventListener("click", async () => {
-    overlayNoAccess.classList.remove("show");
+  btnChangeCode.addEventListener("click", () => {
+    openCodeModal("🔒 Сменить код", "Введи новый код доступа.", "");
+  });
+
+  btnSaveCode.addEventListener("click", async () => {
+    const c = String(codeInput.value || "").trim();
+    if (c.length < 3){
+      codeDebug.textContent = "Код слишком короткий.";
+      return;
+    }
+    ACCESS_CODE = c;
+    localStorage.setItem(ACCESS_CODE_STORAGE_KEY, ACCESS_CODE);
+    overlayCode.classList.remove("show");
     await loadAll(true);
     buildSelectors(true);
     renderAll();
   });
 
-  btnCloseOverlay.addEventListener("click", () => {
-    overlayNoAccess.classList.remove("show");
+  btnCancelCode.addEventListener("click", () => overlayCode.classList.remove("show"));
+
+  btnRetry.addEventListener("click", async () => {
+    overlayError.classList.remove("show");
+    await loadAll(true);
+    buildSelectors(true);
+    renderAll();
+  });
+  btnCloseErr.addEventListener("click", () => overlayError.classList.remove("show"));
+
+  // Enter = сохранить код
+  codeInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") btnSaveCode.click();
   });
 }
 
@@ -558,66 +627,6 @@ function setView(v){
   dailySection.style.display = v==="daily" ? "" : "none";
   monthlySection.style.display = v==="monthly" ? "" : "none";
   renderAll();
-}
-
-/** ====== POST-ONLY AUTH HELPERS ====== */
-/**
- * We support two auth inputs:
- * 1) Telegram WebApp: initData (preferred)
- * 2) Fallback deep-link: ?code=XXXX (if you implement code-based auth in GAS)
- */
-function getInitData(){
-  try{ return (TG && TG.initData) ? TG.initData : ""; }catch(e){ return ""; }
-}
-function getCodeFromUrl(){
-  try{
-    const u = new URL(window.location.href);
-    return (u.searchParams.get("code") || "").trim();
-  }catch(e){ return ""; }
-}
-
-async function apiPost(entity){
-  const initData = getInitData();
-  const code = getCodeFromUrl();
-
-  // If your GAS only supports initData, we keep old behavior with the same overlay/error.
-  if (!initData || String(initData).trim().length < 10){
-    const e = new Error("no_init_data");
-    e.code = "no_init_data";
-    e.meta = { hasCode: !!code, tg: !!TG };
-    throw e;
-  }
-
-  const res = await fetch(GAS_URL, {
-    method: "POST",
-    headers: { "Content-Type":"application/json;charset=utf-8" },
-    cache: "no-store",
-    body: JSON.stringify({ entity, initData })
-  });
-
-  const txt = await res.text();
-  let json = null;
-  try{ json = JSON.parse(txt); }catch(e){}
-
-  if (!json || json.ok !== true){
-    const codeErr = (json && json.error) ? String(json.error) : `http_${res.status}`;
-    const err = new Error(codeErr);
-    err.code = codeErr;
-
-    if (codeErr === "not_approved"){
-      err.status = json.status || "NONE";
-    }
-    if (codeErr === "bad_hash"){
-      err.message = "bad_hash (проверь BOT_TOKEN в GAS и открытие MiniApp из Telegram WebApp)";
-    }
-    if (codeErr === "server_error"){
-      err.message = `server_error: ${json.details || ""}`;
-    }
-    err._raw = txt;
-    throw err;
-  }
-
-  return json;
 }
 
 /** ====== DATA LOADING ====== */
@@ -637,36 +646,26 @@ async function loadAll(force){
     PLANS = Array.isArray(plans?.rows) ? plans.rows : [];
 
     setGas("OK", "good");
-    overlayNoAccess.classList.remove("show");
+    overlayError.classList.remove("show");
   }catch(err){
     console.error(err);
 
-    if (err && err.code === "no_init_data") {
-      setGas("WEB", "bad");
-      showOverlay(
-        "Открой Mini App из Telegram",
-        "Сейчас приложение открыто не как Telegram WebApp, поэтому нет initData.\n\nОткрой мини-приложение из бота (кнопка WebApp / меню), тогда авторизация сработает.",
-        `code=no_init_data\nTG=${!!TG}\nurl=${GAS_URL}`
-      );
-      META = { stores:[], years:[] }; RAW = []; PLANS = [];
-      return;
-    }
-
-    if (err && err.code === "not_approved") {
+    // “Ожидаемые” ошибки
+    if (err && err.code === "invalid_code"){
       setGas("LOCK", "bad");
-      const st = err.status || "NONE";
-      const txt =
-        st === "PENDING"
-          ? "⏳ Твоя заявка уже отправлена и ожидает подтверждения администратора.\n\nПосле одобрения нажми «Проверить снова»."
-          : "🔒 Доступ не выдан.\n\nНажми Start в боте, чтобы отправить заявку. После одобрения нажми «Проверить снова».";
-      showOverlay("🔒 Доступ ограничен", txt, `code=not_approved\nstatus=${st}\nurl=${GAS_URL}`);
+      localStorage.removeItem(ACCESS_CODE_STORAGE_KEY);
+      ACCESS_CODE = "";
+      openCodeModal("❌ Неверный код", "Код не подходит. Введи правильный код доступа.", err.message || "");
       META = { stores:[], years:[] }; RAW = []; PLANS = [];
       return;
     }
 
     setGas("ERR", "bad");
-    const msg = (err && (err.message || err.toString())) ? (err.message || err.toString()) : "unknown_error";
-    showOverlay("⚠️ Ошибка загрузки", "Не удалось получить данные.\n\nНажми «Проверить снова».", `details=${msg}\nurl=${GAS_URL}`);
+    showError(
+      "⚠️ Ошибка загрузки",
+      "Не удалось получить данные.\n\nНажми «Проверить снова».\nЕсли не помогает — проверь код доступа.",
+      `details=${(err && (err.message||err.toString())) ? (err.message||err.toString()) : "unknown"}\nurl=${GAS_URL}`
+    );
 
     META = { stores:[], years:[] };
     RAW = [];
@@ -674,15 +673,24 @@ async function loadAll(force){
   }
 }
 
-function showOverlay(title, text, debug){
-  noAccessTitle.textContent = title;
-  noAccessText.textContent = text;
-  noAccessDebug.textContent = debug || "";
-  overlayNoAccess.classList.add("show");
+function openCodeModal(title, text, debug){
+  codeTitle.textContent = title;
+  codeText.textContent = text;
+  codeDebug.textContent = debug || "";
+  codeInput.value = ACCESS_CODE || "";
+  overlayCode.classList.add("show");
+  setTimeout(()=>codeInput.focus(), 50);
+}
+
+function showError(title, text, debug){
+  errTitle.textContent = title;
+  errText.textContent = text;
+  errDebug.textContent = debug || "";
+  overlayError.classList.add("show");
 }
 
 function cacheKey(entity){
-  return `bugatti_plans_auth_v2_postonly::${GAS_URL}::${entity}`;
+  return `bugatti_plans_codeauth_v1::${GAS_URL}::${entity}::${(ACCESS_CODE||"").slice(0,6)}`;
 }
 
 async function fetchCached(entity, force){
@@ -693,10 +701,48 @@ async function fetchCached(entity, force){
       return cached.data;
     }
   }
-
-  const data = await apiPost(entity);
+  const data = await fetchEntity(entity);
   localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
   return data;
+}
+
+async function fetchEntity(entity){
+  if (!ACCESS_CODE || ACCESS_CODE.length < 3){
+    const e = new Error("no_code");
+    e.code = "invalid_code";
+    throw e;
+  }
+
+  const res = await fetch(GAS_URL, {
+    method: "POST",
+    headers: { "Content-Type":"application/json" },
+    cache: "no-store",
+    body: JSON.stringify({ entity, accessCode: ACCESS_CODE })
+  });
+
+  if (!res.ok){
+    throw new Error(`HTTP ${res.status}`);
+  }
+
+  const json = await res.json();
+  console.log("GAS response", entity, json);
+
+  if (!json || json.ok !== true){
+    const code = (json && json.error) ? String(json.error) : "bad_response";
+    const err = new Error(code);
+    err.code = code;
+
+    if (code === "invalid_code" || code === "unauthorized"){
+      err.code = "invalid_code";
+      err.message = json.message || "invalid_code";
+    }
+    if (code === "server_error"){
+      err.message = `server_error: ${json.details || ""}`;
+    }
+    throw err;
+  }
+
+  return json;
 }
 
 /** ====== UI BUILD ====== */
@@ -872,7 +918,6 @@ function renderAll(){
 /** ====== HELPERS ====== */
 function dedupRaw(rows){
   const map = new Map();
-
   for (const r of rows){
     const store = String(r.store || "").trim();
     const dateKey = String(r.reportDateKey || "").trim();
