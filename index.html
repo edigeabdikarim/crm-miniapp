@@ -1,126 +1,693 @@
 <!doctype html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>CRM Dashboard MVP</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Bugatti CRM • Планы продаж</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
-    body { font-family: system-ui, -apple-system, Arial; margin: 16px; }
-    h2 { margin: 0 0 12px; }
-    .row { display:flex; gap:10px; margin-bottom:12px; flex-wrap: wrap; }
-    button { padding:10px 12px; border-radius:10px; border:1px solid #e5e7eb; background:#fff; cursor:pointer; }
-    button.active { border-color:#111827; font-weight:700; }
-    .meta { font-size: 12px; opacity: .7; margin: 6px 0 12px; }
-    .grid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-    .card { border:1px solid #e5e7eb; border-radius:12px; padding:12px; }
-    .k { font-size: 12px; opacity: .65; }
-    .v { font-size: 22px; font-weight: 700; margin-top: 6px; }
+    :root{
+      --bg0:#070A12;
+      --bg1:#0A1022;
+      --card:#0C142B;
+      --card2:#0B1326;
+      --text:#EAF0FF;
+      --muted:rgba(234,240,255,.65);
+      --muted2:rgba(234,240,255,.45);
+      --line:rgba(255,255,255,.08);
+
+      --blue:#4EA3FF;
+      --cyan:#4BE7FF;
+      --violet:#B36BFF;
+      --pink:#FF4FD8;
+      --green:#3DFFA6;
+      --red:#FF5B6A;
+      --amber:#FFB84A;
+
+      --radius:18px;
+      --radius2:22px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(78,163,255,.16), transparent 60%),
+        radial-gradient(900px 600px at 80% 25%, rgba(179,107,255,.14), transparent 60%),
+        radial-gradient(900px 800px at 60% 90%, rgba(75,231,255,.10), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      color:var(--text);
+    }
+
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 18px 14px 90px;
+      padding-bottom: calc(90px + env(safe-area-inset-bottom));
+    }
+
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin: 6px 2px 14px;
+    }
+    .title{
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      line-height: 1.1;
+      margin:0;
+    }
+    .subtitle{
+      margin-top:6px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height:1.35;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+      font-size: 12px;
+      white-space:nowrap;
+    }
+
+    /* Glass card */
+    .card{
+      border-radius: var(--radius2);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow:
+        0 10px 40px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.05);
+      backdrop-filter: blur(10px);
+    }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    select{
+      flex: 1 1 130px;
+      min-width: 120px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      background: rgba(7,10,18,.55);
+      border:1px solid rgba(255,255,255,.10);
+      color: var(--text);
+      outline:none;
+      appearance:none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    option{ color:#0b1022; }
+
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 12px 0 14px;
+    }
+    @media (min-width: 860px){
+      .kpis{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
+    .kpi{
+      position:relative;
+      padding: 14px 14px 12px;
+      border-radius: var(--radius2);
+      background: linear-gradient(180deg, rgba(12,20,43,.88), rgba(11,19,38,.88));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.05);
+      overflow:hidden;
+    }
+
+    .kpi::before{
+      content:"";
+      position:absolute;
+      inset:-1px;
+      border-radius: inherit;
+      padding:1px;
+      background: linear-gradient(90deg,
+        rgba(78,163,255,.0),
+        rgba(78,163,255,.35),
+        rgba(179,107,255,.25),
+        rgba(75,231,255,.20),
+        rgba(255,79,216,.15),
+        rgba(78,163,255,.0)
+      );
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity:.65;
+      pointer-events:none;
+    }
+
+    .kpi .label{
+      font-size:12px;
+      color: var(--muted);
+      letter-spacing:.2px;
+      margin-bottom:8px;
+    }
+    .kpi .value{
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+    .kpi .hint{
+      margin-top:8px;
+      font-size: 11px;
+      color: var(--muted2);
+    }
+
+    /* Bottom tabbar like your screenshot */
+    .tabbar{
+      position: fixed;
+      left: 0; right: 0;
+      bottom: 0;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: linear-gradient(180deg, rgba(7,10,18,0), rgba(7,10,18,.85) 25%, rgba(7,10,18,.95));
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    .tabs{
+      max-width:980px;
+      margin: 0 auto;
+      display:flex;
+      gap:10px;
+    }
+
+    .tab{
+      flex:1 1 0;
+      text-align:center;
+      padding: 12px 10px;
+      border-radius: 14px;
+      font-size: 13px;
+      color: var(--muted);
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      cursor:pointer;
+      user-select:none;
+    }
+    .tab.active{
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(78,163,255,.35), rgba(78,163,255,.18));
+      border-color: rgba(78,163,255,.35);
+      box-shadow: 0 10px 30px rgba(78,163,255,.12);
+      font-weight: 700;
+    }
+
+    /* Table */
+    .tableCard{
+      padding: 12px;
+      border-radius: var(--radius2);
+      background: linear-gradient(180deg, rgba(12,20,43,.78), rgba(11,19,38,.78));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 10px 30px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 14px;
+    }
+    thead th{
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: none;
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    tbody td{
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: 13px;
+      color: rgba(234,240,255,.92);
+    }
+    tbody tr:hover td{ background: rgba(255,255,255,.03); }
+    .right{ text-align:right; }
+    .mono{ font-variant-numeric: tabular-nums; }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .pos{ color: var(--green); }
+    .neg{ color: var(--red); }
+
+    .sectionTitle{
+      margin: 10px 2px 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(234,240,255,.92);
+    }
+
+    .loading{
+      padding: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
   </style>
 </head>
-<body>
-  <h2>CRM Dashboard (MVP)</h2>
 
-  <div class="row">
-    <button id="btn-day" onclick="load('day')">День</button>
-    <button id="btn-week" onclick="load('week')">Неделя</button>
-    <button id="btn-month" onclick="load('month')">Месяц</button>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1 class="title">Планы продаж</h1>
+        <div id="meta" class="subtitle">Загрузка данных…</div>
+      </div>
+      <div class="pill" id="pill">GAS • OK</div>
+    </div>
+
+    <div class="card">
+      <div class="controls">
+        <select id="year"></select>
+        <select id="month"></select>
+        <select id="store"></select>
+      </div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="sectionTitle" id="sectionTitle">Ежедневные данные</div>
+    <div id="view" class="tableCard">
+      <div class="loading">Загрузка…</div>
+    </div>
   </div>
 
-  <div id="meta" class="meta">—</div>
-  <div class="grid" id="grid"></div>
+  <div class="tabbar">
+    <div class="tabs">
+      <div class="tab active" id="tab-daily" onclick="setTab('daily')">Ежедневно</div>
+      <div class="tab" id="tab-monthly" onclick="setTab('monthly')">Ежемесячно</div>
+    </div>
+  </div>
 
-  <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbz1oR97zOM8_Rwexewxuw9W9ZLob4s-xb8vAWCSMBy8q6mraxuZRaAwydpKQTA-Rtm4/exec";
+<script>
+  // ✅ ТВОЯ НОВАЯ ССЫЛКА GAS
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxCyFpNCzjXunN1gi8eY4Xe5CvDcyp7oFC4M2VP2z2lEdTH_ysmhH8NpIm4nnvY0PIE/exec";
 
-    function setActive(period){
-      ["day","week","month"].forEach(p=>{
-        const el = document.getElementById("btn-"+p);
-        if (!el) return;
-        el.classList.toggle("active", p===period);
+  const RU_MONTHS = [
+    "Январь","Февраль","Март","Апрель","Май","Июнь",
+    "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
+  ];
+  const RU_WEEKDAYS = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
+
+  let RAW = [];
+  let PLANS = [];
+  let META = null;
+  let currentTab = "daily";
+
+  function setTab(t){
+    currentTab = t;
+    document.getElementById("tab-daily").classList.toggle("active", t==="daily");
+    document.getElementById("tab-monthly").classList.toggle("active", t==="monthly");
+    document.getElementById("sectionTitle").textContent = (t==="daily") ? "Ежедневные данные" : "Ежемесячные данные (все магазины)";
+    render();
+  }
+
+  function ymd(d){
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,"0");
+    const da=String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${da}`;
+  }
+  function parseDate(v){
+    const d = new Date(v);
+    return Number.isFinite(d.getTime()) ? d : null;
+  }
+  function num(v){
+    if (v===null || v==="" || v===undefined) return 0;
+    if (typeof v==="number") return v;
+    const n = Number(String(v).replace(",", ".").replace(/\s/g,""));
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function fmtMoneyKZT(v){
+    const n = Math.round(v);
+    return n.toLocaleString("ru-RU") + " ₸";
+  }
+  function fmtPct(v){
+    if (!Number.isFinite(v) || v===null) return "—";
+    const p = (v*100);
+    const out = (Math.round(p*10)/10).toFixed(1).replace(".0","");
+    return out + "%";
+  }
+
+  function monthName(monthIndex){ return RU_MONTHS[monthIndex]; }
+
+  function getSelected(){
+    return {
+      year: Number(document.getElementById("year").value),
+      monthIndex: Number(document.getElementById("month").value),
+      store: document.getElementById("store").value
+    };
+  }
+
+  function daysInMonth(year, monthIndex){
+    const first = new Date(year, monthIndex, 1);
+    const next = new Date(year, monthIndex+1, 1);
+    const out = [];
+    for (let d = new Date(first); d < next; d.setDate(d.getDate()+1)) out.push(new Date(d));
+    return out;
+  }
+
+  // ✅ Дедупликация: берём последнюю версию отчёта по (магазин, дата отчёта) по максимальному ts
+  function dedupRaw(rows){
+    const map = new Map(); // key -> latest row
+    for (const r of rows){
+      const ts = parseDate(r.ts);
+      const rd = parseDate(r.reportDate);
+      if (!ts || !rd || !r.store) continue;
+      const key = r.store + "|" + ymd(rd);
+      const prev = map.get(key);
+      if (!prev || parseDate(prev.ts) < ts) map.set(key, r);
+    }
+    return map;
+  }
+
+  // Факт = salesNew + salesOld - returns
+  function factFromRow(r){ return num(r.salesNew) + num(r.salesOld) - num(r.returns); }
+  function checksFromRow(r){ return num(r.checksNew) + num(r.checksOld); }
+
+  function findPlan(year, monthIndex, store){
+    const mName = monthName(monthIndex);
+    const row = (PLANS||[]).find(p =>
+      Number(p.year)===year &&
+      String(p.month).trim()===mName &&
+      String(p.store).trim()===store
+    );
+    return row ? { planMonth: num(row.planMonth), planDay: num(row.planDay) } : { planMonth: 0, planDay: 0 };
+  }
+
+  function computeLastReportDateInMonth(dedupMap, year, monthIndex){
+    let max=null;
+    for (const r of dedupMap.values()){
+      const rd = parseDate(r.reportDate);
+      if (!rd) continue;
+      if (rd.getFullYear()!==year) continue;
+      if (rd.getMonth()!==monthIndex) continue;
+      if (!max || rd>max) max=rd;
+    }
+    return max;
+  }
+
+  function computeDaily(year, monthIndex, store, dedupMap){
+    const plan = findPlan(year, monthIndex, store);
+    const days = daysInMonth(year, monthIndex);
+
+    let factMonth = 0;
+    let checksMonth = 0;
+
+    const rows = days.map(d=>{
+      const key = store + "|" + ymd(d);
+      const r = dedupMap.get(key);
+      const fact = r ? factFromRow(r) : 0;
+      const pct = plan.planDay>0 ? (fact/plan.planDay) : null;
+
+      if (r){
+        factMonth += fact;
+        checksMonth += checksFromRow(r);
+      }
+
+      return {
+        date: ymd(d),
+        weekday: RU_WEEKDAYS[d.getDay()],
+        planDay: plan.planDay,
+        factDay: fact,
+        pctDay: pct
+      };
+    });
+
+    const pctMonth = plan.planMonth>0 ? (factMonth/plan.planMonth) : null;
+    const avgCheck = checksMonth>0 ? (factMonth/checksMonth) : null;
+
+    return { plan, rows, factMonth, pctMonth, avgCheck };
+  }
+
+  function computeMonthlyAllStores(year, monthIndex, dedupMap){
+    const lastDate = computeLastReportDateInMonth(dedupMap, year, monthIndex);
+    const cutoff = lastDate ? ymd(lastDate) : null;
+
+    const storesFromRaw = new Set((META?.stores?.length ? META.stores : RAW.map(r=>r.store)).filter(Boolean));
+    const storesFromPlans = new Set((PLANS||[]).map(p=>p.store).filter(Boolean));
+    const stores = Array.from(new Set([...storesFromRaw, ...storesFromPlans])).sort((a,b)=>a.localeCompare(b,"ru"));
+
+    const rows = [];
+
+    for (const store of stores){
+      const plan = findPlan(year, monthIndex, store);
+      let factSum=0, checksSum=0;
+
+      for (const r of dedupMap.values()){
+        if (r.store !== store) continue;
+        const rd = parseDate(r.reportDate);
+        if (!rd) continue;
+        if (rd.getFullYear()!==year || rd.getMonth()!==monthIndex) continue;
+        if (lastDate && rd > lastDate) continue; // срез A: общая последняя дата отчёта
+
+        const f = factFromRow(r);
+        factSum += f;
+        checksSum += checksFromRow(r);
+      }
+
+      const pct = plan.planMonth>0 ? (factSum/plan.planMonth) : null;
+      const avg = checksSum>0 ? (factSum/checksSum) : null;
+
+      rows.push({
+        store,
+        planMonth: plan.planMonth,
+        factMonth: factSum,
+        pctMonth: pct,
+        avgCheck: avg
       });
     }
 
-    function num(d, key, fallback = 0) {
-      const v = d?.[key];
-      if (v === undefined || v === null || v === "") return fallback;
-      if (typeof v === "number") return v;
-      const n = Number(String(v).replace(",", "."));
-      return Number.isFinite(n) ? n : fallback;
+    // сортировка по % выполнения (по убыванию) — удобно руководителю
+    rows.sort((a,b)=>{
+      const ap = (a.pctMonth===null? -1 : a.pctMonth);
+      const bp = (b.pctMonth===null? -1 : b.pctMonth);
+      return bp - ap;
+    });
+
+    return { cutoff, rows };
+  }
+
+  function renderKpisDaily(d){
+    // Карточки в стиле скринов: крупное число, маленькая подпись
+    const items = [
+      { label: "План (мес)", value: fmtMoneyKZT(d.plan.planMonth), hint: "Установленный план" },
+      { label: "Факт (мес)", value: fmtMoneyKZT(d.factMonth), hint: "С учётом возвратов" },
+      { label: "% от плана", value: d.pctMonth===null ? "—" : fmtPct(d.pctMonth), hint: "Факт / План" },
+      { label: "Средний чек", value: d.avgCheck===null ? "—" : fmtMoneyKZT(d.avgCheck), hint: "Факт / Чеки" }
+    ];
+
+    const k = document.getElementById("kpis");
+    k.innerHTML = items.map(it=>`
+      <div class="kpi">
+        <div class="label">${it.label}</div>
+        <div class="value mono">${it.value}</div>
+        <div class="hint">${it.hint}</div>
+      </div>
+    `).join("");
+  }
+
+  function renderKpisMonthly(m){
+    // В monthly — показываем общую “шапку” по срезу
+    const cutoffText = m.cutoff ? m.cutoff : "—";
+    const k = document.getElementById("kpis");
+    k.innerHTML = `
+      <div class="kpi">
+        <div class="label">Срез факта</div>
+        <div class="value mono">${cutoffText}</div>
+        <div class="hint">До последнего дня отчёта</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Магазинов</div>
+        <div class="value mono">${m.rows.length}</div>
+        <div class="hint">В выборке</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Лидер по %</div>
+        <div class="value mono">${m.rows[0]?.store || "—"}</div>
+        <div class="hint">${m.rows[0]?.pctMonth==null ? "—" : fmtPct(m.rows[0].pctMonth)}</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Аутсайдер</div>
+        <div class="value mono">${m.rows[m.rows.length-1]?.store || "—"}</div>
+        <div class="hint">${m.rows[m.rows.length-1]?.pctMonth==null ? "—" : fmtPct(m.rows[m.rows.length-1].pctMonth)}</div>
+      </div>
+    `;
+  }
+
+  function render(){
+    const view = document.getElementById("view");
+    const meta = document.getElementById("meta");
+    const {year, monthIndex, store} = getSelected();
+    const dedupMap = dedupRaw(RAW);
+
+    const updatedAt = new Date().toLocaleString("ru-RU", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+    meta.textContent = `Период: ${monthName(monthIndex)} ${year} • Магазин: ${store} • Обновлено: ${updatedAt}`;
+
+    if (currentTab === "daily"){
+      const d = computeDaily(year, monthIndex, store, dedupMap);
+      renderKpisDaily(d);
+
+      const rowsHtml = d.rows.map(r=>`
+        <tr>
+          <td class="mono">${r.date}</td>
+          <td>${r.weekday}</td>
+          <td class="right mono">${fmtMoneyKZT(r.planDay)}</td>
+          <td class="right mono">${fmtMoneyKZT(r.factDay)}</td>
+          <td class="right mono">${r.pctDay===null ? "—" : fmtPct(r.pctDay)}</td>
+        </tr>
+      `).join("");
+
+      view.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>День</th>
+              <th class="right">План</th>
+              <th class="right">Факт</th>
+              <th class="right">% от плана</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
+    } else {
+      const m = computeMonthlyAllStores(year, monthIndex, dedupMap);
+      renderKpisMonthly(m);
+
+      const rowsHtml = m.rows.map(r=>`
+        <tr>
+          <td>${r.store}</td>
+          <td class="right mono">${fmtMoneyKZT(r.planMonth)}</td>
+          <td class="right mono">${fmtMoneyKZT(r.factMonth)}</td>
+          <td class="right mono">${r.pctMonth===null ? "—" : fmtPct(r.pctMonth)}</td>
+          <td class="right mono">${r.avgCheck===null ? "—" : fmtMoneyKZT(r.avgCheck)}</td>
+        </tr>
+      `).join("");
+
+      view.innerHTML = `
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+          <span class="badge">Срез: <b style="color:rgba(234,240,255,.92)">${m.cutoff || "—"}</b></span>
+          <span class="badge">Сортировка: <b style="color:rgba(234,240,255,.92)">по % выполнения</b></span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Магазин</th>
+              <th class="right">План (мес)</th>
+              <th class="right">Факт (мес)</th>
+              <th class="right">% от плана</th>
+              <th class="right">Средний чек</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
     }
 
-    function asInt(v){ return Math.round(v); }
+    if (window.Telegram?.WebApp){
+      Telegram.WebApp.expand();
+      Telegram.WebApp.setHeaderColor("#070A12");
+      Telegram.WebApp.setBackgroundColor("#070A12");
+    }
+  }
 
-    function asPct01(v){ // 0.2 -> "20%"
-      const p = Math.round(v * 1000) / 10; // 1 знак
-      return `${p}%`;
+  async function init(){
+    document.getElementById("pill").textContent = "GAS • загрузка…";
+
+    const [metaRes, rawRes, plansRes] = await Promise.all([
+      fetch(`${GAS_URL}?entity=meta`, { cache:"no-store" }),
+      fetch(`${GAS_URL}?entity=raw`, { cache:"no-store" }),
+      fetch(`${GAS_URL}?entity=plans`, { cache:"no-store" })
+    ]);
+
+    META = await metaRes.json();
+    const rawJson = await rawRes.json();
+    const plansJson = await plansRes.json();
+
+    RAW = rawJson.rows || [];
+    PLANS = plansJson.rows || [];
+
+    // years
+    const years = (META?.years?.length ? META.years : []).slice().sort((a,b)=>a-b);
+    if (!years.length){
+      years.push(new Date().getFullYear());
     }
 
-    function formatReportDate(iso){
-      if (!iso) return "—";
-      const dt = new Date(iso);
-      // покажем как локальную дату пользователя
-      return dt.toLocaleString(undefined, { year:"numeric", month:"2-digit", day:"2-digit" });
-    }
+    // stores: объединяем raw + plans (чтобы всегда были все)
+    const storesFromRaw = new Set((META?.stores?.length ? META.stores : RAW.map(r=>r.store)).filter(Boolean));
+    const storesFromPlans = new Set((PLANS||[]).map(p=>p.store).filter(Boolean));
+    const stores = Array.from(new Set([...storesFromRaw, ...storesFromPlans])).sort((a,b)=>a.localeCompare(b,"ru"));
 
-    async function load(period) {
-      setActive(period);
+    // Fill selectors
+    const yearSel = document.getElementById("year");
+    yearSel.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join("");
 
-      const meta = document.getElementById('meta');
-      meta.textContent = `Загрузка: ${period}...`;
+    const monthSel = document.getElementById("month");
+    monthSel.innerHTML = RU_MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
 
-      const res = await fetch(`${GAS_URL}?period=${period}`, { cache: "no-store" });
-      const text = await res.text();
+    const storeSel = document.getElementById("store");
+    storeSel.innerHTML = stores.map(s=>`<option value="${s}">${s}</option>`).join("");
 
-      let json;
-      try { json = JSON.parse(text); }
-      catch (e) {
-        meta.textContent = `Ошибка: ответ не JSON. Открой GAS URL и пришли первые строки ответа.`;
-        console.log("RAW RESPONSE:", text);
-        return;
-      }
+    // Defaults: последний год из meta, текущий месяц, магазин "Астана" если есть, иначе первый
+    yearSel.value = String(years[years.length-1]);
+    monthSel.value = String(new Date().getMonth());
 
-      const d = json.data ?? json;
+    const preferred = ["Астана","Мира","Есентай","Абайка","Аутлет"];
+    const foundPreferred = preferred.find(x => stores.includes(x));
+    storeSel.value = foundPreferred || stores[0] || "";
 
-      const updatedAt = new Date().toLocaleString(undefined, { hour:"2-digit", minute:"2-digit", day:"2-digit", month:"2-digit" });
-      const reportDate = formatReportDate(d["Дата"]);
+    yearSel.addEventListener("change", render);
+    monthSel.addEventListener("change", render);
+    storeSel.addEventListener("change", render);
 
-      meta.textContent = `Период: ${period === "day" ? "День" : period === "week" ? "Неделя" : "Месяц"} • Отчетная дата: ${reportDate} • Обновлено: ${updatedAt}`;
+    document.getElementById("pill").textContent = "GAS • OK";
+    render();
+  }
 
-      // KPI под твои реальные ключи
-      const incoming = num(d, "Итого входящие");
-      const closed   = num(d, "Итого закрыто");
-      const success  = num(d, "Успешно реализовано");
-      const waiting  = num(d, "Переведено в ожидание ответа");
-      const reserve  = num(d, "Переведено в оффлайн/резерв");
-      const convCls  = num(d, "Конверсия в закрытие"); // 0..1
-      const shareNew = num(d, "Доля новых");          // 0..1
-      const shareRet = num(d, "Доля возвратных");     // 0..1
-
-      const kpis = [
-        ["Входящие", asInt(incoming)],
-        ["Закрыто (итого)", asInt(closed)],
-        ["Успешно реализовано", asInt(success)],
-        ["Ожидание ответа", asInt(waiting)],
-        ["В резерв/оффлайн", asInt(reserve)],
-        ["Конверсия в закрытие", asPct01(convCls)],
-        ["Доля новых", asPct01(shareNew)],
-        ["Доля возвратных", asPct01(shareRet)],
-      ];
-
-      const grid = document.getElementById('grid');
-      grid.innerHTML = "";
-      for (const [k, v] of kpis) {
-        const el = document.createElement('div');
-        el.className = "card";
-        el.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
-        grid.appendChild(el);
-      }
-
-      if (window.Telegram?.WebApp) Telegram.WebApp.expand();
-    }
-
-    load('day');
-  </script>
+  init().catch(err=>{
+    document.getElementById("pill").textContent = "GAS • ошибка";
+    document.getElementById("meta").textContent = "Ошибка загрузки данных: " + String(err);
+    document.getElementById("view").innerHTML = `<div class="loading">Проверь, что GAS доступен публично (Anyone) и ссылка верная.</div>`;
+  });
+</script>
 </body>
 </html>
