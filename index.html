@@ -5,15 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Планы продаж</title>
 
-  <!-- Telegram WebApp SDK -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <style>
     :root{
       --bg0:#070a14;
       --bg1:#0b1022;
-      --card:#0c1630cc;
-      --card2:#0b1430b3;
       --stroke:#1e2a4a;
       --stroke2:#233156;
       --text:#e9eeff;
@@ -32,8 +27,7 @@
     *{box-sizing:border-box}
     html,body{height:100%}
 
-    /* ВАЖНО: body без скролла, скролл только внутри .scrollY
-       чтобы Telegram меньше пытался “сворачивать” вебапп при свайпе */
+    /* IMPORTANT: body без скролла (анти-сворачивание Telegram WebApp) */
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue";
@@ -43,20 +37,23 @@
         radial-gradient(900px 450px at 85% 18%, var(--glow1), transparent 62%),
         radial-gradient(700px 380px at 50% 92%, var(--glow3), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow:hidden;
-    }
-
-    .scrollY{
+      overflow:hidden; /* ключевое */
       height:100vh;
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-      overscroll-behavior:contain;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: auto;
     }
 
+    /* Скролл делаем внутри */
     .wrap{
       max-width:1100px;
       margin:0 auto;
-      padding:18px 14px 96px;
+      padding:18px 14px calc(96px + env(safe-area-inset-bottom));
+      height:calc(100vh - (78px + env(safe-area-inset-bottom)));
+      overflow-y:auto;
+      overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
     }
 
     .top{
@@ -80,6 +77,7 @@
       display:flex;
       flex-wrap:wrap;
       gap:6px;
+      min-height:18px;
     }
 
     .pill{
@@ -141,17 +139,11 @@
       color:var(--text);
       border-radius:999px;
       padding:11px 14px;
-      font-weight:800;
+      font-weight:700;
       cursor:pointer;
       white-space:nowrap;
     }
     .btn:active{transform:translateY(1px)}
-    .btn.secondary{
-      border:1px solid var(--stroke2);
-      background:rgba(10,16,35,.55);
-      color:var(--text);
-      font-weight:800;
-    }
 
     .grid{
       margin-top:12px;
@@ -170,7 +162,7 @@
     }
 
     .k{color:var(--muted2);font-size:12px;margin-bottom:6px}
-    .v{font-size:30px;font-weight:900;letter-spacing:.3px}
+    .v{font-size:30px;font-weight:800;letter-spacing:.3px}
     .hint{margin-top:6px;color:var(--muted2);font-size:12px}
     .v.small{font-size:22px}
     .v.mono{font-variant-numeric: tabular-nums}
@@ -190,8 +182,14 @@
     .badge.warn{border-color:rgba(251,191,36,.35); color:#fff1c2}
     .badge.bad{border-color:rgba(251,113,133,.35); color:#ffd2dc}
 
-    .section{ margin-top:18px; }
-    .section h2{ margin:0 0 10px 4px; font-size:16px; color:var(--text); }
+    .section{
+      margin-top:18px;
+    }
+    .section h2{
+      margin:0 0 10px 4px;
+      font-size:16px;
+      color:var(--text);
+    }
 
     .tableWrap{
       border:1px solid var(--stroke);
@@ -210,7 +208,7 @@
       width:100%;
       border-collapse:separate;
       border-spacing:0;
-      min-width:560px;
+      min-width:620px;
     }
 
     thead th{
@@ -222,7 +220,7 @@
       border-bottom:1px solid var(--stroke);
       color:var(--muted);
       font-size:12px;
-      font-weight:800;
+      font-weight:700;
       padding:12px 12px;
       white-space:nowrap;
     }
@@ -233,12 +231,18 @@
       font-variant-numeric: tabular-nums;
       white-space:nowrap;
     }
-    tbody tr:hover td{ background:rgba(255,255,255,.03); }
+
+    tbody tr:hover td{
+      background:rgba(255,255,255,.03);
+    }
 
     .right{text-align:right}
     .center{text-align:center}
     .muted{color:var(--muted)}
-    .linkish{ border-bottom:1px solid rgba(233,238,255,.35); padding-bottom:1px; }
+    .linkish{
+      border-bottom:1px solid rgba(233,238,255,.35);
+      padding-bottom:1px;
+    }
 
     .pct{
       font-weight:900;
@@ -251,11 +255,12 @@
     .tabs{
       position:fixed;
       left:0; right:0; bottom:0;
-      padding:10px 14px 16px;
+      padding:10px 14px calc(16px + env(safe-area-inset-bottom));
       background:linear-gradient(180deg, rgba(7,10,20,0), rgba(7,10,20,.75) 25%, rgba(7,10,20,.95));
       backdrop-filter: blur(8px);
-      pointer-events:auto;
+      z-index: 50;
     }
+
     .seg{
       max-width:1100px;
       margin:0 auto;
@@ -263,6 +268,7 @@
       grid-template-columns: 1fr 1fr;
       gap:10px;
     }
+
     .seg button{
       border:1px solid var(--stroke);
       background:rgba(10,16,35,.55);
@@ -273,6 +279,7 @@
       font-size:14px;
       cursor:pointer;
     }
+
     .seg button.active{
       color:var(--text);
       border-color:rgba(99,102,241,.45);
@@ -280,42 +287,61 @@
       box-shadow:0 18px 50px rgba(59,130,246,.14);
     }
 
-    /* Overlay screens */
+    /* Overlay “нет доступа / ошибка” */
     .overlay{
       position:fixed;
       inset:0;
-      background:rgba(7,10,20,.82);
-      backdrop-filter: blur(10px);
+      background:rgba(0,0,0,.55);
       display:none;
       align-items:center;
       justify-content:center;
       padding:18px;
-      z-index:9999;
+      z-index: 100;
     }
-    .overlay.show{ display:flex; }
-    .overlayCard{
+    .overlay.show{display:flex}
+    .modal{
       width:min(520px, 100%);
       border:1px solid var(--stroke);
       border-radius:18px;
       background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-      box-shadow:0 30px 80px rgba(0,0,0,.45);
+      box-shadow:0 24px 80px rgba(0,0,0,.45);
       padding:16px;
     }
-    .overlayTitle{
-      font-size:18px;
-      font-weight:900;
-      margin:0 0 6px 0;
+    .modal h3{
+      margin:0 0 8px 0;
+      font-size:16px;
     }
-    .overlayText{
+    .modal p{
+      margin:0 0 12px 0;
       color:var(--muted);
       font-size:13px;
       line-height:1.35;
-      margin:0 0 14px 0;
+      white-space:pre-line;
     }
-    .overlayActions{
+    .modal .row{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
+    }
+    .modal .btn2{
+      flex:1;
+      border:1px solid rgba(99,102,241,.35);
+      background:rgba(10,16,35,.55);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:800;
+      cursor:pointer;
+      text-align:center;
+    }
+    .modal .btn2.primary{
+      background:linear-gradient(180deg, rgba(99,102,241,.35), rgba(59,130,246,.20));
+    }
+    .mini{
+      font-size:12px;
+      color:var(--muted2);
+      margin-top:10px;
+      word-break:break-word;
     }
 
     @media (max-width: 820px){
@@ -323,125 +349,115 @@
       .controls .btn{grid-column:1 / -1}
       .grid{grid-template-columns:1fr 1fr}
       h1{font-size:22px}
+      table{min-width:560px}
       tbody td, thead th{padding:10px 10px}
+      .wrap{height:calc(100vh - (86px + env(safe-area-inset-bottom)));}
     }
+
     @media (max-width: 420px){
       .grid{grid-template-columns:1fr}
       .v{font-size:28px}
+      table{min-width:520px}
     }
   </style>
 </head>
 
 <body>
-  <div class="scrollY" id="scrollRoot">
-    <div class="wrap">
-      <div class="top">
-        <div>
-          <h1>Планы продаж</h1>
-          <div class="sub" id="subtitle"></div>
-        </div>
-        <div class="pill" id="gasPill">
-          <span class="dot warn" id="gasDot"></span>
-          <span>GAS • <strong id="gasStatus">…</strong></span>
-        </div>
+  <div class="wrap" id="scrollRoot">
+    <div class="top">
+      <div>
+        <h1>Планы продаж</h1>
+        <div class="sub" id="subtitle"></div>
       </div>
-
-      <div class="controls">
-        <select id="yearSel" class="sel"></select>
-        <select id="monthSel" class="sel"></select>
-        <select id="storeSel" class="sel"></select>
-        <button class="btn" id="refreshBtn">Обновить</button>
+      <div class="pill" id="gasPill">
+        <span class="dot" id="gasDot"></span>
+        <span>GAS • <strong id="gasStatus">…</strong></span>
       </div>
+    </div>
 
-      <div class="grid" id="kpiGrid"></div>
+    <div class="controls">
+      <select id="yearSel" class="sel"></select>
+      <select id="monthSel" class="sel"></select>
+      <select id="storeSel" class="sel"></select>
+      <button class="btn" id="refreshBtn">Обновить</button>
+    </div>
 
-      <div class="section" id="dailySection">
-        <h2>Ежедневные данные</h2>
-        <div class="tableWrap">
-          <div class="scrollX">
-            <table>
-              <thead>
-                <tr>
-                  <th>Дата</th>
-                  <th class="right">% от плана</th>
-                  <th class="right">План</th>
-                  <th class="right">Факт</th>
-                </tr>
-              </thead>
-              <tbody id="dailyBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <div class="grid" id="kpiGrid"></div>
 
-      <div class="section" id="monthlySection" style="display:none;">
-        <h2>Ежемесячные данные (все магазины)</h2>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
-          <span class="badge"><span class="muted">Срез:</span> <strong id="cutoffText">—</strong></span>
-          <span class="badge bad">Правило %: &lt;80</span>
-          <span class="badge warn">80–100</span>
-          <span class="badge good">&gt;100</span>
-        </div>
-
-        <div class="tableWrap">
-          <div class="scrollX">
-            <table>
-              <thead>
-                <tr>
-                  <th>Магазин</th>
-                  <th class="right">% от плана</th>
-                  <th class="right">План (мес)</th>
-                  <th class="right">Факт (мес)</th>
-                  <th class="right">Средний чек</th>
-                </tr>
-              </thead>
-              <tbody id="monthlyBody"></tbody>
-            </table>
-          </div>
+    <div class="section" id="dailySection">
+      <h2>Ежедневные данные</h2>
+      <div class="tableWrap">
+        <div class="scrollX">
+          <table>
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th class="right">% от плана</th>
+                <th class="right">План</th>
+                <th class="right">Факт</th>
+              </tr>
+            </thead>
+            <tbody id="dailyBody"></tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <div class="tabs">
-      <div class="seg">
-        <button id="tabDaily" class="active">Ежедневно</button>
-        <button id="tabMonthly">Ежемесячно</button>
+    <div class="section" id="monthlySection" style="display:none;">
+      <h2>Ежемесячные данные (все магазины)</h2>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
+        <span class="badge"><span class="muted">Срез:</span> <strong id="cutoffText">—</strong></span>
+        <span class="badge"><span class="muted">Сортировка:</span> <strong>по % выполнения</strong></span>
+        <span class="badge bad">Правило %: &lt;80</span>
+        <span class="badge warn">80–100</span>
+        <span class="badge good">&gt;100</span>
       </div>
+
+      <div class="tableWrap">
+        <div class="scrollX">
+          <table>
+            <thead>
+              <tr>
+                <th>Магазин</th>
+                <th class="right">% от плана</th>
+                <th class="right">План (мес)</th>
+                <th class="right">Факт (мес)</th>
+                <th class="right">Средний чек</th>
+              </tr>
+            </thead>
+            <tbody id="monthlyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:14px"></div>
+  </div>
+
+  <div class="tabs">
+    <div class="seg">
+      <button id="tabDaily" class="active">Ежедневно</button>
+      <button id="tabMonthly">Ежемесячно</button>
     </div>
   </div>
 
-  <!-- Overlays -->
-  <div class="overlay" id="overlayNoTelegram">
-    <div class="overlayCard">
-      <div class="overlayTitle">Открой в Telegram</div>
-      <p class="overlayText">
-        Этот дашборд работает только внутри Telegram Mini App, чтобы мы могли безопасно определить пользователя.
-      </p>
-      <div class="overlayActions">
-        <button class="btn secondary" onclick="location.reload()">Обновить</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- Overlay: нет доступа / ошибка -->
   <div class="overlay" id="overlayNoAccess">
-    <div class="overlayCard">
-      <div class="overlayTitle">Нет доступа</div>
-      <p class="overlayText" id="noAccessText">
-        Нажми Start в боте, чтобы отправить заявку администратору. После одобрения обнови страницу.
-      </p>
-      <div class="overlayActions">
-        <button class="btn" id="openBotBtn">Открыть бота</button>
-        <button class="btn secondary" id="retryBtn">Проверить снова</button>
+    <div class="modal">
+      <h3 id="noAccessTitle">🔒 Доступ ограничен</h3>
+      <p id="noAccessText"></p>
+      <div class="row">
+        <button class="btn2 primary" id="btnRetry">Проверить снова</button>
+        <button class="btn2" id="btnCloseOverlay">Закрыть</button>
       </div>
+      <div class="mini" id="noAccessDebug"></div>
     </div>
   </div>
 
 <script>
-/* ========= НАСТРОЙКИ ========= */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxwjjNad1c0cZWSERRilPOWx3RwaZZEukPcIvV42VaZxn1rpAJDqg_FBTApAxwo-d0V/exec"; // <-- ВАЖНО: вставь свой актуальный /exec
-const BOT_LINK = "https://t.me/Amobugatticrm_bot";
-
+/** ====== CONFIG ====== */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxwjjNad1c0cZWSERRilPOWx3RwaZZEukPcIvV42VaZxn1rpAJDqg_FBTApAxwo-d0V/exec";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 const MONTHS_RU = [
@@ -449,7 +465,7 @@ const MONTHS_RU = [
   "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
 ];
 
-/* ========= UI ========= */
+/** ====== DOM ====== */
 const yearSel = document.getElementById("yearSel");
 const monthSel = document.getElementById("monthSel");
 const storeSel = document.getElementById("storeSel");
@@ -469,58 +485,46 @@ const monthlySection = document.getElementById("monthlySection");
 const tabDaily = document.getElementById("tabDaily");
 const tabMonthly = document.getElementById("tabMonthly");
 
-const overlayNoTelegram = document.getElementById("overlayNoTelegram");
 const overlayNoAccess = document.getElementById("overlayNoAccess");
-const openBotBtn = document.getElementById("openBotBtn");
-const retryBtn = document.getElementById("retryBtn");
-const noAccessText = document.getElementById("noAccessText");
+const noAccessTitle = document.getElementById("noAccessTitle");
+const noAccessText  = document.getElementById("noAccessText");
+const noAccessDebug = document.getElementById("noAccessDebug");
+const btnRetry = document.getElementById("btnRetry");
+const btnCloseOverlay = document.getElementById("btnCloseOverlay");
 
+/** ====== STATE ====== */
 let META = null;
 let RAW = [];
 let PLANS = [];
 let activeView = "daily";
 
-/* ========= Telegram ========= */
-const TG = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+/** ====== TELEGRAM ====== */
+const TG = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
 
 init();
 
 async function init(){
   wireUI();
-
-  if (!TG){
-    overlayNoTelegram.classList.add("show");
-    return;
-  }
-
-  // Telegram UI hints
-  try {
-    TG.ready();
-    TG.expand();
-    // TG.disableVerticalSwipes(); // есть не у всех клиентов, поэтому в try/catch
-    if (typeof TG.disableVerticalSwipes === "function") TG.disableVerticalSwipes();
-  } catch {}
-
-  openBotBtn.addEventListener("click", () => {
-    try {
-      // откроет чат бота в Telegram
-      if (TG && typeof TG.openTelegramLink === "function") TG.openTelegramLink(BOT_LINK);
-      else window.open(BOT_LINK, "_blank");
-    } catch {
-      window.open(BOT_LINK, "_blank");
-    }
-  });
-
-  retryBtn.addEventListener("click", async () => {
-    overlayNoAccess.classList.remove("show");
-    await loadAll(true);
-    buildSelectors(true);
-    renderAll();
-  });
-
+  setupTelegram();
   await loadAll(false);
   buildSelectors();
   renderAll();
+}
+
+function setupTelegram(){
+  try{
+    if (!TG) return;
+
+    // расширяем webapp и делаем более “нативным”
+    TG.ready();
+    TG.expand();
+
+    // иногда помогает от дергания
+    TG.disableVerticalSwipes?.();
+
+  }catch(e){
+    console.warn("TG setup error", e);
+  }
 }
 
 function wireUI(){
@@ -538,6 +542,17 @@ function wireUI(){
     buildSelectors(true);
     renderAll();
   });
+
+  btnRetry.addEventListener("click", async () => {
+    overlayNoAccess.classList.remove("show");
+    await loadAll(true);
+    buildSelectors(true);
+    renderAll();
+  });
+
+  btnCloseOverlay.addEventListener("click", () => {
+    overlayNoAccess.classList.remove("show");
+  });
 }
 
 function setView(v){
@@ -549,11 +564,10 @@ function setView(v){
   renderAll();
 }
 
-/* ========= DATA LOADING (authorized) ========= */
-
+/** ====== DATA LOADING ====== */
 async function loadAll(force){
   setGas("…", "warn");
-  overlayNoAccess.classList.remove("show");
+  subtitle.innerHTML = `<span class="muted">Загрузка…</span>`;
 
   try{
     const [meta, raw, plans] = await Promise.all([
@@ -565,31 +579,56 @@ async function loadAll(force){
     META = meta;
     RAW = Array.isArray(raw?.rows) ? raw.rows : [];
     PLANS = Array.isArray(plans?.rows) ? plans.rows : [];
+
     setGas("OK", "good");
+    overlayNoAccess.classList.remove("show");
   }catch(err){
     console.error(err);
 
-    // если не авторизован — покажем экран
+    // Системные “ожидаемые” ошибки доступа
+    if (err && err.code === "no_init_data") {
+      setGas("WEB", "bad");
+      showOverlay(
+        "Открой Mini App из Telegram",
+        "Сейчас приложение открыто не как Telegram WebApp, поэтому нет initData.\n\nОткрой мини-приложение из бота (кнопка WebApp / меню), тогда авторизация сработает.",
+        `code=no_init_data\nTG=${!!TG}\nurl=${GAS_URL}`
+      );
+      META = { stores:[], years:[] }; RAW = []; PLANS = [];
+      return;
+    }
+
     if (err && err.code === "not_approved") {
       setGas("LOCK", "bad");
       const st = err.status || "NONE";
-      noAccessText.textContent =
+      const txt =
         st === "PENDING"
-          ? "⏳ Твоя заявка уже отправлена и ожидает подтверждения администратора. После одобрения нажми «Проверить снова»."
-          : "🔒 Доступ не выдан. Нажми Start в боте, чтобы отправить заявку. После одобрения нажми «Проверить снова».";
-      overlayNoAccess.classList.add("show");
+          ? "⏳ Твоя заявка уже отправлена и ожидает подтверждения администратора.\n\nПосле одобрения нажми «Проверить снова»."
+          : "🔒 Доступ не выдан.\n\nНажми Start в боте, чтобы отправить заявку. После одобрения нажми «Проверить снова».";
+      showOverlay("🔒 Доступ ограничен", txt, `code=not_approved\nstatus=${st}\nurl=${GAS_URL}`);
+      META = { stores:[], years:[] }; RAW = []; PLANS = [];
       return;
     }
+
+    // Любая другая ошибка (bad_hash, server_error, HTTP...)
+    setGas("ERR", "bad");
+    const msg = (err && (err.message || err.toString())) ? (err.message || err.toString()) : "unknown_error";
+    showOverlay("⚠️ Ошибка загрузки", "Не удалось получить данные.\n\nНажми «Проверить снова».", `details=${msg}\nurl=${GAS_URL}`);
 
     META = { stores:[], years:[] };
     RAW = [];
     PLANS = [];
-    setGas("ERR", "bad");
   }
 }
 
+function showOverlay(title, text, debug){
+  noAccessTitle.textContent = title;
+  noAccessText.textContent = text;
+  noAccessDebug.textContent = debug || "";
+  overlayNoAccess.classList.add("show");
+}
+
 function cacheKey(entity){
-  return `bugatti_plans_secure_v1::${GAS_URL}::${entity}`;
+  return `bugatti_plans_auth_v1::${GAS_URL}::${entity}`;
 }
 
 async function fetchCached(entity, force){
@@ -607,10 +646,13 @@ async function fetchCached(entity, force){
 }
 
 async function fetchEntity(entity){
-  if (!TG) throw new Error("no_telegram");
-
-  const initData = TG.initData || "";
-  if (!initData) throw new Error("no_initData");
+  // initData MUST come from Telegram WebApp
+  const initData = (TG && TG.initData) ? TG.initData : "";
+  if (!initData || String(initData).trim().length < 10){
+    const e = new Error("no_init_data");
+    e.code = "no_init_data";
+    throw e;
+  }
 
   const res = await fetch(GAS_URL, {
     method: "POST",
@@ -619,14 +661,28 @@ async function fetchEntity(entity){
     body: JSON.stringify({ entity, initData })
   });
 
-  // Apps Script всегда 200, но возвращает {ok:false, error:...}
-  const json = await res.json().catch(()=> ({}));
+  if (!res.ok){
+    throw new Error(`HTTP ${res.status}`);
+  }
 
-  if (!json || json.ok !== true) {
-    const err = new Error(json?.error || "api_error");
-    if (json?.error === "not_approved") {
+  const json = await res.json();
+  console.log("GAS response", entity, json);
+
+  if (!json || json.ok !== true){
+    const code = (json && json.error) ? String(json.error) : "bad_response";
+    const err = new Error(code);
+    err.code = code;
+
+    if (code === "not_approved"){
       err.code = "not_approved";
-      err.status = json?.status || "NONE";
+      err.status = json.status || "NONE";
+    }
+    if (code === "bad_hash"){
+      // Подсказка: почти всегда не тот BOT_TOKEN или открыто не из Telegram WebApp
+      err.message = "bad_hash (проверь BOT_TOKEN в GAS и открытие MiniApp из Telegram)";
+    }
+    if (code === "server_error"){
+      err.message = `server_error: ${json.details || ""}`;
     }
     throw err;
   }
@@ -634,8 +690,7 @@ async function fetchEntity(entity){
   return json;
 }
 
-/* ========= RENDERING ========= */
-
+/** ====== UI BUILD ====== */
 function setGas(text, mode){
   gasStatus.textContent = text;
   gasDot.classList.remove("good","warn","bad");
@@ -660,26 +715,32 @@ function buildSelectors(keepSelection=false){
     if (prevStore && stores.includes(prevStore)) storeSel.value = prevStore;
   } else {
     if (years.length) yearSel.value = String(years[0]);
-    monthSel.value = MONTHS_RU[new Date().getMonth()] || "Январь";
+    monthSel.value = MONTHS_RU.includes("Февраль") ? "Февраль" : (MONTHS_RU[0] || "");
     if (stores.includes("Астана")) storeSel.value = "Астана";
     else if (stores.length) storeSel.value = stores[0];
   }
 }
 
+/** ====== RENDER ====== */
 function renderAll(){
   const selectedYear = Number(yearSel.value);
   const selectedMonth = String(monthSel.value).trim();
   const selectedStore = String(storeSel.value).trim();
   const monthIndex = MONTHS_RU.indexOf(selectedMonth);
 
-  if (!selectedYear || monthIndex < 0 || !selectedStore) return;
+  if (!selectedYear || monthIndex < 0 || !selectedStore) {
+    subtitle.innerHTML = `<span class="muted">Выбери год/месяц/магазин</span>`;
+    kpiGrid.innerHTML = "";
+    dailyBody.innerHTML = "";
+    monthlyBody.innerHTML = "";
+    return;
+  }
 
   const ymPrefix = `${selectedYear}-${String(monthIndex+1).padStart(2,"0")}-`;
-
   const dedup = dedupRaw(RAW);
 
   const storeRows = dedup.filter(r =>
-    String(r.store).trim() === selectedStore &&
+    normalizeText(r.store) === normalizeText(selectedStore) &&
     String(r.reportDateKey).startsWith(ymPrefix)
   );
 
@@ -701,12 +762,7 @@ function renderAll(){
     const fact = factRow ? netSales(factRow) : 0;
     const pct = planDay > 0 ? (fact / planDay) : null;
 
-    dailyRows.push({
-      dateKey,
-      plan: planDay,
-      fact,
-      pct
-    });
+    dailyRows.push({ dateKey, plan: planDay, fact, pct });
   }
 
   const cutoff = maxDateKey(storeRows.map(r => r.reportDateKey));
@@ -714,16 +770,17 @@ function renderAll(){
 
   const monthFact = storeRows.reduce((sum, r) => sum + netSales(r), 0);
   const monthPct = planMonth > 0 ? (monthFact / planMonth) : null;
+
   const checks = storeRows.reduce((sum, r) => sum + Number(r.checksNew || 0) + Number(r.checksOld || 0), 0);
   const avgCheck = checks > 0 ? (monthFact / checks) : 0;
-  const remain = Math.max(0, planMonth - monthFact);
 
+  const remain = Math.max(0, planMonth - monthFact);
   const cutoffDay = cutoff ? Number(cutoff.slice(8,10)) : 0;
   const daysLeft = cutoffDay ? Math.max(0, totalDaysInMonth - cutoffDay) : 0;
   const needPerDay = daysLeft > 0 ? (remain / daysLeft) : null;
 
   subtitle.innerHTML = [
-    `<span class="muted">Период:</span> <strong>${selectedMonth} ${selectedYear}</strong>`,
+    `<span class="muted">Период:</span> <strong>${escapeHtml(selectedMonth)} ${selectedYear}</strong>`,
     `<span class="muted">• Магазин:</span> <strong>${escapeHtml(selectedStore)}</strong>`,
     `<span class="muted">• Обновлено:</span> <strong>${timeNow()}</strong>`
   ].join(" ");
@@ -740,6 +797,7 @@ function renderAll(){
     kpiCard("Дней до конца", String(daysLeft), "От среза до конца месяца")
   ].join("");
 
+  // DAILY: дата | % | план | факт
   dailyBody.innerHTML = dailyRows.map(r => {
     const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
     return `
@@ -774,14 +832,7 @@ function renderAll(){
       const pctValue = planMonthValue > 0 ? (factValue / planMonthValue) : null;
       const cutoffValue = maxDateKey(rows.map(r => r.reportDateKey));
 
-      return {
-        store,
-        planMonth: planMonthValue,
-        fact: factValue,
-        avgCheck: avgValue,
-        pct: pctValue,
-        cutoff: cutoffValue
-      };
+      return { store, planMonth: planMonthValue, fact: factValue, avgCheck: avgValue, pct: pctValue, cutoff: cutoffValue };
     });
 
     const globalCutoff = maxDateKey(monthlyRows.map(r => r.cutoff).filter(Boolean));
@@ -793,6 +844,7 @@ function renderAll(){
       return bv - av;
     });
 
+    // MONTHLY: магазин | % | план | факт | ср.чек
     monthlyBody.innerHTML = monthlyRows.map(r => {
       const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
       return `
@@ -808,8 +860,7 @@ function renderAll(){
   }
 }
 
-/* ========= CALC HELPERS ========= */
-
+/** ====== HELPERS ====== */
 function dedupRaw(rows){
   const map = new Map();
 
@@ -828,7 +879,6 @@ function dedupRaw(rows){
       map.set(key, r);
     }
   }
-
   return Array.from(map.values());
 }
 
