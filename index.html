@@ -4,6 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Планы продаж</title>
+
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <style>
     :root{
       --bg0:#070a14;
@@ -26,15 +30,10 @@
     }
 
     *{box-sizing:border-box}
+    html,body{height:100%}
 
-    /* ✅ Telegram-friendly: no body scroll */
-    html, body{
-      height:100%;
-      overflow:hidden;
-      overscroll-behavior:none;
-      -webkit-text-size-adjust:100%;
-    }
-
+    /* ВАЖНО: body без скролла, скролл только внутри .scrollY
+       чтобы Telegram меньше пытался “сворачивать” вебапп при свайпе */
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue";
@@ -44,19 +43,20 @@
         radial-gradient(900px 450px at 85% 18%, var(--glow1), transparent 62%),
         radial-gradient(700px 380px at 50% 92%, var(--glow3), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow:hidden;
     }
 
-    /* ✅ Scroll lives here (Telegram won't collapse WebApp) */
+    .scrollY{
+      height:100vh;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior:contain;
+    }
+
     .wrap{
       max-width:1100px;
       margin:0 auto;
       padding:18px 14px 96px;
-
-      height:100dvh;
-      overflow-y:auto;
-      overflow-x:hidden;
-      -webkit-overflow-scrolling:touch;
-      overscroll-behavior:contain;
     }
 
     .top{
@@ -141,11 +141,17 @@
       color:var(--text);
       border-radius:999px;
       padding:11px 14px;
-      font-weight:700;
+      font-weight:800;
       cursor:pointer;
       white-space:nowrap;
     }
     .btn:active{transform:translateY(1px)}
+    .btn.secondary{
+      border:1px solid var(--stroke2);
+      background:rgba(10,16,35,.55);
+      color:var(--text);
+      font-weight:800;
+    }
 
     .grid{
       margin-top:12px;
@@ -164,7 +170,7 @@
     }
 
     .k{color:var(--muted2);font-size:12px;margin-bottom:6px}
-    .v{font-size:30px;font-weight:800;letter-spacing:.3px}
+    .v{font-size:30px;font-weight:900;letter-spacing:.3px}
     .hint{margin-top:6px;color:var(--muted2);font-size:12px}
     .v.small{font-size:22px}
     .v.mono{font-variant-numeric: tabular-nums}
@@ -184,14 +190,8 @@
     .badge.warn{border-color:rgba(251,191,36,.35); color:#fff1c2}
     .badge.bad{border-color:rgba(251,113,133,.35); color:#ffd2dc}
 
-    .section{
-      margin-top:18px;
-    }
-    .section h2{
-      margin:0 0 10px 4px;
-      font-size:16px;
-      color:var(--text);
-    }
+    .section{ margin-top:18px; }
+    .section h2{ margin:0 0 10px 4px; font-size:16px; color:var(--text); }
 
     .tableWrap{
       border:1px solid var(--stroke);
@@ -204,15 +204,13 @@
     .scrollX{
       overflow-x:auto;
       -webkit-overflow-scrolling:touch;
-      overscroll-behavior:contain;
-      touch-action:pan-x pan-y; /* ✅ allow inside scroll */
     }
 
     table{
       width:100%;
       border-collapse:separate;
       border-spacing:0;
-      min-width:620px;
+      min-width:560px;
     }
 
     thead th{
@@ -224,7 +222,7 @@
       border-bottom:1px solid var(--stroke);
       color:var(--muted);
       font-size:12px;
-      font-weight:700;
+      font-weight:800;
       padding:12px 12px;
       white-space:nowrap;
     }
@@ -235,18 +233,12 @@
       font-variant-numeric: tabular-nums;
       white-space:nowrap;
     }
-
-    tbody tr:hover td{
-      background:rgba(255,255,255,.03);
-    }
+    tbody tr:hover td{ background:rgba(255,255,255,.03); }
 
     .right{text-align:right}
     .center{text-align:center}
     .muted{color:var(--muted)}
-    .linkish{
-      border-bottom:1px solid rgba(233,238,255,.35);
-      padding-bottom:1px;
-    }
+    .linkish{ border-bottom:1px solid rgba(233,238,255,.35); padding-bottom:1px; }
 
     .pct{
       font-weight:900;
@@ -264,7 +256,6 @@
       backdrop-filter: blur(8px);
       pointer-events:auto;
     }
-
     .seg{
       max-width:1100px;
       margin:0 auto;
@@ -272,7 +263,6 @@
       grid-template-columns: 1fr 1fr;
       gap:10px;
     }
-
     .seg button{
       border:1px solid var(--stroke);
       background:rgba(10,16,35,.55);
@@ -283,7 +273,6 @@
       font-size:14px;
       cursor:pointer;
     }
-
     .seg button.active{
       color:var(--text);
       border-color:rgba(99,102,241,.45);
@@ -291,126 +280,168 @@
       box-shadow:0 18px 50px rgba(59,130,246,.14);
     }
 
+    /* Overlay screens */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(7,10,20,.82);
+      backdrop-filter: blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:9999;
+    }
+    .overlay.show{ display:flex; }
+    .overlayCard{
+      width:min(520px, 100%);
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      box-shadow:0 30px 80px rgba(0,0,0,.45);
+      padding:16px;
+    }
+    .overlayTitle{
+      font-size:18px;
+      font-weight:900;
+      margin:0 0 6px 0;
+    }
+    .overlayText{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      margin:0 0 14px 0;
+    }
+    .overlayActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
     @media (max-width: 820px){
       .controls{grid-template-columns:1fr 1fr}
       .controls .btn{grid-column:1 / -1}
       .grid{grid-template-columns:1fr 1fr}
       h1{font-size:22px}
-      table{min-width:560px}
       tbody td, thead th{padding:10px 10px}
     }
-
     @media (max-width: 420px){
       .grid{grid-template-columns:1fr}
       .v{font-size:28px}
-      table{min-width:520px}
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap" id="appScroll">
-    <div class="top">
-      <div>
-        <h1>Планы продаж</h1>
-        <div class="sub" id="subtitle"></div>
+  <div class="scrollY" id="scrollRoot">
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <h1>Планы продаж</h1>
+          <div class="sub" id="subtitle"></div>
+        </div>
+        <div class="pill" id="gasPill">
+          <span class="dot warn" id="gasDot"></span>
+          <span>GAS • <strong id="gasStatus">…</strong></span>
+        </div>
       </div>
-      <div class="pill" id="gasPill">
-        <span class="dot" id="gasDot"></span>
-        <span>GAS • <strong id="gasStatus">…</strong></span>
+
+      <div class="controls">
+        <select id="yearSel" class="sel"></select>
+        <select id="monthSel" class="sel"></select>
+        <select id="storeSel" class="sel"></select>
+        <button class="btn" id="refreshBtn">Обновить</button>
       </div>
-    </div>
 
-    <div class="controls">
-      <select id="yearSel" class="sel"></select>
-      <select id="monthSel" class="sel"></select>
-      <select id="storeSel" class="sel"></select>
-      <button class="btn" id="refreshBtn">Обновить</button>
-    </div>
+      <div class="grid" id="kpiGrid"></div>
 
-    <div class="grid" id="kpiGrid"></div>
+      <div class="section" id="dailySection">
+        <h2>Ежедневные данные</h2>
+        <div class="tableWrap">
+          <div class="scrollX">
+            <table>
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th class="right">% от плана</th>
+                  <th class="right">План</th>
+                  <th class="right">Факт</th>
+                </tr>
+              </thead>
+              <tbody id="dailyBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-    <div class="section" id="dailySection">
-      <h2>Ежедневные данные</h2>
-      <div class="tableWrap">
-        <div class="scrollX">
-          <table>
-            <thead>
-              <tr>
-                <th>Дата</th>
-                <th class="center">День</th>
-                <th class="right">План</th>
-                <th class="right">Факт</th>
-                <th class="right">% от плана</th>
-              </tr>
-            </thead>
-            <tbody id="dailyBody"></tbody>
-          </table>
+      <div class="section" id="monthlySection" style="display:none;">
+        <h2>Ежемесячные данные (все магазины)</h2>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
+          <span class="badge"><span class="muted">Срез:</span> <strong id="cutoffText">—</strong></span>
+          <span class="badge bad">Правило %: &lt;80</span>
+          <span class="badge warn">80–100</span>
+          <span class="badge good">&gt;100</span>
+        </div>
+
+        <div class="tableWrap">
+          <div class="scrollX">
+            <table>
+              <thead>
+                <tr>
+                  <th>Магазин</th>
+                  <th class="right">% от плана</th>
+                  <th class="right">План (мес)</th>
+                  <th class="right">Факт (мес)</th>
+                  <th class="right">Средний чек</th>
+                </tr>
+              </thead>
+              <tbody id="monthlyBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="section" id="monthlySection" style="display:none;">
-      <h2>Ежемесячные данные (все магазины)</h2>
-
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
-        <span class="badge"><span class="muted">Срез:</span> <strong id="cutoffText">—</strong></span>
-        <span class="badge"><span class="muted">Сортировка:</span> <strong>по % выполнения</strong></span>
-        <span class="badge bad">Правило %: &lt;80</span>
-        <span class="badge warn">80–100</span>
-        <span class="badge good">&gt;100</span>
-      </div>
-
-      <div class="tableWrap">
-        <div class="scrollX">
-          <table>
-            <thead>
-              <tr>
-                <th>Магазин</th>
-                <th class="right">План (мес)</th>
-                <th class="right">Факт (мес)</th>
-                <th class="right">% от плана</th>
-                <th class="right">Средний чек</th>
-              </tr>
-            </thead>
-            <tbody id="monthlyBody"></tbody>
-          </table>
-        </div>
+    <div class="tabs">
+      <div class="seg">
+        <button id="tabDaily" class="active">Ежедневно</button>
+        <button id="tabMonthly">Ежемесячно</button>
       </div>
     </div>
   </div>
 
-  <div class="tabs">
-    <div class="seg">
-      <button id="tabDaily" class="active">Ежедневно</button>
-      <button id="tabMonthly">Ежемесячно</button>
+  <!-- Overlays -->
+  <div class="overlay" id="overlayNoTelegram">
+    <div class="overlayCard">
+      <div class="overlayTitle">Открой в Telegram</div>
+      <p class="overlayText">
+        Этот дашборд работает только внутри Telegram Mini App, чтобы мы могли безопасно определить пользователя.
+      </p>
+      <div class="overlayActions">
+        <button class="btn secondary" onclick="location.reload()">Обновить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlayNoAccess">
+    <div class="overlayCard">
+      <div class="overlayTitle">Нет доступа</div>
+      <p class="overlayText" id="noAccessText">
+        Нажми Start в боте, чтобы отправить заявку администратору. После одобрения обнови страницу.
+      </p>
+      <div class="overlayActions">
+        <button class="btn" id="openBotBtn">Открыть бота</button>
+        <button class="btn secondary" id="retryBtn">Проверить снова</button>
+      </div>
     </div>
   </div>
 
 <script>
-/* ===== Telegram WebApp: stop collapsing on scroll ===== */
-(function telegramFix(){
-  // hard lock page scroll; scroll is inside .wrap
-  const lock = (e) => {
-    // allow touches inside the inner scroller
-    if (e.target && e.target.closest && e.target.closest('#appScroll')) return;
-    e.preventDefault();
-  };
+/* ========= НАСТРОЙКИ ========= */
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxwjjNad1c0cZWSERRilPOWx3RwaZZEukPcIvV42VaZxn1rpAJDqg_FBTApAxwo-d0V/exec"; // <-- ВАЖНО: вставь свой актуальный /exec
+const BOT_LINK = "https://t.me/Amobugatticrm_bot";
 
-  // iOS safari bounce protection
-  document.addEventListener('touchmove', lock, { passive: false });
-
-  // Telegram WebApp helpers
-  if (window.Telegram && Telegram.WebApp) {
-    const tg = Telegram.WebApp;
-    try { tg.expand(); } catch {}
-    try { tg.ready(); } catch {}
-  }
-})();
-</script>
-
-<script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyU7ZHBh6tt0TkpvaoVJff5AVR_lXt3oVIEbH46ZT7zjHbonPzeOKX2T0KdT_N9XWJy/exec";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 const MONTHS_RU = [
@@ -418,6 +449,7 @@ const MONTHS_RU = [
   "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
 ];
 
+/* ========= UI ========= */
 const yearSel = document.getElementById("yearSel");
 const monthSel = document.getElementById("monthSel");
 const storeSel = document.getElementById("storeSel");
@@ -437,15 +469,55 @@ const monthlySection = document.getElementById("monthlySection");
 const tabDaily = document.getElementById("tabDaily");
 const tabMonthly = document.getElementById("tabMonthly");
 
+const overlayNoTelegram = document.getElementById("overlayNoTelegram");
+const overlayNoAccess = document.getElementById("overlayNoAccess");
+const openBotBtn = document.getElementById("openBotBtn");
+const retryBtn = document.getElementById("retryBtn");
+const noAccessText = document.getElementById("noAccessText");
+
 let META = null;
 let RAW = [];
 let PLANS = [];
 let activeView = "daily";
 
+/* ========= Telegram ========= */
+const TG = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+
 init();
 
 async function init(){
   wireUI();
+
+  if (!TG){
+    overlayNoTelegram.classList.add("show");
+    return;
+  }
+
+  // Telegram UI hints
+  try {
+    TG.ready();
+    TG.expand();
+    // TG.disableVerticalSwipes(); // есть не у всех клиентов, поэтому в try/catch
+    if (typeof TG.disableVerticalSwipes === "function") TG.disableVerticalSwipes();
+  } catch {}
+
+  openBotBtn.addEventListener("click", () => {
+    try {
+      // откроет чат бота в Telegram
+      if (TG && typeof TG.openTelegramLink === "function") TG.openTelegramLink(BOT_LINK);
+      else window.open(BOT_LINK, "_blank");
+    } catch {
+      window.open(BOT_LINK, "_blank");
+    }
+  });
+
+  retryBtn.addEventListener("click", async () => {
+    overlayNoAccess.classList.remove("show");
+    await loadAll(true);
+    buildSelectors(true);
+    renderAll();
+  });
+
   await loadAll(false);
   buildSelectors();
   renderAll();
@@ -477,8 +549,12 @@ function setView(v){
   renderAll();
 }
 
+/* ========= DATA LOADING (authorized) ========= */
+
 async function loadAll(force){
   setGas("…", "warn");
+  overlayNoAccess.classList.remove("show");
+
   try{
     const [meta, raw, plans] = await Promise.all([
       fetchCached("meta", force),
@@ -489,10 +565,22 @@ async function loadAll(force){
     META = meta;
     RAW = Array.isArray(raw?.rows) ? raw.rows : [];
     PLANS = Array.isArray(plans?.rows) ? plans.rows : [];
-
     setGas("OK", "good");
   }catch(err){
     console.error(err);
+
+    // если не авторизован — покажем экран
+    if (err && err.code === "not_approved") {
+      setGas("LOCK", "bad");
+      const st = err.status || "NONE";
+      noAccessText.textContent =
+        st === "PENDING"
+          ? "⏳ Твоя заявка уже отправлена и ожидает подтверждения администратора. После одобрения нажми «Проверить снова»."
+          : "🔒 Доступ не выдан. Нажми Start в боте, чтобы отправить заявку. После одобрения нажми «Проверить снова».";
+      overlayNoAccess.classList.add("show");
+      return;
+    }
+
     META = { stores:[], years:[] };
     RAW = [];
     PLANS = [];
@@ -501,7 +589,7 @@ async function loadAll(force){
 }
 
 function cacheKey(entity){
-  return `bugatti_plans_v3::${GAS_URL}::${entity}`;
+  return `bugatti_plans_secure_v1::${GAS_URL}::${entity}`;
 }
 
 async function fetchCached(entity, force){
@@ -513,21 +601,40 @@ async function fetchCached(entity, force){
     }
   }
 
-  const url = `${GAS_URL}?entity=${encodeURIComponent(entity)}${force ? `&nocache=${Date.now()}` : ""}`;
-  const data = await fetchJson(url);
+  const data = await fetchEntity(entity);
   localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
   return data;
 }
 
-async function fetchJson(url){
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
+async function fetchEntity(entity){
+  if (!TG) throw new Error("no_telegram");
+
+  const initData = TG.initData || "";
+  if (!initData) throw new Error("no_initData");
+
+  const res = await fetch(GAS_URL, {
+    method: "POST",
+    headers: { "Content-Type":"application/json" },
+    cache: "no-store",
+    body: JSON.stringify({ entity, initData })
+  });
+
+  // Apps Script всегда 200, но возвращает {ok:false, error:...}
+  const json = await res.json().catch(()=> ({}));
+
+  if (!json || json.ok !== true) {
+    const err = new Error(json?.error || "api_error");
+    if (json?.error === "not_approved") {
+      err.code = "not_approved";
+      err.status = json?.status || "NONE";
+    }
+    throw err;
+  }
+
+  return json;
 }
 
-function safeJsonParse(s){
-  try { return JSON.parse(s); } catch { return null; }
-}
+/* ========= RENDERING ========= */
 
 function setGas(text, mode){
   gasStatus.textContent = text;
@@ -553,7 +660,7 @@ function buildSelectors(keepSelection=false){
     if (prevStore && stores.includes(prevStore)) storeSel.value = prevStore;
   } else {
     if (years.length) yearSel.value = String(years[0]);
-    monthSel.value = "Февраль";
+    monthSel.value = MONTHS_RU[new Date().getMonth()] || "Январь";
     if (stores.includes("Астана")) storeSel.value = "Астана";
     else if (stores.length) storeSel.value = stores[0];
   }
@@ -596,7 +703,6 @@ function renderAll(){
 
     dailyRows.push({
       dateKey,
-      dayShort: weekdayShortRU(dateKey),
       plan: planDay,
       fact,
       pct
@@ -639,10 +745,9 @@ function renderAll(){
     return `
       <tr>
         <td><span class="linkish">${shortDate(r.dateKey)}</span></td>
-        <td class="center">${r.dayShort}</td>
+        <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
         <td class="right">${r.plan ? money(r.plan) : "—"}</td>
         <td class="right">${r.fact ? `<span class="linkish">${money(r.fact)}</span>` : "—"}</td>
-        <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
       </tr>
     `;
   }).join("");
@@ -693,15 +798,17 @@ function renderAll(){
       return `
         <tr>
           <td>${escapeHtml(r.store)}</td>
+          <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
           <td class="right">${r.planMonth ? money(r.planMonth) : "—"}</td>
           <td class="right">${r.fact ? money(r.fact) : "0 ₸"}</td>
-          <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
           <td class="right">${r.avgCheck ? money(r.avgCheck) : "—"}</td>
         </tr>
       `;
     }).join("");
   }
 }
+
+/* ========= CALC HELPERS ========= */
 
 function dedupRaw(rows){
   const map = new Map();
@@ -734,13 +841,6 @@ function netSales(r){
 function maxDateKey(keys){
   if (!keys || !keys.length) return null;
   return keys.reduce((max, key) => (!max || key > max) ? key : max, null);
-}
-
-function weekdayShortRU(dateKey){
-  const [y,m,d] = dateKey.split("-").map(Number);
-  const dt = new Date(Date.UTC(y, m-1, d));
-  const map = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
-  return map[dt.getUTCDay()];
 }
 
 function shortDate(dateKey){
@@ -800,6 +900,10 @@ function escapeHtml(s){
     '"':"&quot;",
     "'":"&#39;"
   }[c]));
+}
+
+function safeJsonParse(s){
+  try { return JSON.parse(s); } catch { return null; }
 }
 </script>
 </body>
