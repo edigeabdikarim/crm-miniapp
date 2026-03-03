@@ -1,54 +1,48 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Bugatti CRM • Планы продаж</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Планы продаж</title>
   <style>
     :root{
-      --bg0:#070A12;
-      --bg1:#0A1022;
+      --bg0:#070a14;
+      --bg1:#0b1022;
+      --card:#0c1630cc;
+      --card2:#0b1430b3;
+      --stroke:#1e2a4a;
+      --stroke2:#233156;
+      --text:#e9eeff;
+      --muted:#a7b2d6;
+      --muted2:#7e8ab3;
 
-      --text:#EAF0FF;
-      --muted:rgba(234,240,255,.65);
-      --muted2:rgba(234,240,255,.45);
+      --good:#34d399;   /* зелёный */
+      --warn:#fbbf24;   /* жёлтый */
+      --bad:#fb7185;    /* красный */
 
-      --line:rgba(255,255,255,.08);
-
-      --blue:#4EA3FF;
-      --cyan:#4BE7FF;
-      --violet:#B36BFF;
-      --pink:#FF4FD8;
-
-      /* Статусы % (в твоей стилистике) */
-      --pct-red:#FF5B6A;     /* <80 */
-      --pct-yellow:#FFB84A;  /* 80-100 */
-      --pct-green:#3DFFA6;   /* >100 */
-
-      --radius:18px;
-      --radius2:22px;
+      --glow1: rgba(109,40,217,.18);
+      --glow2: rgba(59,130,246,.18);
+      --glow3: rgba(16,185,129,.12);
     }
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 700px at 20% 10%, rgba(78,163,255,.16), transparent 60%),
-        radial-gradient(900px 600px at 80% 25%, rgba(179,107,255,.14), transparent 60%),
-        radial-gradient(900px 800px at 60% 90%, rgba(75,231,255,.10), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue";
       color:var(--text);
+      background:
+        radial-gradient(900px 450px at 20% 10%, var(--glow2), transparent 60%),
+        radial-gradient(900px 450px at 85% 18%, var(--glow1), transparent 62%),
+        radial-gradient(700px 380px at 50% 92%, var(--glow3), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
     }
 
     .wrap{
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 18px 14px 92px;
-      padding-bottom: calc(92px + env(safe-area-inset-bottom));
+      max-width:1100px;
+      margin:0 auto;
+      padding:18px 14px 90px;
     }
 
     .top{
@@ -56,254 +50,230 @@
       align-items:flex-start;
       justify-content:space-between;
       gap:12px;
-      margin: 6px 2px 14px;
+      margin-bottom:14px;
     }
-    .title{
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: .2px;
-      line-height: 1.1;
-      margin:0;
+
+    h1{
+      font-size:26px;
+      margin:0 0 4px 0;
+      letter-spacing:.2px;
     }
-    .subtitle{
-      margin-top:6px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height:1.35;
+    .sub{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.25;
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
     }
 
     .pill{
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border-radius:999px;
+      padding:8px 10px;
+      font-size:12px;
+      color:var(--muted);
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:10px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-      color: var(--muted);
-      font-size: 12px;
       white-space:nowrap;
+      box-shadow: 0 8px 30px rgba(0,0,0,.25);
     }
-
-    .card{
-      border-radius: var(--radius2);
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-      border: 1px solid rgba(255,255,255,.08);
-      box-shadow:
-        0 10px 40px rgba(0,0,0,.35),
-        inset 0 1px 0 rgba(255,255,255,.05);
-      backdrop-filter: blur(10px);
+    .pill strong{color:var(--text); font-weight:700}
+    .dot{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--good);
+      box-shadow:0 0 0 4px rgba(52,211,153,.14);
     }
+    .dot.bad{background:var(--bad); box-shadow:0 0 0 4px rgba(251,113,133,.14)}
+    .dot.warn{background:var(--warn); box-shadow:0 0 0 4px rgba(251,191,36,.14)}
 
     .controls{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-
-    select{
-      flex: 1 1 160px;
-      min-width: 140px;
-      padding: 12px 12px;
-      border-radius: 14px;
-      background: rgba(7,10,18,.55);
-      border:1px solid rgba(255,255,255,.10);
-      color: var(--text);
-      outline:none;
-      appearance:none;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
-    }
-    option{ color:#0b1022; }
-
-    .kpis{
+      margin-top:12px;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border-radius:18px;
+      padding:12px;
       display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin: 12px 0 14px;
-    }
-    @media (min-width: 860px){
-      .kpis{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    }
-
-    .kpi{
-      position:relative;
-      padding: 14px 14px 12px;
-      border-radius: var(--radius2);
-      background: linear-gradient(180deg, rgba(12,20,43,.88), rgba(11,19,38,.88));
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow:
-        0 10px 30px rgba(0,0,0,.35),
-        inset 0 1px 0 rgba(255,255,255,.05);
-      overflow:hidden;
-    }
-    .kpi::before{
-      content:"";
-      position:absolute;
-      inset:-1px;
-      border-radius: inherit;
-      padding:1px;
-      background: linear-gradient(90deg,
-        rgba(78,163,255,.0),
-        rgba(78,163,255,.35),
-        rgba(179,107,255,.25),
-        rgba(75,231,255,.20),
-        rgba(255,79,216,.15),
-        rgba(78,163,255,.0)
-      );
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      opacity:.65;
-      pointer-events:none;
-    }
-    .kpi .label{
-      font-size:12px;
-      color: var(--muted);
-      letter-spacing:.2px;
-      margin-bottom:8px;
-    }
-    .kpi .value{
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: .3px;
-      display:flex;
-      align-items:baseline;
+      grid-template-columns: 1fr 1fr 1fr auto;
       gap:10px;
+      box-shadow:0 18px 50px rgba(0,0,0,.28);
     }
-    .kpi .hint{
-      margin-top:8px;
-      font-size: 11px;
-      color: var(--muted2);
-    }
-
-    .pctChip{
-      font-size: 12px;
-      font-weight: 800;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      letter-spacing: .2px;
-    }
-    .pct-red{ color: var(--pct-red); border-color: rgba(255,91,106,.25); background: rgba(255,91,106,.06); }
-    .pct-yellow{ color: var(--pct-yellow); border-color: rgba(255,184,74,.25); background: rgba(255,184,74,.06); }
-    .pct-green{ color: var(--pct-green); border-color: rgba(61,255,166,.25); background: rgba(61,255,166,.06); }
-
-    .tabbar{
-      position: fixed;
-      left: 0; right: 0;
-      bottom: 0;
-      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-      background: linear-gradient(180deg, rgba(7,10,18,0), rgba(7,10,18,.85) 25%, rgba(7,10,18,.95));
-      backdrop-filter: blur(12px);
-      border-top: 1px solid rgba(255,255,255,.06);
-    }
-    .tabs{
-      max-width:1080px;
-      margin: 0 auto;
-      display:flex;
-      gap:10px;
-    }
-    .tab{
-      flex:1 1 0;
-      text-align:center;
-      padding: 12px 10px;
-      border-radius: 14px;
-      font-size: 13px;
-      color: var(--muted);
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
-      cursor:pointer;
-      user-select:none;
-    }
-    .tab.active{
-      color: var(--text);
-      background: linear-gradient(180deg, rgba(78,163,255,.35), rgba(78,163,255,.18));
-      border-color: rgba(78,163,255,.35);
-      box-shadow: 0 10px 30px rgba(78,163,255,.12);
-      font-weight: 700;
-    }
-
-    .tableCard{
-      padding: 12px;
-      border-radius: var(--radius2);
-      background: linear-gradient(180deg, rgba(12,20,43,.78), rgba(11,19,38,.78));
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 30px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.05);
-    }
-
-    table{
+    .sel{
       width:100%;
-      border-collapse: collapse;
-      overflow:hidden;
-      border-radius: 14px;
+      appearance:none;
+      border:1px solid var(--stroke2);
+      background:rgba(10,16,35,.6);
+      color:var(--text);
+      border-radius:999px;
+      padding:11px 12px;
+      font-size:14px;
+      outline:none;
     }
-    thead th{
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 600;
-      padding: 10px 10px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.03);
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      white-space: nowrap;
+    .btn{
+      border:1px solid rgba(99,102,241,.35);
+      background:linear-gradient(180deg, rgba(99,102,241,.35), rgba(59,130,246,.20));
+      color:var(--text);
+      border-radius:999px;
+      padding:11px 14px;
+      font-weight:700;
+      cursor:pointer;
+      white-space:nowrap;
     }
-    tbody td{
-      padding: 10px 10px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-      font-size: 13px;
-      color: rgba(234,240,255,.92);
-      white-space: nowrap;
-    }
-    tbody tr:hover td{ background: rgba(255,255,255,.03); }
+    .btn:active{transform:translateY(1px)}
 
-    .right{ text-align:right; }
-    .mono{ font-variant-numeric: tabular-nums; }
+    .grid{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+    .card{
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border-radius:18px;
+      padding:14px 14px 12px;
+      box-shadow:0 16px 48px rgba(0,0,0,.26);
+      min-height:92px;
+    }
+    .k{color:var(--muted2);font-size:12px;margin-bottom:6px}
+    .v{font-size:30px;font-weight:800;letter-spacing:.3px}
+    .hint{margin-top:6px;color:var(--muted2);font-size:12px}
+
+    .v.small{font-size:22px}
+    .v.mono{font-variant-numeric: tabular-nums}
 
     .badge{
       display:inline-flex;
       align-items:center;
-      gap:6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      color: var(--muted);
-      font-size: 12px;
+      gap:8px;
+      border:1px solid var(--stroke2);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      background:rgba(10,16,35,.55);
     }
 
-    .sectionTitle{
-      margin: 10px 2px 10px;
-      font-size: 14px;
-      font-weight: 700;
-      color: rgba(234,240,255,.92);
+    .badge.good{border-color:rgba(52,211,153,.35); color:#b7ffe3}
+    .badge.warn{border-color:rgba(251,191,36,.35); color:#fff1c2}
+    .badge.bad{border-color:rgba(251,113,133,.35); color:#ffd2dc}
+
+    .section{
+      margin-top:18px;
+    }
+    .section h2{
+      margin:0 0 10px 4px;
+      font-size:16px;
+      color:var(--text);
     }
 
-    .loading{
-      padding: 14px;
-      color: var(--muted);
-      font-size: 13px;
+    /* table container */
+    .tableWrap{
+      border:1px solid var(--stroke);
+      border-radius:18px;
+      overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+      box-shadow:0 18px 50px rgba(0,0,0,.30);
+    }
+    .scrollX{
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      min-width:620px;
+    }
+    thead th{
+      position:sticky;
+      top:0;
+      z-index:2;
+      background:rgba(9,14,31,.88);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--stroke);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+      text-transform:none;
+      padding:12px 12px;
+      white-space:nowrap;
+    }
+    tbody td{
+      padding:12px 12px;
+      border-bottom:1px solid rgba(35,49,86,.45);
+      font-variant-numeric: tabular-nums;
+      white-space:nowrap;
+    }
+    tbody tr:hover td{
+      background:rgba(255,255,255,.03);
     }
 
-    /* Подсветка % в таблице */
-    .pctCell{
-      font-weight: 800;
-      letter-spacing: .2px;
+    .right{text-align:right}
+    .center{text-align:center}
+    .muted{color:var(--muted)}
+    .linkish{
+      border-bottom:1px solid rgba(233,238,255,.35);
+      padding-bottom:1px;
     }
-    .pctCell.pct-red{ color: var(--pct-red); }
-    .pctCell.pct-yellow{ color: var(--pct-yellow); }
-    .pctCell.pct-green{ color: var(--pct-green); }
 
-    /* Узкие экраны: таблица скроллится */
-    .tableScroll{ overflow:auto; border-radius: 14px; }
-    .tableScroll::-webkit-scrollbar{ height: 8px; }
-    .tableScroll::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.12); border-radius: 10px; }
+    /* percent cell */
+    .pct{
+      font-weight:900;
+      border-left:1px solid rgba(35,49,86,.45);
+    }
+    .pct.good{color:var(--good); background:linear-gradient(90deg, rgba(52,211,153,.14), rgba(52,211,153,.02))}
+    .pct.warn{color:var(--warn); background:linear-gradient(90deg, rgba(251,191,36,.14), rgba(251,191,36,.02))}
+    .pct.bad{color:var(--bad); background:linear-gradient(90deg, rgba(251,113,133,.14), rgba(251,113,133,.02))}
+
+    /* bottom tabs */
+    .tabs{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      padding:10px 14px 16px;
+      background:linear-gradient(180deg, rgba(7,10,20,0), rgba(7,10,20,.75) 25%, rgba(7,10,20,.95));
+      backdrop-filter: blur(8px);
+    }
+    .seg{
+      max-width:1100px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .seg button{
+      border:1px solid var(--stroke);
+      background:rgba(10,16,35,.55);
+      color:var(--muted);
+      border-radius:16px;
+      padding:12px 14px;
+      font-weight:900;
+      font-size:14px;
+      cursor:pointer;
+    }
+    .seg button.active{
+      color:var(--text);
+      border-color:rgba(99,102,241,.45);
+      background:linear-gradient(180deg, rgba(99,102,241,.35), rgba(59,130,246,.18));
+      box-shadow:0 18px 50px rgba(59,130,246,.14);
+    }
+
+    /* mobile */
+    @media (max-width: 820px){
+      .controls{grid-template-columns:1fr 1fr; }
+      .controls .btn{grid-column:1 / -1}
+      .grid{grid-template-columns:1fr 1fr}
+      h1{font-size:22px}
+      table{min-width:560px}
+      tbody td, thead th{padding:10px 10px}
+    }
+    @media (max-width: 420px){
+      .grid{grid-template-columns:1fr}
+      .v{font-size:28px}
+      table{min-width:520px}
+    }
   </style>
 </head>
 
@@ -311,441 +281,57 @@
   <div class="wrap">
     <div class="top">
       <div>
-        <h1 class="title">Планы продаж</h1>
-        <div id="meta" class="subtitle">Загрузка данных…</div>
+        <h1>Планы продаж</h1>
+        <div class="sub" id="subtitle"></div>
       </div>
-      <div class="pill" id="pill">GAS • загрузка…</div>
-    </div>
-
-    <div class="card">
-      <div class="controls">
-        <select id="year"></select>
-        <select id="month"></select>
-        <select id="store"></select>
+      <div class="pill" id="gasPill">
+        <span class="dot" id="gasDot"></span>
+        <span>GAS • <strong id="gasStatus">…</strong></span>
       </div>
     </div>
 
-    <div class="kpis" id="kpis"></div>
-
-    <div class="sectionTitle" id="sectionTitle">Ежедневные данные</div>
-    <div id="view" class="tableCard">
-      <div class="loading">Загрузка…</div>
+    <div class="controls">
+      <select id="yearSel" class="sel"></select>
+      <select id="monthSel" class="sel"></select>
+      <select id="storeSel" class="sel"></select>
+      <button class="btn" id="refreshBtn">Обновить</button>
     </div>
-  </div>
 
-  <div class="tabbar">
-    <div class="tabs">
-      <div class="tab active" id="tab-daily" onclick="setTab('daily')">Ежедневно</div>
-      <div class="tab" id="tab-monthly" onclick="setTab('monthly')">Ежемесячно</div>
-    </div>
-  </div>
+    <div class="grid" id="kpiGrid"></div>
 
-<script>
-  // ✅ ТВОЯ ТЕКУЩАЯ ССЫЛКА GAS
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxCyFpNCzjXunN1gi8eY4Xe5CvDcyp7oFC4M2VP2z2lEdTH_ysmhH8NpIm4nnvY0PIE/exec";
-
-  // ✅ ФИКС ТАЙМЗОНЫ (исправляет “сдвиг на 1 день”)
-  const APP_TZ = "Asia/Almaty";
-  const fmtYMD_TZ = new Intl.DateTimeFormat("en-CA", { timeZone: APP_TZ, year:"numeric", month:"2-digit", day:"2-digit" });
-  const fmtWD_TZ  = new Intl.DateTimeFormat("ru-RU", { timeZone: APP_TZ, weekday:"short" });
-
-  const RU_MONTHS = [
-    "Январь","Февраль","Март","Апрель","Май","Июнь",
-    "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
-  ];
-
-  let RAW = [];
-  let PLANS = [];
-  let META = null;
-  let currentTab = "daily";
-
-  function setTab(t){
-    currentTab = t;
-    document.getElementById("tab-daily").classList.toggle("active", t==="daily");
-    document.getElementById("tab-monthly").classList.toggle("active", t==="monthly");
-    document.getElementById("sectionTitle").textContent = (t==="daily")
-      ? "Ежедневные данные"
-      : "Ежемесячные данные (все магазины)";
-    render();
-  }
-
-  function parseDate(v){
-    const d = new Date(v);
-    return Number.isFinite(d.getTime()) ? d : null;
-  }
-
-function ymdUTC(dateObj){
-  const y = dateObj.getUTCFullYear();
-  const m = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
-  const d = String(dateObj.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-// Делаем "календарный день" как UTC полдень (чтобы не было DST/сдвигов)
-function makeDayUTCNoon(year, monthIndex, day){
-  return new Date(Date.UTC(year, monthIndex, day, 12, 0, 0));
-}
-
-const RU_WEEKDAYS = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
-function weekdayUTC(dateObj){
-  return RU_WEEKDAYS[dateObj.getUTCDay()];
-}
-
-function daysInMonth(year, monthIndex){
-  const last = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
-  const out = [];
-  for (let day = 1; day <= last; day++){
-    out.push(makeDayUTCNoon(year, monthIndex, day));
-  }
-  return out;
-}
-
-  function num(v){
-    if (v===null || v==="" || v===undefined) return 0;
-    if (typeof v==="number") return v;
-    const n = Number(String(v).replace(",", ".").replace(/\s/g,""));
-    return Number.isFinite(n) ? n : 0;
-  }
-
-  function fmtMoneyKZT(v){
-    const n = Math.round(v);
-    return n.toLocaleString("ru-RU") + " ₸";
-  }
-
-  function fmtPct(v){
-    if (!Number.isFinite(v) || v===null) return "—";
-    const p = (v*100);
-    const out = (Math.round(p*10)/10).toFixed(1).replace(".0","");
-    return out + "%";
-  }
-
-  function monthName(monthIndex){ return RU_MONTHS[monthIndex]; }
-
-  function getSelected(){
-    return {
-      year: Number(document.getElementById("year").value),
-      monthIndex: Number(document.getElementById("month").value),
-      store: document.getElementById("store").value
-    };
-  }
-
-  // Цвет для %: <80 красный, 80-100 жёлтый, >100 зелёный
-  function pctClass(ratio){
-    if (!Number.isFinite(ratio) || ratio===null) return "";
-    if (ratio < 0.80) return "pct-red";
-    if (ratio <= 1.00) return "pct-yellow";
-    return "pct-green";
-  }
-
-  // ✅ Дедуп: последняя версия отчёта по (магазин, дата отчёта в Almaty)
-  function dedupRaw(rows){
-    const map = new Map();
-    for (const r of rows){
-      const ts = parseDate(r.ts);
-      const rd = parseDate(r.reportDate);
-      if (!ts || !rd || !r.store) continue;
-
-      const key = String(r.store).trim() + "|" + ymdUTC(rd);
-      const prev = map.get(key);
-      if (!prev || parseDate(prev.ts) < ts) map.set(key, r);
-    }
-    return map;
-  }
-
-  // Факт = salesNew + salesOld - returns
-  function factFromRow(r){ return num(r.salesNew) + num(r.salesOld) - num(r.returns); }
-  function checksFromRow(r){ return num(r.checksNew) + num(r.checksOld); }
-
-  function findPlan(year, monthIndex, store){
-    const mName = monthName(monthIndex);
-    const row = (PLANS||[]).find(p =>
-      Number(p.year)===year &&
-      String(p.month).trim()===mName &&
-      String(p.store).trim()===store
-    );
-    return row ? { planMonth: num(row.planMonth), planDay: num(row.planDay) } : { planMonth: 0, planDay: 0 };
-  }
-
-  // Определяем “последний день отчёта” в месяце (по Almaty-дате)
-  function computeLastReportDateInMonth(dedupMap, year, monthIndex){
-    let maxKey = null; // YYYY-MM-DD
-    for (const r of dedupMap.values()){
-      const rd = parseDate(r.reportDate);
-      if (!rd) continue;
-      const k = ymdUTC(rd);
-      const y = Number(k.slice(0,4));
-      const m = Number(k.slice(5,7)) - 1;
-      if (y !== year || m !== monthIndex) continue;
-      if (!maxKey || k > maxKey) maxKey = k;
-    }
-    return maxKey; // строкой YYYY-MM-DD
-  }
-
-  function computeDaily(year, monthIndex, store, dedupMap){
-    const plan = findPlan(year, monthIndex, store);
-    const days = daysInMonth(year, monthIndex);
-
-    let factMonth = 0;
-    let checksMonth = 0;
-
-    const rows = days.map(d=>{
-      const key = store + "|" + ymdUTC(d);
-      const r = dedupMap.get(key);
-
-      const fact = r ? factFromRow(r) : 0;
-      const pct = plan.planDay>0 ? (fact/plan.planDay) : null;
-
-      if (r){
-        factMonth += fact;
-        checksMonth += checksFromRow(r);
-      }
-
-      return {
-        date: ymdUTC(d),
-        weekday: weekdayUTC(d),
-        planDay: plan.planDay,
-        factDay: fact,
-        pctDay: pct
-      };
-    });
-
-    const pctMonth = plan.planMonth>0 ? (factMonth/plan.planMonth) : null;
-    const avgCheck = checksMonth>0 ? (factMonth/checksMonth) : null;
-
-    const leftToPlan = Math.max(0, plan.planMonth - factMonth);
-
-    // “нужно в день” считаем до конца месяца, начиная со следующего дня после последнего факта
-    const lastKey = computeLastReportDateInMonth(dedupMap, year, monthIndex);
-    const lastDayNum = lastKey ? Number(lastKey.slice(8,10)) : 0;
-    const totalDays = days.length;
-    const daysLeft = Math.max(0, totalDays - lastDayNum);
-    const needPerDay = daysLeft > 0 ? (leftToPlan / daysLeft) : null;
-
-    return { plan, rows, factMonth, pctMonth, avgCheck, leftToPlan, needPerDay, lastKey };
-  }
-
-  function computeMonthlyAllStores(year, monthIndex, dedupMap){
-    const cutoff = computeLastReportDateInMonth(dedupMap, year, monthIndex); // YYYY-MM-DD или null
-    const cutoffDayNum = cutoff ? Number(cutoff.slice(8,10)) : 0;
-    const totalDays = daysInMonth(year, monthIndex).length;
-    const daysLeft = Math.max(0, totalDays - cutoffDayNum);
-
-    const storesFromRaw = new Set((META?.stores?.length ? META.stores : RAW.map(r=>r.store)).filter(Boolean));
-    const storesFromPlans = new Set((PLANS||[]).map(p=>p.store).filter(Boolean));
-    const stores = Array.from(new Set([...storesFromRaw, ...storesFromPlans]))
-      .map(s=>String(s).trim())
-      .filter(Boolean)
-      .sort((a,b)=>a.localeCompare(b,"ru"));
-
-    const rows = [];
-
-    for (const store of stores){
-      const plan = findPlan(year, monthIndex, store);
-      let factSum=0, checksSum=0;
-
-      for (const r of dedupMap.values()){
-        if (String(r.store).trim() !== store) continue;
-        const rd = parseDate(r.reportDate);
-        if (!rd) continue;
-
-        const k = ymdUTC(rd);
-        const y = Number(k.slice(0,4));
-        const m = Number(k.slice(5,7)) - 1;
-        if (y !== year || m !== monthIndex) continue;
-
-        if (cutoff && k > cutoff) continue; // общий срез A: до последнего дня отчёта
-
-        factSum += factFromRow(r);
-        checksSum += checksFromRow(r);
-      }
-
-      const pct = plan.planMonth>0 ? (factSum/plan.planMonth) : null;
-      const avg = checksSum>0 ? (factSum/checksSum) : null;
-
-      const leftToPlan = Math.max(0, plan.planMonth - factSum);
-      const needPerDay = (daysLeft > 0) ? (leftToPlan / daysLeft) : null;
-
-      rows.push({
-        store,
-        planMonth: plan.planMonth,
-        factMonth: factSum,
-        pctMonth: pct,
-        avgCheck: avg,
-        leftToPlan,
-        needPerDay
-      });
-    }
-
-    // сортировка по % выполнения (по убыванию)
-    rows.sort((a,b)=>{
-      const ap = (a.pctMonth===null? -1 : a.pctMonth);
-      const bp = (b.pctMonth===null? -1 : b.pctMonth);
-      return bp - ap;
-    });
-
-    return { cutoff, rows, daysLeft };
-  }
-
-  function pctChipHtml(ratio){
-    const cls = pctClass(ratio);
-    return `<span class="pctChip ${cls}">${ratio==null ? "—" : fmtPct(ratio)}</span>`;
-  }
-
-  function renderKpisDaily(d){
-    const k = document.getElementById("kpis");
-
-    k.innerHTML = `
-      <div class="kpi">
-        <div class="label">План (мес)</div>
-        <div class="value mono">${fmtMoneyKZT(d.plan.planMonth)}</div>
-        <div class="hint">Установленный план</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">Факт (мес)</div>
-        <div class="value mono">${fmtMoneyKZT(d.factMonth)}</div>
-        <div class="hint">С учётом возвратов • Срез: ${d.lastKey || "—"}</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">% от плана</div>
-        <div class="value mono">${pctChipHtml(d.pctMonth)}</div>
-        <div class="hint">Факт / План</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">Средний чек</div>
-        <div class="value mono">${d.avgCheck==null ? "—" : fmtMoneyKZT(d.avgCheck)}</div>
-        <div class="hint">Факт / Чеки</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">Осталось до плана</div>
-        <div class="value mono">${fmtMoneyKZT(d.leftToPlan)}</div>
-        <div class="hint">Макс(0, План − Факт)</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">Нужно в день</div>
-        <div class="value mono">${d.needPerDay==null ? "—" : fmtMoneyKZT(d.needPerDay)}</div>
-        <div class="hint">Чтобы закрыть план до конца месяца</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">План на день</div>
-        <div class="value mono">${fmtMoneyKZT(d.plan.planDay)}</div>
-        <div class="hint">Из установленных планов</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">Дней до конца</div>
-        <div class="value mono">${d.needPerDay==null ? "—" : (Math.max(0, daysInMonth(getSelected().year, getSelected().monthIndex).length - (d.lastKey ? Number(d.lastKey.slice(8,10)) : 0)))}</div>
-        <div class="hint">От среза до конца месяца</div>
-      </div>
-    `;
-  }
-
-  function renderKpisMonthly(m){
-    const k = document.getElementById("kpis");
-    const leader = m.rows[0];
-    const tail = m.rows[m.rows.length-1];
-
-    k.innerHTML = `
-      <div class="kpi">
-        <div class="label">Срез факта</div>
-        <div class="value mono">${m.cutoff || "—"}</div>
-        <div class="hint">До последнего дня отчёта</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">Дней до конца</div>
-        <div class="value mono">${m.daysLeft}</div>
-        <div class="hint">От среза до конца месяца</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">Лидер по %</div>
-        <div class="value mono">${leader?.store || "—"}</div>
-        <div class="hint">${leader?.pctMonth==null ? "—" : fmtPct(leader.pctMonth)}</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">Аутсайдер</div>
-        <div class="value mono">${tail?.store || "—"}</div>
-        <div class="hint">${tail?.pctMonth==null ? "—" : fmtPct(tail.pctMonth)}</div>
-      </div>
-    `;
-  }
-
-  function render(){
-    const view = document.getElementById("view");
-    const meta = document.getElementById("meta");
-    const {year, monthIndex, store} = getSelected();
-    const dedupMap = dedupRaw(RAW);
-
-    const updatedAt = new Date().toLocaleString("ru-RU", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
-    meta.textContent = `Период: ${monthName(monthIndex)} ${year} • Магазин: ${store} • Обновлено: ${updatedAt}`;
-
-    if (currentTab === "daily"){
-      const d = computeDaily(year, monthIndex, store, dedupMap);
-      renderKpisDaily(d);
-
-      const rowsHtml = d.rows.map(r=>{
-        const cls = pctClass(r.pctDay);
-        return `
-          <tr>
-            <td class="mono">${r.date}</td>
-            <td>${r.weekday}</td>
-            <td class="right mono">${fmtMoneyKZT(r.planDay)}</td>
-            <td class="right mono">${fmtMoneyKZT(r.factDay)}</td>
-            <td class="right mono pctCell ${cls}">${r.pctDay===null ? "—" : fmtPct(r.pctDay)}</td>
-          </tr>
-        `;
-      }).join("");
-
-      view.innerHTML = `
-        <div class="tableScroll">
+    <div class="section" id="dailySection">
+      <h2>Ежедневные данные</h2>
+      <div class="tableWrap">
+        <div class="scrollX">
           <table>
             <thead>
               <tr>
                 <th>Дата</th>
-                <th>День</th>
+                <th class="center">День</th>
                 <th class="right">План</th>
                 <th class="right">Факт</th>
                 <th class="right">% от плана</th>
               </tr>
             </thead>
-            <tbody>${rowsHtml}</tbody>
+            <tbody id="dailyBody"></tbody>
           </table>
         </div>
-      `;
-    } else {
-      const m = computeMonthlyAllStores(year, monthIndex, dedupMap);
-      renderKpisMonthly(m);
+      </div>
+    </div>
 
-      const rowsHtml = m.rows.map(r=>{
-        const cls = pctClass(r.pctMonth);
-        return `
-          <tr>
-            <td>${r.store}</td>
-            <td class="right mono">${fmtMoneyKZT(r.planMonth)}</td>
-            <td class="right mono">${fmtMoneyKZT(r.factMonth)}</td>
-            <td class="right mono pctCell ${cls}">${r.pctMonth===null ? "—" : fmtPct(r.pctMonth)}</td>
-            <td class="right mono">${r.avgCheck==null ? "—" : fmtMoneyKZT(r.avgCheck)}</td>
-            <td class="right mono">${fmtMoneyKZT(r.leftToPlan)}</td>
-            <td class="right mono">${r.needPerDay==null ? "—" : fmtMoneyKZT(r.needPerDay)}</td>
-          </tr>
-        `;
-      }).join("");
+    <div class="section" id="monthlySection" style="display:none;">
+      <h2>Ежемесячные данные (все магазины)</h2>
 
-      view.innerHTML = `
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
-          <span class="badge">Срез: <b style="color:rgba(234,240,255,.92)">${m.cutoff || "—"}</b></span>
-          <span class="badge">Сортировка: <b style="color:rgba(234,240,255,.92)">по % выполнения</b></span>
-          <span class="badge">Правило %: <b class="pctChip pct-red">&lt;80</b> <b class="pctChip pct-yellow">80–100</b> <b class="pctChip pct-green">&gt;100</b></span>
-        </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
+        <span class="badge"><span class="muted">Срез:</span> <strong id="cutoffText">—</strong></span>
+        <span class="badge"><span class="muted">Сортировка:</span> <strong id="sortText">по % выполнения</strong></span>
+        <span class="badge bad">Правило %: &lt;80</span>
+        <span class="badge warn">80–100</span>
+        <span class="badge good">&gt;100</span>
+      </div>
 
-        <div class="tableScroll">
+      <div class="tableWrap">
+        <div class="scrollX">
           <table>
             <thead>
               <tr>
@@ -754,84 +340,410 @@ function daysInMonth(year, monthIndex){
                 <th class="right">Факт (мес)</th>
                 <th class="right">% от плана</th>
                 <th class="right">Средний чек</th>
-                <th class="right">Осталось (₸)</th>
-                <th class="right">Нужно/день</th>
               </tr>
             </thead>
-            <tbody>${rowsHtml}</tbody>
+            <tbody id="monthlyBody"></tbody>
           </table>
         </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tabs">
+    <div class="seg">
+      <button id="tabDaily" class="active">Ежедневно</button>
+      <button id="tabMonthly">Ежемесячно</button>
+    </div>
+  </div>
+
+<script>
+/** ========= CONFIG ========= **/
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyU7ZHBh6tt0TkpvaoVJff5AVR_lXt3oVIEbH46ZT7zjHbonPzeOKX2T0KdT_N9XWJy/exec";
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+/** ========= UI refs ========= **/
+const yearSel = document.getElementById("yearSel");
+const monthSel = document.getElementById("monthSel");
+const storeSel = document.getElementById("storeSel");
+const refreshBtn = document.getElementById("refreshBtn");
+
+const subtitle = document.getElementById("subtitle");
+const gasStatus = document.getElementById("gasStatus");
+const gasDot = document.getElementById("gasDot");
+
+const kpiGrid = document.getElementById("kpiGrid");
+const dailyBody = document.getElementById("dailyBody");
+const monthlyBody = document.getElementById("monthlyBody");
+const cutoffText = document.getElementById("cutoffText");
+
+const dailySection = document.getElementById("dailySection");
+const monthlySection = document.getElementById("monthlySection");
+const tabDaily = document.getElementById("tabDaily");
+const tabMonthly = document.getElementById("tabMonthly");
+
+/** ========= State ========= **/
+let META = null;
+let RAW = null;
+let PLANS = null;
+let activeView = "daily"; // daily|monthly
+
+const MONTHS_RU = [
+  "Январь","Февраль","Март","Апрель","Май","Июнь",
+  "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
+];
+
+init();
+
+/** ========= Init ========= **/
+async function init(){
+  wireUI();
+  await loadAll(false);
+  buildSelectors();
+  renderAll();
+}
+
+function wireUI(){
+  tabDaily.addEventListener("click", () => setView("daily"));
+  tabMonthly.addEventListener("click", () => setView("monthly"));
+
+  yearSel.addEventListener("change", renderAll);
+  monthSel.addEventListener("change", renderAll);
+  storeSel.addEventListener("change", renderAll);
+
+  refreshBtn.addEventListener("click", async () => {
+    await loadAll(true);
+    buildSelectors(true);
+    renderAll();
+  });
+}
+
+function setView(v){
+  activeView = v;
+  tabDaily.classList.toggle("active", v==="daily");
+  tabMonthly.classList.toggle("active", v==="monthly");
+  dailySection.style.display = v==="daily" ? "" : "none";
+  monthlySection.style.display = v==="monthly" ? "" : "none";
+  renderAll();
+}
+
+/** ========= Data loading with cache ========= **/
+async function loadAll(force){
+  setGas("…", "warn");
+
+  try{
+    const [meta, raw, plans] = await Promise.all([
+      fetchCached("meta", force),
+      fetchCached("raw", force),
+      fetchCached("plans", force)
+    ]);
+
+    META = meta;
+    RAW = raw?.rows || [];
+    PLANS = plans?.rows || [];
+
+    setGas("OK", "good");
+  }catch(err){
+    console.error(err);
+    setGas("ERR", "bad");
+    META = { stores:[], years:[] };
+    RAW = [];
+    PLANS = [];
+  }
+}
+
+function cacheKey(entity){
+  return `bugatti_cache_v2::${GAS_URL}::${entity}`;
+}
+
+async function fetchCached(entity, force){
+  const key = cacheKey(entity);
+  if (!force){
+    const cached = safeJsonParse(localStorage.getItem(key));
+    if (cached && cached.ts && (Date.now()-cached.ts) < CACHE_TTL_MS){
+      return cached.data;
+    }
+  }
+  const nocache = force ? `&nocache=${Date.now()}` : "";
+  const url = `${GAS_URL}?entity=${encodeURIComponent(entity)}${nocache}`;
+  const data = await fetchJson(url);
+  localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  return data;
+}
+
+async function fetchJson(url){
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+function safeJsonParse(s){
+  try{ return JSON.parse(s); }catch{ return null; }
+}
+
+function setGas(text, mode){
+  gasStatus.textContent = text;
+  gasDot.classList.remove("good","warn","bad");
+  if (mode==="good") gasDot.classList.add("good");
+  if (mode==="warn") gasDot.classList.add("warn");
+  if (mode==="bad") gasDot.classList.add("bad");
+}
+
+/** ========= Selectors ========= **/
+function buildSelectors(keepSelection=false){
+  const years = (META?.years || []).slice().sort((a,b)=>b-a);
+  const stores = (META?.stores || []).slice().sort((a,b)=>a.localeCompare(b,"ru"));
+
+  const prevYear = yearSel.value;
+  const prevMonth = monthSel.value;
+  const prevStore = storeSel.value;
+
+  yearSel.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join("");
+  monthSel.innerHTML = MONTHS_RU.map(m=>`<option value="${m}">${m}</option>`).join("");
+  storeSel.innerHTML = stores.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+
+  // defaults (если не было выбора)
+  if (!keepSelection){
+    // год: максимальный
+    if (years.length) yearSel.value = String(years[0]);
+    // месяц: по умолчанию Февраль (как в примерах) или текущий
+    const now = new Date();
+    const curMonth = MONTHS_RU[now.getMonth()];
+    monthSel.value = curMonth || "Февраль";
+    // магазин: Астана если есть
+    if (stores.includes("Астана")) storeSel.value = "Астана";
+  }else{
+    if (prevYear) yearSel.value = prevYear;
+    if (prevMonth) monthSel.value = prevMonth;
+    if (prevStore) storeSel.value = prevStore;
+  }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/** ========= Core computations ========= **/
+function renderAll(){
+  if (!META) return;
+
+  const year = Number(yearSel.value);
+  const monthName = monthSel.value;
+  const store = storeSel.value;
+
+  const monthIndex = MONTHS_RU.indexOf(monthName); // 0..11
+  if (monthIndex < 0) return;
+
+  // ✅ Дедуп по последнему отчёту на store + reportDateKey (по ts)
+  const dedup = dedupRaw(RAW);
+
+  // ✅ Фильтруем выбранный месяц
+  const ymPrefix = `${year}-${String(monthIndex+1).padStart(2,"0")}-`;
+
+  // для выбранного магазина (дневка + KPI)
+  const storeRows = dedup.filter(r => r.store === store && r.reportDateKey.startsWith(ymPrefix));
+
+  // планы (берём по year+month+store)
+  const planRec = PLANS.find(p => Number(p.year)===year && String(p.month).trim()===monthName && String(p.store).trim()===store);
+  const planMonth = planRec ? Number(p.planMonth||0) : 0;
+  const planDay = planRec ? Number(p.planDay||0) : 0;
+
+  // расчёт daily rows на ВСЕ дни месяца (чтобы совпадало с твоим дашбордом)
+  const daysInMonth = new Date(Date.UTC(year, monthIndex+1, 0)).getUTCDate();
+  const daily = [];
+  for (let d=1; d<=daysInMonth; d++){
+    const dateKey = `${year}-${String(monthIndex+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const row = storeRows.find(x => x.reportDateKey === dateKey);
+    const fact = row ? netSales(row) : 0;
+    const pct = planDay > 0 ? (fact / planDay) : 0;
+    daily.push({
+      dateKey,
+      dayShort: weekdayShortRU(dateKey),
+      plan: planDay,
+      fact,
+      pct
+    });
+  }
+
+  // KPI по месяцу: срез = max reportDateKey где fact>0 (или где есть отчёт)
+  const cutoff = maxDateKey(storeRows.map(r=>r.reportDateKey));
+  const cutoffLabel = cutoff || `${year}-${String(monthIndex+1).padStart(2,"0")}-01`;
+
+  const monthFact = storeRows.reduce((s,r)=> s + netSales(r), 0);
+  const monthPct = planMonth>0 ? (monthFact/planMonth) : 0;
+
+  const monthChecks = storeRows.reduce((s,r)=> s + (Number(r.checksNew||0)+Number(r.checksOld||0)), 0);
+  const avgCheck = monthChecks>0 ? (monthFact / monthChecks) : 0;
+
+  const remain = Math.max(0, planMonth - monthFact);
+
+  // days left from cutoff to end month
+  const cutoffDay = cutoff ? Number(cutoff.slice(8,10)) : 0;
+  const daysLeft = cutoffDay ? (daysInMonth - cutoffDay) : 0;
+  const needPerDay = (daysLeft>0) ? (remain / daysLeft) : 0;
+
+  // subtitle
+  subtitle.innerHTML = [
+    `<span class="muted">Период:</span> <strong>${monthName} ${year}</strong>`,
+    `<span class="muted">• Магазин:</span> <strong>${store}</strong>`,
+    `<span class="muted">• Обновлено:</span> <strong>${timeNow()}</strong>`
+  ].join(" ");
+
+  // KPI cards
+  const pctBadge = pctClass(monthPct*100);
+  kpiGrid.innerHTML = [
+    kpiCard("План (мес)", money(planMonth), "Установленный план"),
+    kpiCard("Факт (мес)", money(monthFact), `С учётом возвратов • Срез: ${cutoffLabel}`),
+    kpiCard("% от плана",
+      `<span class="badge ${pctBadge}">${pctText(monthPct)}</span>`,
+      "Факт / План",
+      true
+    ),
+    kpiCard("Средний чек", money(avgCheck), "Факт / Чеки"),
+
+    kpiCard("Осталось до плана", money(remain), "Макс(0, План − Факт)"),
+    kpiCard("Нужно в день", daysLeft>0 ? money(needPerDay) : "—", "Чтобы закрыть план до конца месяца"),
+    kpiCard("План на день", planDay>0 ? money(planDay) : "—", "Из установленных планов"),
+    kpiCard("Дней до конца", daysLeft>0 ? String(daysLeft) : "0", "От среза до конца месяца"),
+  ].join("");
+
+  // Daily table (mobile-friendly date)
+  dailyBody.innerHTML = daily.map(r=>{
+    const cls = pctClass(r.pct*100);
+    return `
+      <tr>
+        <td><span class="linkish">${shortDate(r.dateKey)}</span></td>
+        <td class="center">${r.dayShort}</td>
+        <td class="right">${money(r.plan)}</td>
+        <td class="right">${r.fact ? `<span class="linkish">${money(r.fact)}</span>` : "—"}</td>
+        <td class="right pct ${cls}">${r.plan>0 ? pctText(r.pct) : "—"}</td>
+      </tr>
+    `;
+  }).join("");
+
+  // Monthly view: all stores
+  if (activeView === "monthly"){
+    const allStores = (META.stores || []);
+    const monthAll = allStores.map(s=>{
+      const rows = dedup.filter(r => r.store===s && r.reportDateKey.startsWith(ymPrefix));
+      const cutoffS = maxDateKey(rows.map(r=>r.reportDateKey));
+      const fact = rows.reduce((sum,r)=>sum+netSales(r),0);
+
+      const planP = PLANS.find(p => Number(p.year)===year && String(p.month).trim()===monthName && String(p.store).trim()===s);
+      const pMonth = planP ? Number(planP.planMonth||0) : 0;
+
+      const checks = rows.reduce((sum,r)=> sum + (Number(r.checksNew||0)+Number(r.checksOld||0)), 0);
+      const avg = checks>0 ? (fact/checks) : 0;
+
+      const pct = pMonth>0 ? (fact/pMonth) : 0;
+
+      return { store:s, planMonth:pMonth, fact, pct, avgCheck:avg, cutoff:cutoffS || null };
+    });
+
+    // общий срез: максимальный cutoff среди магазинов (чтобы показ было понятно)
+    const globalCutoff = maxDateKey(monthAll.map(x=>x.cutoff).filter(Boolean));
+    cutoffText.textContent = globalCutoff || "—";
+
+    monthAll.sort((a,b)=> (b.pct - a.pct));
+
+    monthlyBody.innerHTML = monthAll.map(r=>{
+      const cls = pctClass(r.pct*100);
+      return `
+        <tr>
+          <td>${escapeHtml(r.store)}</td>
+          <td class="right">${money(r.planMonth)}</td>
+          <td class="right">${money(r.fact)}</td>
+          <td class="right pct ${cls}">${r.planMonth>0 ? pctText(r.pct) : "—"}</td>
+          <td class="right">${r.avgCheck>0 ? money(r.avgCheck) : "—"}</td>
+        </tr>
       `;
-    }
-
-    if (window.Telegram?.WebApp){
-      Telegram.WebApp.expand();
-      Telegram.WebApp.setHeaderColor("#070A12");
-      Telegram.WebApp.setBackgroundColor("#070A12");
-    }
+    }).join("");
   }
+}
 
-  async function init(){
-    try{
-      document.getElementById("pill").textContent = "GAS • загрузка…";
-
-      const [metaRes, rawRes, plansRes] = await Promise.all([
-        fetch(`${GAS_URL}?entity=meta`, { cache:"no-store" }),
-        fetch(`${GAS_URL}?entity=raw`, { cache:"no-store" }),
-        fetch(`${GAS_URL}?entity=plans`, { cache:"no-store" })
-      ]);
-
-      META = await metaRes.json();
-      const rawJson = await rawRes.json();
-      const plansJson = await plansRes.json();
-
-      RAW = rawJson.rows || [];
-      PLANS = plansJson.rows || [];
-
-      // years
-      const years = (META?.years?.length ? META.years : []).slice().sort((a,b)=>a-b);
-      if (!years.length) years.push(new Date().getFullYear());
-
-      // stores = raw + plans
-      const storesFromRaw = new Set((META?.stores?.length ? META.stores : RAW.map(r=>r.store)).filter(Boolean));
-      const storesFromPlans = new Set((PLANS||[]).map(p=>p.store).filter(Boolean));
-      const stores = Array.from(new Set([...storesFromRaw, ...storesFromPlans]))
-        .map(s=>String(s).trim())
-        .filter(Boolean)
-        .sort((a,b)=>a.localeCompare(b,"ru"));
-
-      // Fill selectors
-      const yearSel = document.getElementById("year");
-      yearSel.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join("");
-
-      const monthSel = document.getElementById("month");
-      monthSel.innerHTML = RU_MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
-
-      const storeSel = document.getElementById("store");
-      storeSel.innerHTML = stores.map(s=>`<option value="${s}">${s}</option>`).join("");
-
-      // Defaults
-      yearSel.value = String(years[years.length-1]);
-      monthSel.value = String(new Date().getMonth());
-
-      const preferred = ["Астана","Мира","Есентай","Абайка","Аутлет","Above&Beyond","Above Астана"];
-      const foundPreferred = preferred.find(x => stores.includes(x));
-      storeSel.value = foundPreferred || stores[0] || "";
-
-      yearSel.addEventListener("change", render);
-      monthSel.addEventListener("change", render);
-      storeSel.addEventListener("change", render);
-
-      document.getElementById("pill").textContent = "GAS • OK";
-      render();
-    } catch (err){
-      document.getElementById("pill").textContent = "GAS • ошибка";
-      document.getElementById("meta").textContent = "Ошибка загрузки данных: " + String(err);
-      document.getElementById("view").innerHTML = `<div class="loading">Проверь доступ GAS (Anyone) и корректность ссылки.</div>`;
+/** ========= Utilities ========= **/
+function dedupRaw(rows){
+  // key = store + dateKey ; keep latest ts
+  const m = new Map();
+  for (const r of rows){
+    if (!r || !r.store || !r.reportDateKey) continue;
+    const k = `${r.store}__${r.reportDateKey}`;
+    const prev = m.get(k);
+    if (!prev){
+      m.set(k, r);
+      continue;
     }
+    const tNew = r.ts ? Date.parse(r.ts) : 0;
+    const tOld = prev.ts ? Date.parse(prev.ts) : 0;
+    if (tNew >= tOld) m.set(k, r);
   }
+  return Array.from(m.values());
+}
 
-  init();
+function netSales(r){
+  const gross = (Number(r.salesNew||0) + Number(r.salesOld||0));
+  const ret = Number(r.returns||0);
+  return Math.max(0, gross - ret);
+}
+
+function maxDateKey(keys){
+  if (!keys || !keys.length) return null;
+  return keys.reduce((max,k)=> (k && (!max || k>max)) ? k : max, null);
+}
+
+function weekdayShortRU(dateKey){
+  // dateKey = "YYYY-MM-DD" ; считаем по UTC чтобы не ловить TZ
+  const [y,m,d] = dateKey.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m-1, d));
+  const map = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
+  return map[dt.getUTCDay()];
+}
+
+function shortDate(dateKey){
+  // "2026-02-01" -> "01.02"
+  const d = dateKey.slice(8,10);
+  const m = dateKey.slice(5,7);
+  return `${d}.${m}`;
+}
+
+function money(x){
+  const n = Math.round(Number(x||0));
+  // тонкий пробел между разрядами
+  const s = n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return `${s} ₸`;
+}
+
+function pctText(p){
+  const v = (Number(p||0)*100);
+  return `${v.toFixed(1)}%`;
+}
+
+function pctClass(pct){
+  if (!isFinite(pct)) return "warn";
+  if (pct < 80) return "bad";
+  if (pct <= 100) return "warn";
+  return "good";
+}
+
+function kpiCard(title, valueHtml, hint, isHtml=false){
+  const val = isHtml ? valueHtml : `<div class="v mono">${valueHtml}</div>`;
+  return `
+    <div class="card">
+      <div class="k">${title}</div>
+      ${isHtml ? `<div class="v small mono">${valueHtml}</div>` : `<div class="v mono">${valueHtml}</div>`}
+      <div class="hint">${hint}</div>
+    </div>
+  `;
+}
+
+function timeNow(){
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2,"0");
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mi = String(d.getMinutes()).padStart(2,"0");
+  return `${dd}.${mm}, ${hh}:${mi}`;
+}
 </script>
 </body>
 </html>
