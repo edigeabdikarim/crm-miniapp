@@ -16,9 +16,9 @@
       --muted:#a7b2d6;
       --muted2:#7e8ab3;
 
-      --good:#34d399;   /* зелёный */
-      --warn:#fbbf24;   /* жёлтый */
-      --bad:#fb7185;    /* красный */
+      --good:#34d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
 
       --glow1: rgba(109,40,217,.18);
       --glow2: rgba(59,130,246,.18);
@@ -42,7 +42,7 @@
     .wrap{
       max-width:1100px;
       margin:0 auto;
-      padding:18px 14px 90px;
+      padding:18px 14px 96px;
     }
 
     .top{
@@ -58,6 +58,7 @@
       margin:0 0 4px 0;
       letter-spacing:.2px;
     }
+
     .sub{
       color:var(--muted);
       font-size:13px;
@@ -81,13 +82,20 @@
       box-shadow: 0 8px 30px rgba(0,0,0,.25);
     }
     .pill strong{color:var(--text); font-weight:700}
+
     .dot{
       width:8px;height:8px;border-radius:50%;
       background:var(--good);
       box-shadow:0 0 0 4px rgba(52,211,153,.14);
     }
-    .dot.bad{background:var(--bad); box-shadow:0 0 0 4px rgba(251,113,133,.14)}
-    .dot.warn{background:var(--warn); box-shadow:0 0 0 4px rgba(251,191,36,.14)}
+    .dot.bad{
+      background:var(--bad);
+      box-shadow:0 0 0 4px rgba(251,113,133,.14);
+    }
+    .dot.warn{
+      background:var(--warn);
+      box-shadow:0 0 0 4px rgba(251,191,36,.14);
+    }
 
     .controls{
       margin-top:12px;
@@ -100,6 +108,7 @@
       gap:10px;
       box-shadow:0 18px 50px rgba(0,0,0,.28);
     }
+
     .sel{
       width:100%;
       appearance:none;
@@ -111,6 +120,7 @@
       font-size:14px;
       outline:none;
     }
+
     .btn{
       border:1px solid rgba(99,102,241,.35);
       background:linear-gradient(180deg, rgba(99,102,241,.35), rgba(59,130,246,.20));
@@ -129,6 +139,7 @@
       grid-template-columns: repeat(4, 1fr);
       gap:10px;
     }
+
     .card{
       border:1px solid var(--stroke);
       background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
@@ -137,10 +148,10 @@
       box-shadow:0 16px 48px rgba(0,0,0,.26);
       min-height:92px;
     }
+
     .k{color:var(--muted2);font-size:12px;margin-bottom:6px}
     .v{font-size:30px;font-weight:800;letter-spacing:.3px}
     .hint{margin-top:6px;color:var(--muted2);font-size:12px}
-
     .v.small{font-size:22px}
     .v.mono{font-variant-numeric: tabular-nums}
 
@@ -155,7 +166,6 @@
       color:var(--muted);
       background:rgba(10,16,35,.55);
     }
-
     .badge.good{border-color:rgba(52,211,153,.35); color:#b7ffe3}
     .badge.warn{border-color:rgba(251,191,36,.35); color:#fff1c2}
     .badge.bad{border-color:rgba(251,113,133,.35); color:#ffd2dc}
@@ -169,7 +179,6 @@
       color:var(--text);
     }
 
-    /* table container */
     .tableWrap{
       border:1px solid var(--stroke);
       border-radius:18px;
@@ -177,16 +186,19 @@
       background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
       box-shadow:0 18px 50px rgba(0,0,0,.30);
     }
+
     .scrollX{
       overflow-x:auto;
       -webkit-overflow-scrolling:touch;
     }
+
     table{
       width:100%;
       border-collapse:separate;
       border-spacing:0;
       min-width:620px;
     }
+
     thead th{
       position:sticky;
       top:0;
@@ -197,16 +209,17 @@
       color:var(--muted);
       font-size:12px;
       font-weight:700;
-      text-transform:none;
       padding:12px 12px;
       white-space:nowrap;
     }
+
     tbody td{
       padding:12px 12px;
       border-bottom:1px solid rgba(35,49,86,.45);
       font-variant-numeric: tabular-nums;
       white-space:nowrap;
     }
+
     tbody tr:hover td{
       background:rgba(255,255,255,.03);
     }
@@ -219,7 +232,6 @@
       padding-bottom:1px;
     }
 
-    /* percent cell */
     .pct{
       font-weight:900;
       border-left:1px solid rgba(35,49,86,.45);
@@ -228,7 +240,6 @@
     .pct.warn{color:var(--warn); background:linear-gradient(90deg, rgba(251,191,36,.14), rgba(251,191,36,.02))}
     .pct.bad{color:var(--bad); background:linear-gradient(90deg, rgba(251,113,133,.14), rgba(251,113,133,.02))}
 
-    /* bottom tabs */
     .tabs{
       position:fixed;
       left:0; right:0; bottom:0;
@@ -236,6 +247,7 @@
       background:linear-gradient(180deg, rgba(7,10,20,0), rgba(7,10,20,.75) 25%, rgba(7,10,20,.95));
       backdrop-filter: blur(8px);
     }
+
     .seg{
       max-width:1100px;
       margin:0 auto;
@@ -243,6 +255,7 @@
       grid-template-columns: 1fr 1fr;
       gap:10px;
     }
+
     .seg button{
       border:1px solid var(--stroke);
       background:rgba(10,16,35,.55);
@@ -253,6 +266,7 @@
       font-size:14px;
       cursor:pointer;
     }
+
     .seg button.active{
       color:var(--text);
       border-color:rgba(99,102,241,.45);
@@ -260,15 +274,15 @@
       box-shadow:0 18px 50px rgba(59,130,246,.14);
     }
 
-    /* mobile */
     @media (max-width: 820px){
-      .controls{grid-template-columns:1fr 1fr; }
+      .controls{grid-template-columns:1fr 1fr}
       .controls .btn{grid-column:1 / -1}
       .grid{grid-template-columns:1fr 1fr}
       h1{font-size:22px}
       table{min-width:560px}
       tbody td, thead th{padding:10px 10px}
     }
+
     @media (max-width: 420px){
       .grid{grid-template-columns:1fr}
       .v{font-size:28px}
@@ -324,7 +338,7 @@
 
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
         <span class="badge"><span class="muted">Срез:</span> <strong id="cutoffText">—</strong></span>
-        <span class="badge"><span class="muted">Сортировка:</span> <strong id="sortText">по % выполнения</strong></span>
+        <span class="badge"><span class="muted">Сортировка:</span> <strong>по % выполнения</strong></span>
         <span class="badge bad">Правило %: &lt;80</span>
         <span class="badge warn">80–100</span>
         <span class="badge good">&gt;100</span>
@@ -347,7 +361,6 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <div class="tabs">
@@ -358,11 +371,14 @@
   </div>
 
 <script>
-/** ========= CONFIG ========= **/
 const GAS_URL = "https://script.google.com/macros/s/AKfycbyU7ZHBh6tt0TkpvaoVJff5AVR_lXt3oVIEbH46ZT7zjHbonPzeOKX2T0KdT_N9XWJy/exec";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-/** ========= UI refs ========= **/
+const MONTHS_RU = [
+  "Январь","Февраль","Март","Апрель","Май","Июнь",
+  "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
+];
+
 const yearSel = document.getElementById("yearSel");
 const monthSel = document.getElementById("monthSel");
 const storeSel = document.getElementById("storeSel");
@@ -382,20 +398,13 @@ const monthlySection = document.getElementById("monthlySection");
 const tabDaily = document.getElementById("tabDaily");
 const tabMonthly = document.getElementById("tabMonthly");
 
-/** ========= State ========= **/
 let META = null;
-let RAW = null;
-let PLANS = null;
-let activeView = "daily"; // daily|monthly
-
-const MONTHS_RU = [
-  "Январь","Февраль","Март","Апрель","Май","Июнь",
-  "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
-];
+let RAW = [];
+let PLANS = [];
+let activeView = "daily";
 
 init();
 
-/** ========= Init ========= **/
 async function init(){
   wireUI();
   await loadAll(false);
@@ -407,9 +416,11 @@ function wireUI(){
   tabDaily.addEventListener("click", () => setView("daily"));
   tabMonthly.addEventListener("click", () => setView("monthly"));
 
-  yearSel.addEventListener("change", renderAll);
-  monthSel.addEventListener("change", renderAll);
-  storeSel.addEventListener("change", renderAll);
+  ["change","input"].forEach(evt=>{
+    yearSel.addEventListener(evt, renderAll);
+    monthSel.addEventListener(evt, renderAll);
+    storeSel.addEventListener(evt, renderAll);
+  });
 
   refreshBtn.addEventListener("click", async () => {
     await loadAll(true);
@@ -427,45 +438,43 @@ function setView(v){
   renderAll();
 }
 
-/** ========= Data loading with cache ========= **/
 async function loadAll(force){
   setGas("…", "warn");
-
   try{
     const [meta, raw, plans] = await Promise.all([
       fetchCached("meta", force),
       fetchCached("raw", force),
-      fetchCached("plans", force)
+      fetchCached("plans", force),
     ]);
 
     META = meta;
-    RAW = raw?.rows || [];
-    PLANS = plans?.rows || [];
+    RAW = Array.isArray(raw?.rows) ? raw.rows : [];
+    PLANS = Array.isArray(plans?.rows) ? plans.rows : [];
 
     setGas("OK", "good");
   }catch(err){
     console.error(err);
-    setGas("ERR", "bad");
     META = { stores:[], years:[] };
     RAW = [];
     PLANS = [];
+    setGas("ERR", "bad");
   }
 }
 
 function cacheKey(entity){
-  return `bugatti_cache_v2::${GAS_URL}::${entity}`;
+  return `bugatti_plans_v3::${GAS_URL}::${entity}`;
 }
 
 async function fetchCached(entity, force){
   const key = cacheKey(entity);
   if (!force){
     const cached = safeJsonParse(localStorage.getItem(key));
-    if (cached && cached.ts && (Date.now()-cached.ts) < CACHE_TTL_MS){
+    if (cached && cached.ts && (Date.now() - cached.ts) < CACHE_TTL_MS){
       return cached.data;
     }
   }
-  const nocache = force ? `&nocache=${Date.now()}` : "";
-  const url = `${GAS_URL}?entity=${encodeURIComponent(entity)}${nocache}`;
+
+  const url = `${GAS_URL}?entity=${encodeURIComponent(entity)}${force ? `&nocache=${Date.now()}` : ""}`;
   const data = await fetchJson(url);
   localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
   return data;
@@ -478,85 +487,75 @@ async function fetchJson(url){
 }
 
 function safeJsonParse(s){
-  try{ return JSON.parse(s); }catch{ return null; }
+  try { return JSON.parse(s); } catch { return null; }
 }
 
 function setGas(text, mode){
   gasStatus.textContent = text;
   gasDot.classList.remove("good","warn","bad");
-  if (mode==="good") gasDot.classList.add("good");
-  if (mode==="warn") gasDot.classList.add("warn");
-  if (mode==="bad") gasDot.classList.add("bad");
+  if (mode) gasDot.classList.add(mode);
 }
 
-/** ========= Selectors ========= **/
 function buildSelectors(keepSelection=false){
-  const years = (META?.years || []).slice().sort((a,b)=>b-a);
-  const stores = (META?.stores || []).slice().sort((a,b)=>a.localeCompare(b,"ru"));
+  const years = (META?.years || []).slice().map(Number).filter(Boolean).sort((a,b)=>b-a);
+  const stores = (META?.stores || []).slice().map(String).filter(Boolean).sort((a,b)=>a.localeCompare(b,"ru"));
 
   const prevYear = yearSel.value;
   const prevMonth = monthSel.value;
   const prevStore = storeSel.value;
 
-  yearSel.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join("");
-  monthSel.innerHTML = MONTHS_RU.map(m=>`<option value="${m}">${m}</option>`).join("");
-  storeSel.innerHTML = stores.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+  yearSel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join("");
+  monthSel.innerHTML = MONTHS_RU.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join("");
+  storeSel.innerHTML = stores.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
 
-  // defaults (если не было выбора)
-  if (!keepSelection){
-    // год: максимальный
+  if (keepSelection){
+    if (prevYear && years.includes(Number(prevYear))) yearSel.value = prevYear;
+    if (prevMonth && MONTHS_RU.includes(prevMonth)) monthSel.value = prevMonth;
+    if (prevStore && stores.includes(prevStore)) storeSel.value = prevStore;
+  } else {
     if (years.length) yearSel.value = String(years[0]);
-    // месяц: по умолчанию Февраль (как в примерах) или текущий
-    const now = new Date();
-    const curMonth = MONTHS_RU[now.getMonth()];
-    monthSel.value = curMonth || "Февраль";
-    // магазин: Астана если есть
+    monthSel.value = "Февраль";
     if (stores.includes("Астана")) storeSel.value = "Астана";
-  }else{
-    if (prevYear) yearSel.value = prevYear;
-    if (prevMonth) monthSel.value = prevMonth;
-    if (prevStore) storeSel.value = prevStore;
+    else if (stores.length) storeSel.value = stores[0];
   }
 }
 
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-/** ========= Core computations ========= **/
 function renderAll(){
-  if (!META) return;
+  const selectedYear = Number(yearSel.value);
+  const selectedMonth = String(monthSel.value).trim();
+  const selectedStore = String(storeSel.value).trim();
+  const monthIndex = MONTHS_RU.indexOf(selectedMonth);
 
-  const year = Number(yearSel.value);
-  const monthName = monthSel.value;
-  const store = storeSel.value;
+  if (!selectedYear || monthIndex < 0 || !selectedStore) return;
 
-  const monthIndex = MONTHS_RU.indexOf(monthName); // 0..11
-  if (monthIndex < 0) return;
+  const ymPrefix = `${selectedYear}-${String(monthIndex+1).padStart(2,"0")}-`;
 
-  // ✅ Дедуп по последнему отчёту на store + reportDateKey (по ts)
   const dedup = dedupRaw(RAW);
 
-  // ✅ Фильтруем выбранный месяц
-  const ymPrefix = `${year}-${String(monthIndex+1).padStart(2,"0")}-`;
+  const storeRows = dedup.filter(r =>
+    String(r.store).trim() === selectedStore &&
+    String(r.reportDateKey).startsWith(ymPrefix)
+  );
 
-  // для выбранного магазина (дневка + KPI)
-  const storeRows = dedup.filter(r => r.store === store && r.reportDateKey.startsWith(ymPrefix));
+  const planRow = PLANS.find(p =>
+    Number(p.year) === selectedYear &&
+    normalizeText(p.month) === normalizeText(selectedMonth) &&
+    normalizeText(p.store) === normalizeText(selectedStore)
+  );
 
-  // планы (берём по year+month+store)
-  const planRec = PLANS.find(p => Number(p.year)===year && String(p.month).trim()===monthName && String(p.store).trim()===store);
-  const planMonth = planRec ? Number(p.planMonth||0) : 0;
-  const planDay = planRec ? Number(p.planDay||0) : 0;
+  const planMonth = planRow ? Number(planRow.planMonth || 0) : 0;
+  const planDay = planRow ? Number(planRow.planDay || 0) : 0;
 
-  // расчёт daily rows на ВСЕ дни месяца (чтобы совпадало с твоим дашбордом)
-  const daysInMonth = new Date(Date.UTC(year, monthIndex+1, 0)).getUTCDate();
-  const daily = [];
-  for (let d=1; d<=daysInMonth; d++){
-    const dateKey = `${year}-${String(monthIndex+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-    const row = storeRows.find(x => x.reportDateKey === dateKey);
-    const fact = row ? netSales(row) : 0;
-    const pct = planDay > 0 ? (fact / planDay) : 0;
-    daily.push({
+  const totalDaysInMonth = new Date(Date.UTC(selectedYear, monthIndex + 1, 0)).getUTCDate();
+
+  const dailyRows = [];
+  for (let day = 1; day <= totalDaysInMonth; day++){
+    const dateKey = `${selectedYear}-${String(monthIndex+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    const factRow = storeRows.find(r => r.reportDateKey === dateKey);
+    const fact = factRow ? netSales(factRow) : 0;
+    const pct = planDay > 0 ? (fact / planDay) : null;
+
+    dailyRows.push({
       dateKey,
       dayShort: weekdayShortRU(dateKey),
       plan: planDay,
@@ -565,134 +564,140 @@ function renderAll(){
     });
   }
 
-  // KPI по месяцу: срез = max reportDateKey где fact>0 (или где есть отчёт)
-  const cutoff = maxDateKey(storeRows.map(r=>r.reportDateKey));
-  const cutoffLabel = cutoff || `${year}-${String(monthIndex+1).padStart(2,"0")}-01`;
+  const cutoff = maxDateKey(storeRows.map(r => r.reportDateKey));
+  const cutoffLabel = cutoff || `${selectedYear}-${String(monthIndex+1).padStart(2,"0")}-01`;
 
-  const monthFact = storeRows.reduce((s,r)=> s + netSales(r), 0);
-  const monthPct = planMonth>0 ? (monthFact/planMonth) : 0;
-
-  const monthChecks = storeRows.reduce((s,r)=> s + (Number(r.checksNew||0)+Number(r.checksOld||0)), 0);
-  const avgCheck = monthChecks>0 ? (monthFact / monthChecks) : 0;
-
+  const monthFact = storeRows.reduce((sum, r) => sum + netSales(r), 0);
+  const monthPct = planMonth > 0 ? (monthFact / planMonth) : null;
+  const checks = storeRows.reduce((sum, r) => sum + Number(r.checksNew || 0) + Number(r.checksOld || 0), 0);
+  const avgCheck = checks > 0 ? (monthFact / checks) : 0;
   const remain = Math.max(0, planMonth - monthFact);
 
-  // days left from cutoff to end month
   const cutoffDay = cutoff ? Number(cutoff.slice(8,10)) : 0;
-  const daysLeft = cutoffDay ? (daysInMonth - cutoffDay) : 0;
-  const needPerDay = (daysLeft>0) ? (remain / daysLeft) : 0;
+  const daysLeft = cutoffDay ? Math.max(0, totalDaysInMonth - cutoffDay) : 0;
+  const needPerDay = daysLeft > 0 ? (remain / daysLeft) : null;
 
-  // subtitle
   subtitle.innerHTML = [
-    `<span class="muted">Период:</span> <strong>${monthName} ${year}</strong>`,
-    `<span class="muted">• Магазин:</span> <strong>${store}</strong>`,
+    `<span class="muted">Период:</span> <strong>${selectedMonth} ${selectedYear}</strong>`,
+    `<span class="muted">• Магазин:</span> <strong>${escapeHtml(selectedStore)}</strong>`,
     `<span class="muted">• Обновлено:</span> <strong>${timeNow()}</strong>`
   ].join(" ");
 
-  // KPI cards
-  const pctBadge = pctClass(monthPct*100);
   kpiGrid.innerHTML = [
-    kpiCard("План (мес)", money(planMonth), "Установленный план"),
-    kpiCard("Факт (мес)", money(monthFact), `С учётом возвратов • Срез: ${cutoffLabel}`),
-    kpiCard("% от плана",
-      `<span class="badge ${pctBadge}">${pctText(monthPct)}</span>`,
-      "Факт / План",
-      true
-    ),
-    kpiCard("Средний чек", money(avgCheck), "Факт / Чеки"),
+    kpiCard("План (мес)", planMonth ? money(planMonth) : "—", "Установленный план"),
+    kpiCard("Факт (мес)", monthFact ? money(monthFact) : "0 ₸", `С учётом возвратов • Срез: ${cutoffLabel}`),
+    kpiCard("% от плана", monthPct == null ? `<span class="badge bad">—</span>` : `<span class="badge ${pctClass(monthPct*100)}">${pctText(monthPct)}</span>`, "Факт / План", true),
+    kpiCard("Средний чек", avgCheck ? money(avgCheck) : "0 ₸", "Факт / Чеки"),
 
-    kpiCard("Осталось до плана", money(remain), "Макс(0, План − Факт)"),
-    kpiCard("Нужно в день", daysLeft>0 ? money(needPerDay) : "—", "Чтобы закрыть план до конца месяца"),
-    kpiCard("План на день", planDay>0 ? money(planDay) : "—", "Из установленных планов"),
-    kpiCard("Дней до конца", daysLeft>0 ? String(daysLeft) : "0", "От среза до конца месяца"),
+    kpiCard("Осталось до плана", planMonth ? money(remain) : "—", "Макс(0, План − Факт)"),
+    kpiCard("Нужно в день", needPerDay ? money(needPerDay) : "—", "Чтобы закрыть план до конца месяца"),
+    kpiCard("План на день", planDay ? money(planDay) : "—", "Из установленных планов"),
+    kpiCard("Дней до конца", String(daysLeft), "От среза до конца месяца")
   ].join("");
 
-  // Daily table (mobile-friendly date)
-  dailyBody.innerHTML = daily.map(r=>{
-    const cls = pctClass(r.pct*100);
+  dailyBody.innerHTML = dailyRows.map(r => {
+    const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
     return `
       <tr>
         <td><span class="linkish">${shortDate(r.dateKey)}</span></td>
         <td class="center">${r.dayShort}</td>
-        <td class="right">${money(r.plan)}</td>
+        <td class="right">${r.plan ? money(r.plan) : "—"}</td>
         <td class="right">${r.fact ? `<span class="linkish">${money(r.fact)}</span>` : "—"}</td>
-        <td class="right pct ${cls}">${r.plan>0 ? pctText(r.pct) : "—"}</td>
+        <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
       </tr>
     `;
   }).join("");
 
-  // Monthly view: all stores
   if (activeView === "monthly"){
-    const allStores = (META.stores || []);
-    const monthAll = allStores.map(s=>{
-      const rows = dedup.filter(r => r.store===s && r.reportDateKey.startsWith(ymPrefix));
-      const cutoffS = maxDateKey(rows.map(r=>r.reportDateKey));
-      const fact = rows.reduce((sum,r)=>sum+netSales(r),0);
+    const allStores = (META?.stores || []).slice().map(String).filter(Boolean);
 
-      const planP = PLANS.find(p => Number(p.year)===year && String(p.month).trim()===monthName && String(p.store).trim()===s);
-      const pMonth = planP ? Number(planP.planMonth||0) : 0;
+    const monthlyRows = allStores.map(store => {
+      const rows = dedup.filter(r =>
+        normalizeText(r.store) === normalizeText(store) &&
+        String(r.reportDateKey).startsWith(ymPrefix)
+      );
 
-      const checks = rows.reduce((sum,r)=> sum + (Number(r.checksNew||0)+Number(r.checksOld||0)), 0);
-      const avg = checks>0 ? (fact/checks) : 0;
+      const plan = PLANS.find(p =>
+        Number(p.year) === selectedYear &&
+        normalizeText(p.month) === normalizeText(selectedMonth) &&
+        normalizeText(p.store) === normalizeText(store)
+      );
 
-      const pct = pMonth>0 ? (fact/pMonth) : 0;
+      const planMonthValue = plan ? Number(plan.planMonth || 0) : 0;
+      const factValue = rows.reduce((sum, r) => sum + netSales(r), 0);
+      const checksValue = rows.reduce((sum, r) => sum + Number(r.checksNew || 0) + Number(r.checksOld || 0), 0);
+      const avgValue = checksValue > 0 ? (factValue / checksValue) : 0;
+      const pctValue = planMonthValue > 0 ? (factValue / planMonthValue) : null;
+      const cutoffValue = maxDateKey(rows.map(r => r.reportDateKey));
 
-      return { store:s, planMonth:pMonth, fact, pct, avgCheck:avg, cutoff:cutoffS || null };
+      return {
+        store,
+        planMonth: planMonthValue,
+        fact: factValue,
+        avgCheck: avgValue,
+        pct: pctValue,
+        cutoff: cutoffValue
+      };
     });
 
-    // общий срез: максимальный cutoff среди магазинов (чтобы показ было понятно)
-    const globalCutoff = maxDateKey(monthAll.map(x=>x.cutoff).filter(Boolean));
+    const globalCutoff = maxDateKey(monthlyRows.map(r => r.cutoff).filter(Boolean));
     cutoffText.textContent = globalCutoff || "—";
 
-    monthAll.sort((a,b)=> (b.pct - a.pct));
+    monthlyRows.sort((a,b) => {
+      const av = a.pct == null ? -1 : a.pct;
+      const bv = b.pct == null ? -1 : b.pct;
+      return bv - av;
+    });
 
-    monthlyBody.innerHTML = monthAll.map(r=>{
-      const cls = pctClass(r.pct*100);
+    monthlyBody.innerHTML = monthlyRows.map(r => {
+      const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
       return `
         <tr>
           <td>${escapeHtml(r.store)}</td>
-          <td class="right">${money(r.planMonth)}</td>
-          <td class="right">${money(r.fact)}</td>
-          <td class="right pct ${cls}">${r.planMonth>0 ? pctText(r.pct) : "—"}</td>
-          <td class="right">${r.avgCheck>0 ? money(r.avgCheck) : "—"}</td>
+          <td class="right">${r.planMonth ? money(r.planMonth) : "—"}</td>
+          <td class="right">${r.fact ? money(r.fact) : "0 ₸"}</td>
+          <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
+          <td class="right">${r.avgCheck ? money(r.avgCheck) : "—"}</td>
         </tr>
       `;
     }).join("");
   }
 }
 
-/** ========= Utilities ========= **/
 function dedupRaw(rows){
-  // key = store + dateKey ; keep latest ts
-  const m = new Map();
+  const map = new Map();
+
   for (const r of rows){
-    if (!r || !r.store || !r.reportDateKey) continue;
-    const k = `${r.store}__${r.reportDateKey}`;
-    const prev = m.get(k);
-    if (!prev){
-      m.set(k, r);
-      continue;
+    const store = String(r.store || "").trim();
+    const dateKey = String(r.reportDateKey || "").trim();
+    if (!store || !dateKey) continue;
+
+    const key = `${normalizeText(store)}__${dateKey}`;
+    const prev = map.get(key);
+
+    const tsNew = r.ts ? Date.parse(r.ts) : 0;
+    const tsPrev = prev?.ts ? Date.parse(prev.ts) : 0;
+
+    if (!prev || tsNew >= tsPrev){
+      map.set(key, r);
     }
-    const tNew = r.ts ? Date.parse(r.ts) : 0;
-    const tOld = prev.ts ? Date.parse(prev.ts) : 0;
-    if (tNew >= tOld) m.set(k, r);
   }
-  return Array.from(m.values());
+
+  return Array.from(map.values());
 }
 
 function netSales(r){
-  const gross = (Number(r.salesNew||0) + Number(r.salesOld||0));
-  const ret = Number(r.returns||0);
-  return Math.max(0, gross - ret);
+  const gross = Number(r.salesNew || 0) + Number(r.salesOld || 0);
+  const returns = Number(r.returns || 0);
+  return Math.max(0, gross - returns);
 }
 
 function maxDateKey(keys){
   if (!keys || !keys.length) return null;
-  return keys.reduce((max,k)=> (k && (!max || k>max)) ? k : max, null);
+  return keys.reduce((max, key) => (!max || key > max) ? key : max, null);
 }
 
 function weekdayShortRU(dateKey){
-  // dateKey = "YYYY-MM-DD" ; считаем по UTC чтобы не ловить TZ
   const [y,m,d] = dateKey.split("-").map(Number);
   const dt = new Date(Date.UTC(y, m-1, d));
   const map = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
@@ -700,33 +705,28 @@ function weekdayShortRU(dateKey){
 }
 
 function shortDate(dateKey){
-  // "2026-02-01" -> "01.02"
   const d = dateKey.slice(8,10);
   const m = dateKey.slice(5,7);
   return `${d}.${m}`;
 }
 
-function money(x){
-  const n = Math.round(Number(x||0));
-  // тонкий пробел между разрядами
-  const s = n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  return `${s} ₸`;
+function money(value){
+  const n = Math.round(Number(value || 0));
+  return `${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₸`;
 }
 
-function pctText(p){
-  const v = (Number(p||0)*100);
-  return `${v.toFixed(1)}%`;
+function pctText(ratio){
+  return `${(Number(ratio || 0) * 100).toFixed(1)}%`;
 }
 
 function pctClass(pct){
-  if (!isFinite(pct)) return "warn";
+  if (!isFinite(pct)) return "bad";
   if (pct < 80) return "bad";
   if (pct <= 100) return "warn";
   return "good";
 }
 
 function kpiCard(title, valueHtml, hint, isHtml=false){
-  const val = isHtml ? valueHtml : `<div class="v mono">${valueHtml}</div>`;
   return `
     <div class="card">
       <div class="k">${title}</div>
@@ -743,6 +743,24 @@ function timeNow(){
   const hh = String(d.getHours()).padStart(2,"0");
   const mi = String(d.getMinutes()).padStart(2,"0");
   return `${dd}.${mm}, ${hh}:${mi}`;
+}
+
+function normalizeText(s){
+  return String(s || "")
+    .trim()
+    .toLowerCase()
+    .replace(/ё/g, "е")
+    .replace(/\s+/g, " ");
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
 }
 </script>
 </body>
