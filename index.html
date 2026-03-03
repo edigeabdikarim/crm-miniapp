@@ -10,20 +10,22 @@
     :root{
       --bg0:#070A12;
       --bg1:#0A1022;
-      --card:#0C142B;
-      --card2:#0B1326;
+
       --text:#EAF0FF;
       --muted:rgba(234,240,255,.65);
       --muted2:rgba(234,240,255,.45);
+
       --line:rgba(255,255,255,.08);
 
       --blue:#4EA3FF;
       --cyan:#4BE7FF;
       --violet:#B36BFF;
       --pink:#FF4FD8;
-      --green:#3DFFA6;
-      --red:#FF5B6A;
-      --amber:#FFB84A;
+
+      /* Статусы % (в твоей стилистике) */
+      --pct-red:#FF5B6A;     /* <80 */
+      --pct-yellow:#FFB84A;  /* 80-100 */
+      --pct-green:#3DFFA6;   /* >100 */
 
       --radius:18px;
       --radius2:22px;
@@ -43,10 +45,10 @@
     }
 
     .wrap{
-      max-width: 980px;
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 18px 14px 90px;
-      padding-bottom: calc(90px + env(safe-area-inset-bottom));
+      padding: 18px 14px 92px;
+      padding-bottom: calc(92px + env(safe-area-inset-bottom));
     }
 
     .top{
@@ -83,7 +85,6 @@
       white-space:nowrap;
     }
 
-    /* Glass card */
     .card{
       border-radius: var(--radius2);
       background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
@@ -103,8 +104,8 @@
     }
 
     select{
-      flex: 1 1 130px;
-      min-width: 120px;
+      flex: 1 1 160px;
+      min-width: 140px;
       padding: 12px 12px;
       border-radius: 14px;
       background: rgba(7,10,18,.55);
@@ -137,7 +138,6 @@
         inset 0 1px 0 rgba(255,255,255,.05);
       overflow:hidden;
     }
-
     .kpi::before{
       content:"";
       position:absolute;
@@ -160,7 +160,6 @@
       opacity:.65;
       pointer-events:none;
     }
-
     .kpi .label{
       font-size:12px;
       color: var(--muted);
@@ -171,6 +170,9 @@
       font-size: 26px;
       font-weight: 800;
       letter-spacing: .3px;
+      display:flex;
+      align-items:baseline;
+      gap:10px;
     }
     .kpi .hint{
       margin-top:8px;
@@ -178,7 +180,19 @@
       color: var(--muted2);
     }
 
-    /* Bottom tabbar like your screenshot */
+    .pctChip{
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      letter-spacing: .2px;
+    }
+    .pct-red{ color: var(--pct-red); border-color: rgba(255,91,106,.25); background: rgba(255,91,106,.06); }
+    .pct-yellow{ color: var(--pct-yellow); border-color: rgba(255,184,74,.25); background: rgba(255,184,74,.06); }
+    .pct-green{ color: var(--pct-green); border-color: rgba(61,255,166,.25); background: rgba(61,255,166,.06); }
+
     .tabbar{
       position: fixed;
       left: 0; right: 0;
@@ -188,14 +202,12 @@
       backdrop-filter: blur(12px);
       border-top: 1px solid rgba(255,255,255,.06);
     }
-
     .tabs{
-      max-width:980px;
+      max-width:1080px;
       margin: 0 auto;
       display:flex;
       gap:10px;
     }
-
     .tab{
       flex:1 1 0;
       text-align:center;
@@ -216,7 +228,6 @@
       font-weight: 700;
     }
 
-    /* Table */
     .tableCard{
       padding: 12px;
       border-radius: var(--radius2);
@@ -235,23 +246,26 @@
       font-size: 11px;
       color: var(--muted);
       font-weight: 600;
-      text-transform: none;
       padding: 10px 10px;
       border-bottom: 1px solid rgba(255,255,255,.08);
       background: rgba(255,255,255,.03);
       position: sticky;
       top: 0;
       z-index: 1;
+      white-space: nowrap;
     }
     tbody td{
       padding: 10px 10px;
       border-bottom: 1px solid rgba(255,255,255,.06);
       font-size: 13px;
       color: rgba(234,240,255,.92);
+      white-space: nowrap;
     }
     tbody tr:hover td{ background: rgba(255,255,255,.03); }
+
     .right{ text-align:right; }
     .mono{ font-variant-numeric: tabular-nums; }
+
     .badge{
       display:inline-flex;
       align-items:center;
@@ -263,9 +277,6 @@
       color: var(--muted);
       font-size: 12px;
     }
-
-    .pos{ color: var(--green); }
-    .neg{ color: var(--red); }
 
     .sectionTitle{
       margin: 10px 2px 10px;
@@ -279,6 +290,20 @@
       color: var(--muted);
       font-size: 13px;
     }
+
+    /* Подсветка % в таблице */
+    .pctCell{
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+    .pctCell.pct-red{ color: var(--pct-red); }
+    .pctCell.pct-yellow{ color: var(--pct-yellow); }
+    .pctCell.pct-green{ color: var(--pct-green); }
+
+    /* Узкие экраны: таблица скроллится */
+    .tableScroll{ overflow:auto; border-radius: 14px; }
+    .tableScroll::-webkit-scrollbar{ height: 8px; }
+    .tableScroll::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.12); border-radius: 10px; }
   </style>
 </head>
 
@@ -289,7 +314,7 @@
         <h1 class="title">Планы продаж</h1>
         <div id="meta" class="subtitle">Загрузка данных…</div>
       </div>
-      <div class="pill" id="pill">GAS • OK</div>
+      <div class="pill" id="pill">GAS • загрузка…</div>
     </div>
 
     <div class="card">
@@ -316,14 +341,18 @@
   </div>
 
 <script>
-  // ✅ ТВОЯ НОВАЯ ССЫЛКА GAS
+  // ✅ ТВОЯ ТЕКУЩАЯ ССЫЛКА GAS
   const GAS_URL = "https://script.google.com/macros/s/AKfycbxCyFpNCzjXunN1gi8eY4Xe5CvDcyp7oFC4M2VP2z2lEdTH_ysmhH8NpIm4nnvY0PIE/exec";
+
+  // ✅ ФИКС ТАЙМЗОНЫ (исправляет “сдвиг на 1 день”)
+  const APP_TZ = "Asia/Almaty";
+  const fmtYMD_TZ = new Intl.DateTimeFormat("en-CA", { timeZone: APP_TZ, year:"numeric", month:"2-digit", day:"2-digit" });
+  const fmtWD_TZ  = new Intl.DateTimeFormat("ru-RU", { timeZone: APP_TZ, weekday:"short" });
 
   const RU_MONTHS = [
     "Январь","Февраль","Март","Апрель","Май","Июнь",
     "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
   ];
-  const RU_WEEKDAYS = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 
   let RAW = [];
   let PLANS = [];
@@ -334,20 +363,39 @@
     currentTab = t;
     document.getElementById("tab-daily").classList.toggle("active", t==="daily");
     document.getElementById("tab-monthly").classList.toggle("active", t==="monthly");
-    document.getElementById("sectionTitle").textContent = (t==="daily") ? "Ежедневные данные" : "Ежемесячные данные (все магазины)";
+    document.getElementById("sectionTitle").textContent = (t==="daily")
+      ? "Ежедневные данные"
+      : "Ежемесячные данные (все магазины)";
     render();
   }
 
-  function ymd(d){
-    const y=d.getFullYear();
-    const m=String(d.getMonth()+1).padStart(2,"0");
-    const da=String(d.getDate()).padStart(2,"0");
-    return `${y}-${m}-${da}`;
-  }
   function parseDate(v){
     const d = new Date(v);
     return Number.isFinite(d.getTime()) ? d : null;
   }
+
+  function ymdTZ(dateObj){
+    return fmtYMD_TZ.format(dateObj); // YYYY-MM-DD в Asia/Almaty
+  }
+
+  // Генерируем “день месяца” стабильным способом (UTC noon → без сдвигов)
+  function makeDayUTCNoon(year, monthIndex, day){
+    return new Date(Date.UTC(year, monthIndex, day, 12, 0, 0));
+  }
+
+  function weekdayTZ(dateObj){
+    // "вс."/"пн." → "Вс"/"Пн"
+    const s = fmtWD_TZ.format(dateObj).replace(".", "");
+    return s.charAt(0).toUpperCase() + s.slice(1,2);
+  }
+
+  function daysInMonth(year, monthIndex){
+    const last = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+    const out = [];
+    for (let d=1; d<=last; d++) out.push(makeDayUTCNoon(year, monthIndex, d));
+    return out;
+  }
+
   function num(v){
     if (v===null || v==="" || v===undefined) return 0;
     if (typeof v==="number") return v;
@@ -359,6 +407,7 @@
     const n = Math.round(v);
     return n.toLocaleString("ru-RU") + " ₸";
   }
+
   function fmtPct(v){
     if (!Number.isFinite(v) || v===null) return "—";
     const p = (v*100);
@@ -376,22 +425,23 @@
     };
   }
 
-  function daysInMonth(year, monthIndex){
-    const first = new Date(year, monthIndex, 1);
-    const next = new Date(year, monthIndex+1, 1);
-    const out = [];
-    for (let d = new Date(first); d < next; d.setDate(d.getDate()+1)) out.push(new Date(d));
-    return out;
+  // Цвет для %: <80 красный, 80-100 жёлтый, >100 зелёный
+  function pctClass(ratio){
+    if (!Number.isFinite(ratio) || ratio===null) return "";
+    if (ratio < 0.80) return "pct-red";
+    if (ratio <= 1.00) return "pct-yellow";
+    return "pct-green";
   }
 
-  // ✅ Дедупликация: берём последнюю версию отчёта по (магазин, дата отчёта) по максимальному ts
+  // ✅ Дедуп: последняя версия отчёта по (магазин, дата отчёта в Almaty)
   function dedupRaw(rows){
-    const map = new Map(); // key -> latest row
+    const map = new Map();
     for (const r of rows){
       const ts = parseDate(r.ts);
       const rd = parseDate(r.reportDate);
       if (!ts || !rd || !r.store) continue;
-      const key = r.store + "|" + ymd(rd);
+
+      const key = String(r.store).trim() + "|" + ymdTZ(rd);
       const prev = map.get(key);
       if (!prev || parseDate(prev.ts) < ts) map.set(key, r);
     }
@@ -412,16 +462,19 @@
     return row ? { planMonth: num(row.planMonth), planDay: num(row.planDay) } : { planMonth: 0, planDay: 0 };
   }
 
+  // Определяем “последний день отчёта” в месяце (по Almaty-дате)
   function computeLastReportDateInMonth(dedupMap, year, monthIndex){
-    let max=null;
+    let maxKey = null; // YYYY-MM-DD
     for (const r of dedupMap.values()){
       const rd = parseDate(r.reportDate);
       if (!rd) continue;
-      if (rd.getFullYear()!==year) continue;
-      if (rd.getMonth()!==monthIndex) continue;
-      if (!max || rd>max) max=rd;
+      const k = ymdTZ(rd);
+      const y = Number(k.slice(0,4));
+      const m = Number(k.slice(5,7)) - 1;
+      if (y !== year || m !== monthIndex) continue;
+      if (!maxKey || k > maxKey) maxKey = k;
     }
-    return max;
+    return maxKey; // строкой YYYY-MM-DD
   }
 
   function computeDaily(year, monthIndex, store, dedupMap){
@@ -432,8 +485,9 @@
     let checksMonth = 0;
 
     const rows = days.map(d=>{
-      const key = store + "|" + ymd(d);
+      const key = store + "|" + ymdTZ(d);
       const r = dedupMap.get(key);
+
       const fact = r ? factFromRow(r) : 0;
       const pct = plan.planDay>0 ? (fact/plan.planDay) : null;
 
@@ -443,8 +497,8 @@
       }
 
       return {
-        date: ymd(d),
-        weekday: RU_WEEKDAYS[d.getDay()],
+        date: ymdTZ(d),
+        weekday: weekdayTZ(d),
         planDay: plan.planDay,
         factDay: fact,
         pctDay: pct
@@ -454,16 +508,30 @@
     const pctMonth = plan.planMonth>0 ? (factMonth/plan.planMonth) : null;
     const avgCheck = checksMonth>0 ? (factMonth/checksMonth) : null;
 
-    return { plan, rows, factMonth, pctMonth, avgCheck };
+    const leftToPlan = Math.max(0, plan.planMonth - factMonth);
+
+    // “нужно в день” считаем до конца месяца, начиная со следующего дня после последнего факта
+    const lastKey = computeLastReportDateInMonth(dedupMap, year, monthIndex);
+    const lastDayNum = lastKey ? Number(lastKey.slice(8,10)) : 0;
+    const totalDays = days.length;
+    const daysLeft = Math.max(0, totalDays - lastDayNum);
+    const needPerDay = daysLeft > 0 ? (leftToPlan / daysLeft) : null;
+
+    return { plan, rows, factMonth, pctMonth, avgCheck, leftToPlan, needPerDay, lastKey };
   }
 
   function computeMonthlyAllStores(year, monthIndex, dedupMap){
-    const lastDate = computeLastReportDateInMonth(dedupMap, year, monthIndex);
-    const cutoff = lastDate ? ymd(lastDate) : null;
+    const cutoff = computeLastReportDateInMonth(dedupMap, year, monthIndex); // YYYY-MM-DD или null
+    const cutoffDayNum = cutoff ? Number(cutoff.slice(8,10)) : 0;
+    const totalDays = daysInMonth(year, monthIndex).length;
+    const daysLeft = Math.max(0, totalDays - cutoffDayNum);
 
     const storesFromRaw = new Set((META?.stores?.length ? META.stores : RAW.map(r=>r.store)).filter(Boolean));
     const storesFromPlans = new Set((PLANS||[]).map(p=>p.store).filter(Boolean));
-    const stores = Array.from(new Set([...storesFromRaw, ...storesFromPlans])).sort((a,b)=>a.localeCompare(b,"ru"));
+    const stores = Array.from(new Set([...storesFromRaw, ...storesFromPlans]))
+      .map(s=>String(s).trim())
+      .filter(Boolean)
+      .sort((a,b)=>a.localeCompare(b,"ru"));
 
     const rows = [];
 
@@ -472,82 +540,135 @@
       let factSum=0, checksSum=0;
 
       for (const r of dedupMap.values()){
-        if (r.store !== store) continue;
+        if (String(r.store).trim() !== store) continue;
         const rd = parseDate(r.reportDate);
         if (!rd) continue;
-        if (rd.getFullYear()!==year || rd.getMonth()!==monthIndex) continue;
-        if (lastDate && rd > lastDate) continue; // срез A: общая последняя дата отчёта
 
-        const f = factFromRow(r);
-        factSum += f;
+        const k = ymdTZ(rd);
+        const y = Number(k.slice(0,4));
+        const m = Number(k.slice(5,7)) - 1;
+        if (y !== year || m !== monthIndex) continue;
+
+        if (cutoff && k > cutoff) continue; // общий срез A: до последнего дня отчёта
+
+        factSum += factFromRow(r);
         checksSum += checksFromRow(r);
       }
 
       const pct = plan.planMonth>0 ? (factSum/plan.planMonth) : null;
       const avg = checksSum>0 ? (factSum/checksSum) : null;
 
+      const leftToPlan = Math.max(0, plan.planMonth - factSum);
+      const needPerDay = (daysLeft > 0) ? (leftToPlan / daysLeft) : null;
+
       rows.push({
         store,
         planMonth: plan.planMonth,
         factMonth: factSum,
         pctMonth: pct,
-        avgCheck: avg
+        avgCheck: avg,
+        leftToPlan,
+        needPerDay
       });
     }
 
-    // сортировка по % выполнения (по убыванию) — удобно руководителю
+    // сортировка по % выполнения (по убыванию)
     rows.sort((a,b)=>{
       const ap = (a.pctMonth===null? -1 : a.pctMonth);
       const bp = (b.pctMonth===null? -1 : b.pctMonth);
       return bp - ap;
     });
 
-    return { cutoff, rows };
+    return { cutoff, rows, daysLeft };
+  }
+
+  function pctChipHtml(ratio){
+    const cls = pctClass(ratio);
+    return `<span class="pctChip ${cls}">${ratio==null ? "—" : fmtPct(ratio)}</span>`;
   }
 
   function renderKpisDaily(d){
-    // Карточки в стиле скринов: крупное число, маленькая подпись
-    const items = [
-      { label: "План (мес)", value: fmtMoneyKZT(d.plan.planMonth), hint: "Установленный план" },
-      { label: "Факт (мес)", value: fmtMoneyKZT(d.factMonth), hint: "С учётом возвратов" },
-      { label: "% от плана", value: d.pctMonth===null ? "—" : fmtPct(d.pctMonth), hint: "Факт / План" },
-      { label: "Средний чек", value: d.avgCheck===null ? "—" : fmtMoneyKZT(d.avgCheck), hint: "Факт / Чеки" }
-    ];
-
     const k = document.getElementById("kpis");
-    k.innerHTML = items.map(it=>`
+
+    k.innerHTML = `
       <div class="kpi">
-        <div class="label">${it.label}</div>
-        <div class="value mono">${it.value}</div>
-        <div class="hint">${it.hint}</div>
+        <div class="label">План (мес)</div>
+        <div class="value mono">${fmtMoneyKZT(d.plan.planMonth)}</div>
+        <div class="hint">Установленный план</div>
       </div>
-    `).join("");
+
+      <div class="kpi">
+        <div class="label">Факт (мес)</div>
+        <div class="value mono">${fmtMoneyKZT(d.factMonth)}</div>
+        <div class="hint">С учётом возвратов • Срез: ${d.lastKey || "—"}</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">% от плана</div>
+        <div class="value mono">${pctChipHtml(d.pctMonth)}</div>
+        <div class="hint">Факт / План</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">Средний чек</div>
+        <div class="value mono">${d.avgCheck==null ? "—" : fmtMoneyKZT(d.avgCheck)}</div>
+        <div class="hint">Факт / Чеки</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">Осталось до плана</div>
+        <div class="value mono">${fmtMoneyKZT(d.leftToPlan)}</div>
+        <div class="hint">Макс(0, План − Факт)</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">Нужно в день</div>
+        <div class="value mono">${d.needPerDay==null ? "—" : fmtMoneyKZT(d.needPerDay)}</div>
+        <div class="hint">Чтобы закрыть план до конца месяца</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">План на день</div>
+        <div class="value mono">${fmtMoneyKZT(d.plan.planDay)}</div>
+        <div class="hint">Из установленных планов</div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">Дней до конца</div>
+        <div class="value mono">${d.needPerDay==null ? "—" : (Math.max(0, daysInMonth(getSelected().year, getSelected().monthIndex).length - (d.lastKey ? Number(d.lastKey.slice(8,10)) : 0)))}</div>
+        <div class="hint">От среза до конца месяца</div>
+      </div>
+    `;
   }
 
   function renderKpisMonthly(m){
-    // В monthly — показываем общую “шапку” по срезу
-    const cutoffText = m.cutoff ? m.cutoff : "—";
     const k = document.getElementById("kpis");
+    const leader = m.rows[0];
+    const tail = m.rows[m.rows.length-1];
+
     k.innerHTML = `
       <div class="kpi">
         <div class="label">Срез факта</div>
-        <div class="value mono">${cutoffText}</div>
+        <div class="value mono">${m.cutoff || "—"}</div>
         <div class="hint">До последнего дня отчёта</div>
       </div>
+
       <div class="kpi">
-        <div class="label">Магазинов</div>
-        <div class="value mono">${m.rows.length}</div>
-        <div class="hint">В выборке</div>
+        <div class="label">Дней до конца</div>
+        <div class="value mono">${m.daysLeft}</div>
+        <div class="hint">От среза до конца месяца</div>
       </div>
+
       <div class="kpi">
         <div class="label">Лидер по %</div>
-        <div class="value mono">${m.rows[0]?.store || "—"}</div>
-        <div class="hint">${m.rows[0]?.pctMonth==null ? "—" : fmtPct(m.rows[0].pctMonth)}</div>
+        <div class="value mono">${leader?.store || "—"}</div>
+        <div class="hint">${leader?.pctMonth==null ? "—" : fmtPct(leader.pctMonth)}</div>
       </div>
+
       <div class="kpi">
         <div class="label">Аутсайдер</div>
-        <div class="value mono">${m.rows[m.rows.length-1]?.store || "—"}</div>
-        <div class="hint">${m.rows[m.rows.length-1]?.pctMonth==null ? "—" : fmtPct(m.rows[m.rows.length-1].pctMonth)}</div>
+        <div class="value mono">${tail?.store || "—"}</div>
+        <div class="hint">${tail?.pctMonth==null ? "—" : fmtPct(tail.pctMonth)}</div>
       </div>
     `;
   }
@@ -565,61 +686,77 @@
       const d = computeDaily(year, monthIndex, store, dedupMap);
       renderKpisDaily(d);
 
-      const rowsHtml = d.rows.map(r=>`
-        <tr>
-          <td class="mono">${r.date}</td>
-          <td>${r.weekday}</td>
-          <td class="right mono">${fmtMoneyKZT(r.planDay)}</td>
-          <td class="right mono">${fmtMoneyKZT(r.factDay)}</td>
-          <td class="right mono">${r.pctDay===null ? "—" : fmtPct(r.pctDay)}</td>
-        </tr>
-      `).join("");
+      const rowsHtml = d.rows.map(r=>{
+        const cls = pctClass(r.pctDay);
+        return `
+          <tr>
+            <td class="mono">${r.date}</td>
+            <td>${r.weekday}</td>
+            <td class="right mono">${fmtMoneyKZT(r.planDay)}</td>
+            <td class="right mono">${fmtMoneyKZT(r.factDay)}</td>
+            <td class="right mono pctCell ${cls}">${r.pctDay===null ? "—" : fmtPct(r.pctDay)}</td>
+          </tr>
+        `;
+      }).join("");
 
       view.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Дата</th>
-              <th>День</th>
-              <th class="right">План</th>
-              <th class="right">Факт</th>
-              <th class="right">% от плана</th>
-            </tr>
-          </thead>
-          <tbody>${rowsHtml}</tbody>
-        </table>
+        <div class="tableScroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>День</th>
+                <th class="right">План</th>
+                <th class="right">Факт</th>
+                <th class="right">% от плана</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
       `;
     } else {
       const m = computeMonthlyAllStores(year, monthIndex, dedupMap);
       renderKpisMonthly(m);
 
-      const rowsHtml = m.rows.map(r=>`
-        <tr>
-          <td>${r.store}</td>
-          <td class="right mono">${fmtMoneyKZT(r.planMonth)}</td>
-          <td class="right mono">${fmtMoneyKZT(r.factMonth)}</td>
-          <td class="right mono">${r.pctMonth===null ? "—" : fmtPct(r.pctMonth)}</td>
-          <td class="right mono">${r.avgCheck===null ? "—" : fmtMoneyKZT(r.avgCheck)}</td>
-        </tr>
-      `).join("");
+      const rowsHtml = m.rows.map(r=>{
+        const cls = pctClass(r.pctMonth);
+        return `
+          <tr>
+            <td>${r.store}</td>
+            <td class="right mono">${fmtMoneyKZT(r.planMonth)}</td>
+            <td class="right mono">${fmtMoneyKZT(r.factMonth)}</td>
+            <td class="right mono pctCell ${cls}">${r.pctMonth===null ? "—" : fmtPct(r.pctMonth)}</td>
+            <td class="right mono">${r.avgCheck==null ? "—" : fmtMoneyKZT(r.avgCheck)}</td>
+            <td class="right mono">${fmtMoneyKZT(r.leftToPlan)}</td>
+            <td class="right mono">${r.needPerDay==null ? "—" : fmtMoneyKZT(r.needPerDay)}</td>
+          </tr>
+        `;
+      }).join("");
 
       view.innerHTML = `
         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
           <span class="badge">Срез: <b style="color:rgba(234,240,255,.92)">${m.cutoff || "—"}</b></span>
           <span class="badge">Сортировка: <b style="color:rgba(234,240,255,.92)">по % выполнения</b></span>
+          <span class="badge">Правило %: <b class="pctChip pct-red">&lt;80</b> <b class="pctChip pct-yellow">80–100</b> <b class="pctChip pct-green">&gt;100</b></span>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Магазин</th>
-              <th class="right">План (мес)</th>
-              <th class="right">Факт (мес)</th>
-              <th class="right">% от плана</th>
-              <th class="right">Средний чек</th>
-            </tr>
-          </thead>
-          <tbody>${rowsHtml}</tbody>
-        </table>
+
+        <div class="tableScroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Магазин</th>
+                <th class="right">План (мес)</th>
+                <th class="right">Факт (мес)</th>
+                <th class="right">% от плана</th>
+                <th class="right">Средний чек</th>
+                <th class="right">Осталось (₸)</th>
+                <th class="right">Нужно/день</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
       `;
     }
 
@@ -631,63 +768,66 @@
   }
 
   async function init(){
-    document.getElementById("pill").textContent = "GAS • загрузка…";
+    try{
+      document.getElementById("pill").textContent = "GAS • загрузка…";
 
-    const [metaRes, rawRes, plansRes] = await Promise.all([
-      fetch(`${GAS_URL}?entity=meta`, { cache:"no-store" }),
-      fetch(`${GAS_URL}?entity=raw`, { cache:"no-store" }),
-      fetch(`${GAS_URL}?entity=plans`, { cache:"no-store" })
-    ]);
+      const [metaRes, rawRes, plansRes] = await Promise.all([
+        fetch(`${GAS_URL}?entity=meta`, { cache:"no-store" }),
+        fetch(`${GAS_URL}?entity=raw`, { cache:"no-store" }),
+        fetch(`${GAS_URL}?entity=plans`, { cache:"no-store" })
+      ]);
 
-    META = await metaRes.json();
-    const rawJson = await rawRes.json();
-    const plansJson = await plansRes.json();
+      META = await metaRes.json();
+      const rawJson = await rawRes.json();
+      const plansJson = await plansRes.json();
 
-    RAW = rawJson.rows || [];
-    PLANS = plansJson.rows || [];
+      RAW = rawJson.rows || [];
+      PLANS = plansJson.rows || [];
 
-    // years
-    const years = (META?.years?.length ? META.years : []).slice().sort((a,b)=>a-b);
-    if (!years.length){
-      years.push(new Date().getFullYear());
+      // years
+      const years = (META?.years?.length ? META.years : []).slice().sort((a,b)=>a-b);
+      if (!years.length) years.push(new Date().getFullYear());
+
+      // stores = raw + plans
+      const storesFromRaw = new Set((META?.stores?.length ? META.stores : RAW.map(r=>r.store)).filter(Boolean));
+      const storesFromPlans = new Set((PLANS||[]).map(p=>p.store).filter(Boolean));
+      const stores = Array.from(new Set([...storesFromRaw, ...storesFromPlans]))
+        .map(s=>String(s).trim())
+        .filter(Boolean)
+        .sort((a,b)=>a.localeCompare(b,"ru"));
+
+      // Fill selectors
+      const yearSel = document.getElementById("year");
+      yearSel.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join("");
+
+      const monthSel = document.getElementById("month");
+      monthSel.innerHTML = RU_MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+
+      const storeSel = document.getElementById("store");
+      storeSel.innerHTML = stores.map(s=>`<option value="${s}">${s}</option>`).join("");
+
+      // Defaults
+      yearSel.value = String(years[years.length-1]);
+      monthSel.value = String(new Date().getMonth());
+
+      const preferred = ["Астана","Мира","Есентай","Абайка","Аутлет","Above&Beyond","Above Астана"];
+      const foundPreferred = preferred.find(x => stores.includes(x));
+      storeSel.value = foundPreferred || stores[0] || "";
+
+      yearSel.addEventListener("change", render);
+      monthSel.addEventListener("change", render);
+      storeSel.addEventListener("change", render);
+
+      document.getElementById("pill").textContent = "GAS • OK";
+      render();
+    } catch (err){
+      document.getElementById("pill").textContent = "GAS • ошибка";
+      document.getElementById("meta").textContent = "Ошибка загрузки данных: " + String(err);
+      document.getElementById("view").innerHTML = `<div class="loading">Проверь доступ GAS (Anyone) и корректность ссылки.</div>`;
     }
-
-    // stores: объединяем raw + plans (чтобы всегда были все)
-    const storesFromRaw = new Set((META?.stores?.length ? META.stores : RAW.map(r=>r.store)).filter(Boolean));
-    const storesFromPlans = new Set((PLANS||[]).map(p=>p.store).filter(Boolean));
-    const stores = Array.from(new Set([...storesFromRaw, ...storesFromPlans])).sort((a,b)=>a.localeCompare(b,"ru"));
-
-    // Fill selectors
-    const yearSel = document.getElementById("year");
-    yearSel.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join("");
-
-    const monthSel = document.getElementById("month");
-    monthSel.innerHTML = RU_MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
-
-    const storeSel = document.getElementById("store");
-    storeSel.innerHTML = stores.map(s=>`<option value="${s}">${s}</option>`).join("");
-
-    // Defaults: последний год из meta, текущий месяц, магазин "Астана" если есть, иначе первый
-    yearSel.value = String(years[years.length-1]);
-    monthSel.value = String(new Date().getMonth());
-
-    const preferred = ["Астана","Мира","Есентай","Абайка","Аутлет"];
-    const foundPreferred = preferred.find(x => stores.includes(x));
-    storeSel.value = foundPreferred || stores[0] || "";
-
-    yearSel.addEventListener("change", render);
-    monthSel.addEventListener("change", render);
-    storeSel.addEventListener("change", render);
-
-    document.getElementById("pill").textContent = "GAS • OK";
-    render();
   }
 
-  init().catch(err=>{
-    document.getElementById("pill").textContent = "GAS • ошибка";
-    document.getElementById("meta").textContent = "Ошибка загрузки данных: " + String(err);
-    document.getElementById("view").innerHTML = `<div class="loading">Проверь, что GAS доступен публично (Anyone) и ссылка верная.</div>`;
-  });
+  init();
 </script>
 </body>
 </html>
