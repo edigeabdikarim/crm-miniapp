@@ -374,27 +374,31 @@
     return Number.isFinite(d.getTime()) ? d : null;
   }
 
-  function ymdTZ(dateObj){
-    return fmtYMD_TZ.format(dateObj); // YYYY-MM-DD в Asia/Almaty
-  }
+function ymdUTC(dateObj){
+  const y = dateObj.getUTCFullYear();
+  const m = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(dateObj.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
 
-  // Генерируем “день месяца” стабильным способом (UTC noon → без сдвигов)
-  function makeDayUTCNoon(year, monthIndex, day){
-    return new Date(Date.UTC(year, monthIndex, day, 12, 0, 0));
-  }
+// Делаем "календарный день" как UTC полдень (чтобы не было DST/сдвигов)
+function makeDayUTCNoon(year, monthIndex, day){
+  return new Date(Date.UTC(year, monthIndex, day, 12, 0, 0));
+}
 
-  function weekdayTZ(dateObj){
-    // "вс."/"пн." → "Вс"/"Пн"
-    const s = fmtWD_TZ.format(dateObj).replace(".", "");
-    return s.charAt(0).toUpperCase() + s.slice(1,2);
-  }
+const RU_WEEKDAYS = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
+function weekdayUTC(dateObj){
+  return RU_WEEKDAYS[dateObj.getUTCDay()];
+}
 
-  function daysInMonth(year, monthIndex){
-    const last = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
-    const out = [];
-    for (let d=1; d<=last; d++) out.push(makeDayUTCNoon(year, monthIndex, d));
-    return out;
+function daysInMonth(year, monthIndex){
+  const last = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+  const out = [];
+  for (let day = 1; day <= last; day++){
+    out.push(makeDayUTCNoon(year, monthIndex, day));
   }
+  return out;
+}
 
   function num(v){
     if (v===null || v==="" || v===undefined) return 0;
@@ -441,7 +445,7 @@
       const rd = parseDate(r.reportDate);
       if (!ts || !rd || !r.store) continue;
 
-      const key = String(r.store).trim() + "|" + ymdTZ(rd);
+      const key = String(r.store).trim() + "|" + ymdUTC(rd);
       const prev = map.get(key);
       if (!prev || parseDate(prev.ts) < ts) map.set(key, r);
     }
@@ -468,7 +472,7 @@
     for (const r of dedupMap.values()){
       const rd = parseDate(r.reportDate);
       if (!rd) continue;
-      const k = ymdTZ(rd);
+      const k = ymdUTC(rd);
       const y = Number(k.slice(0,4));
       const m = Number(k.slice(5,7)) - 1;
       if (y !== year || m !== monthIndex) continue;
@@ -485,7 +489,7 @@
     let checksMonth = 0;
 
     const rows = days.map(d=>{
-      const key = store + "|" + ymdTZ(d);
+      const key = store + "|" + ymdUTC(d);
       const r = dedupMap.get(key);
 
       const fact = r ? factFromRow(r) : 0;
@@ -497,8 +501,8 @@
       }
 
       return {
-        date: ymdTZ(d),
-        weekday: weekdayTZ(d),
+        date: ymdUTC(d),
+        weekday: weekdayUTC(d),
         planDay: plan.planDay,
         factDay: fact,
         pctDay: pct
@@ -544,7 +548,7 @@
         const rd = parseDate(r.reportDate);
         if (!rd) continue;
 
-        const k = ymdTZ(rd);
+        const k = ymdUTC(rd);
         const y = Number(k.slice(0,4));
         const m = Number(k.slice(5,7)) - 1;
         if (y !== year || m !== monthIndex) continue;
