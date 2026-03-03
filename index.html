@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Планы продаж</title>
+  <title>Планы продаж • v4</title>
   <style>
     :root{
       --bg0:#070a14;
@@ -27,11 +27,6 @@
 
     *{box-sizing:border-box}
     html,body{height:100%}
-
-    /* IMPORTANT:
-       body не скроллим, чтобы Telegram WebApp не сворачивался от "page scroll".
-       Скроллим только внутренний контейнер .content
-    */
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue";
@@ -41,22 +36,13 @@
         radial-gradient(900px 450px at 85% 18%, var(--glow1), transparent 62%),
         radial-gradient(700px 380px at 50% 92%, var(--glow3), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow:hidden; /* FIX: полностью блокируем page scroll */
-    }
-
-    /* FIX: основной скролл только тут */
-    .content{
-      height:100%;
-      overflow:auto;
-      -webkit-overflow-scrolling:touch;
-      overscroll-behavior:contain;
-      padding-bottom:96px; /* чтобы контент не прятался за табами */
+      overflow-x:hidden;
     }
 
     .wrap{
       max-width:1100px;
       margin:0 auto;
-      padding:18px 14px 0;
+      padding:18px 14px 96px;
     }
 
     .top{
@@ -204,14 +190,13 @@
     .scrollX{
       overflow-x:auto;
       -webkit-overflow-scrolling:touch;
-      overscroll-behavior:contain;
     }
 
     table{
       width:100%;
       border-collapse:separate;
       border-spacing:0;
-      min-width:560px; /* FIX: чуть меньше, комфортнее на телефоне */
+      min-width:560px;
     }
 
     thead th{
@@ -261,7 +246,6 @@
       padding:10px 14px 16px;
       background:linear-gradient(180deg, rgba(7,10,20,0), rgba(7,10,20,.75) 25%, rgba(7,10,20,.95));
       backdrop-filter: blur(8px);
-      z-index:50;
     }
 
     .seg{
@@ -302,81 +286,77 @@
     @media (max-width: 420px){
       .grid{grid-template-columns:1fr}
       .v{font-size:28px}
-      table{min-width:500px}
+      table{min-width:480px}
     }
   </style>
 </head>
 
 <body>
-  <!-- FIX: скроллим только content -->
-  <div class="content" id="contentScroll">
-    <div class="wrap">
-      <div class="top">
-        <div>
-          <h1>Планы продаж</h1>
-          <div class="sub" id="subtitle"></div>
-        </div>
-        <div class="pill" id="gasPill">
-          <span class="dot" id="gasDot"></span>
-          <span>GAS • <strong id="gasStatus">…</strong></span>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>Планы продаж</h1>
+        <div class="sub" id="subtitle"></div>
+      </div>
+      <div class="pill" id="gasPill">
+        <span class="dot" id="gasDot"></span>
+        <span>GAS • <strong id="gasStatus">…</strong></span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <select id="yearSel" class="sel"></select>
+      <select id="monthSel" class="sel"></select>
+      <select id="storeSel" class="sel"></select>
+      <button class="btn" id="refreshBtn">Обновить</button>
+    </div>
+
+    <div class="grid" id="kpiGrid"></div>
+
+    <div class="section" id="dailySection">
+      <h2>Ежедневные данные</h2>
+      <div class="tableWrap">
+        <div class="scrollX">
+          <table>
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th class="right">% от плана</th>
+                <th class="right">План</th>
+                <th class="right">Факт</th>
+              </tr>
+            </thead>
+            <tbody id="dailyBody"></tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <div class="controls">
-        <select id="yearSel" class="sel"></select>
-        <select id="monthSel" class="sel"></select>
-        <select id="storeSel" class="sel"></select>
-        <button class="btn" id="refreshBtn">Обновить</button>
+    <div class="section" id="monthlySection" style="display:none;">
+      <h2>Ежемесячные данные (все магазины)</h2>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
+        <span class="badge"><span class="muted">Срез:</span> <strong id="cutoffText">—</strong></span>
+        <span class="badge"><span class="muted">Сортировка:</span> <strong>по % выполнения</strong></span>
+        <span class="badge bad">Правило %: &lt;80</span>
+        <span class="badge warn">80–100</span>
+        <span class="badge good">&gt;100</span>
       </div>
 
-      <div class="grid" id="kpiGrid"></div>
-
-      <div class="section" id="dailySection">
-        <h2>Ежедневные данные</h2>
-        <div class="tableWrap">
-          <div class="scrollX">
-            <table>
-              <thead>
-                <tr>
-                  <th>Дата</th>
-                  <th class="center">День</th>
-                  <th class="right">План</th>
-                  <th class="right">Факт</th>
-                  <th class="right">% от плана</th>
-                </tr>
-              </thead>
-              <tbody id="dailyBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="section" id="monthlySection" style="display:none;">
-        <h2>Ежемесячные данные (все магазины)</h2>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
-          <span class="badge"><span class="muted">Срез:</span> <strong id="cutoffText">—</strong></span>
-          <span class="badge"><span class="muted">Сортировка:</span> <strong>по % выполнения</strong></span>
-          <span class="badge bad">Правило %: &lt;80</span>
-          <span class="badge warn">80–100</span>
-          <span class="badge good">&gt;100</span>
-        </div>
-
-        <div class="tableWrap">
-          <div class="scrollX">
-            <table>
-              <thead>
-                <tr>
-                  <th>Магазин</th>
-                  <th class="right">План (мес)</th>
-                  <th class="right">Факт (мес)</th>
-                  <th class="right">% от плана</th>
-                  <th class="right">Средний чек</th>
-                </tr>
-              </thead>
-              <tbody id="monthlyBody"></tbody>
-            </table>
-          </div>
+      <div class="tableWrap">
+        <div class="scrollX">
+          <table>
+            <thead>
+              <tr>
+                <th>Магазин</th>
+                <th class="right">% от плана</th>
+                <th class="right">План (мес)</th>
+                <th class="right">Факт (мес)</th>
+                <th class="right">Средний чек</th>
+              </tr>
+            </thead>
+            <tbody id="monthlyBody"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -481,7 +461,8 @@ async function loadAll(force){
 }
 
 function cacheKey(entity){
-  return `bugatti_plans_v3::${GAS_URL}::${entity}`;
+  // bump версии ключа, чтобы точно не мешал старый localStorage
+  return `bugatti_plans_v4::${GAS_URL}::${entity}`;
 }
 
 async function fetchCached(entity, force){
@@ -551,9 +532,8 @@ function renderAll(){
 
   const dedup = dedupRaw(RAW);
 
-  /* FIX #1: store сравнение через normalizeText (иначе в некоторых месяцах будет "0") */
   const storeRows = dedup.filter(r =>
-    normalizeText(r.store) === normalizeText(selectedStore) &&
+    String(r.store).trim() === selectedStore &&
     String(r.reportDateKey).startsWith(ymPrefix)
   );
 
@@ -575,13 +555,7 @@ function renderAll(){
     const fact = factRow ? netSales(factRow) : 0;
     const pct = planDay > 0 ? (fact / planDay) : null;
 
-    dailyRows.push({
-      dateKey,
-      dayShort: weekdayShortRU(dateKey),
-      plan: planDay,
-      fact,
-      pct
-    });
+    dailyRows.push({ dateKey, plan: planDay, fact, pct });
   }
 
   const cutoff = maxDateKey(storeRows.map(r => r.reportDateKey));
@@ -600,7 +574,6 @@ function renderAll(){
   subtitle.innerHTML = [
     `<span class="muted">Период:</span> <strong>${selectedMonth} ${selectedYear}</strong>`,
     `<span class="muted">• Магазин:</span> <strong>${escapeHtml(selectedStore)}</strong>`,
-    `<span class="muted">• Срез:</span> <strong>${cutoffLabel}</strong>`,
     `<span class="muted">• Обновлено:</span> <strong>${timeNow()}</strong>`
   ].join(" ");
 
@@ -616,15 +589,15 @@ function renderAll(){
     kpiCard("Дней до конца", String(daysLeft), "От среза до конца месяца")
   ].join("");
 
+  // ЕЖЕДНЕВНО: Дата → % → План → Факт
   dailyBody.innerHTML = dailyRows.map(r => {
     const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
     return `
       <tr>
         <td><span class="linkish">${shortDate(r.dateKey)}</span></td>
-        <td class="center">${r.dayShort}</td>
+        <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
         <td class="right">${r.plan ? money(r.plan) : "—"}</td>
         <td class="right">${r.fact ? `<span class="linkish">${money(r.fact)}</span>` : "—"}</td>
-        <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
       </tr>
     `;
   }).join("");
@@ -651,14 +624,7 @@ function renderAll(){
       const pctValue = planMonthValue > 0 ? (factValue / planMonthValue) : null;
       const cutoffValue = maxDateKey(rows.map(r => r.reportDateKey));
 
-      return {
-        store,
-        planMonth: planMonthValue,
-        fact: factValue,
-        avgCheck: avgValue,
-        pct: pctValue,
-        cutoff: cutoffValue
-      };
+      return { store, planMonth: planMonthValue, fact: factValue, avgCheck: avgValue, pct: pctValue, cutoff: cutoffValue };
     });
 
     const globalCutoff = maxDateKey(monthlyRows.map(r => r.cutoff).filter(Boolean));
@@ -670,14 +636,15 @@ function renderAll(){
       return bv - av;
     });
 
+    // ЕЖЕМЕСЯЧНО: Магазин → % → План → Факт → Ср.чек
     monthlyBody.innerHTML = monthlyRows.map(r => {
       const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
       return `
         <tr>
           <td>${escapeHtml(r.store)}</td>
+          <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
           <td class="right">${r.planMonth ? money(r.planMonth) : "—"}</td>
           <td class="right">${r.fact ? money(r.fact) : "0 ₸"}</td>
-          <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
           <td class="right">${r.avgCheck ? money(r.avgCheck) : "—"}</td>
         </tr>
       `;
@@ -716,13 +683,6 @@ function netSales(r){
 function maxDateKey(keys){
   if (!keys || !keys.length) return null;
   return keys.reduce((max, key) => (!max || key > max) ? key : max, null);
-}
-
-function weekdayShortRU(dateKey){
-  const [y,m,d] = dateKey.split("-").map(Number);
-  const dt = new Date(Date.UTC(y, m-1, d));
-  const map = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
-  return map[dt.getUTCDay()];
 }
 
 function shortDate(dateKey){
