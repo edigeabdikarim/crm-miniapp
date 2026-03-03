@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Планы продаж • v4</title>
+  <title>Планы продаж</title>
   <style>
     :root{
       --bg0:#070a14;
@@ -26,7 +26,15 @@
     }
 
     *{box-sizing:border-box}
-    html,body{height:100%}
+
+    /* ✅ Telegram-friendly: no body scroll */
+    html, body{
+      height:100%;
+      overflow:hidden;
+      overscroll-behavior:none;
+      -webkit-text-size-adjust:100%;
+    }
+
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue";
@@ -36,13 +44,19 @@
         radial-gradient(900px 450px at 85% 18%, var(--glow1), transparent 62%),
         radial-gradient(700px 380px at 50% 92%, var(--glow3), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow-x:hidden;
     }
 
+    /* ✅ Scroll lives here (Telegram won't collapse WebApp) */
     .wrap{
       max-width:1100px;
       margin:0 auto;
       padding:18px 14px 96px;
+
+      height:100dvh;
+      overflow-y:auto;
+      overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior:contain;
     }
 
     .top{
@@ -190,13 +204,15 @@
     .scrollX{
       overflow-x:auto;
       -webkit-overflow-scrolling:touch;
+      overscroll-behavior:contain;
+      touch-action:pan-x pan-y; /* ✅ allow inside scroll */
     }
 
     table{
       width:100%;
       border-collapse:separate;
       border-spacing:0;
-      min-width:560px;
+      min-width:620px;
     }
 
     thead th{
@@ -246,6 +262,7 @@
       padding:10px 14px 16px;
       background:linear-gradient(180deg, rgba(7,10,20,0), rgba(7,10,20,.75) 25%, rgba(7,10,20,.95));
       backdrop-filter: blur(8px);
+      pointer-events:auto;
     }
 
     .seg{
@@ -279,20 +296,20 @@
       .controls .btn{grid-column:1 / -1}
       .grid{grid-template-columns:1fr 1fr}
       h1{font-size:22px}
-      table{min-width:520px}
+      table{min-width:560px}
       tbody td, thead th{padding:10px 10px}
     }
 
     @media (max-width: 420px){
       .grid{grid-template-columns:1fr}
       .v{font-size:28px}
-      table{min-width:480px}
+      table{min-width:520px}
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
+  <div class="wrap" id="appScroll">
     <div class="top">
       <div>
         <h1>Планы продаж</h1>
@@ -321,9 +338,10 @@
             <thead>
               <tr>
                 <th>Дата</th>
-                <th class="right">% от плана</th>
+                <th class="center">День</th>
                 <th class="right">План</th>
                 <th class="right">Факт</th>
+                <th class="right">% от плана</th>
               </tr>
             </thead>
             <tbody id="dailyBody"></tbody>
@@ -349,9 +367,9 @@
             <thead>
               <tr>
                 <th>Магазин</th>
-                <th class="right">% от плана</th>
                 <th class="right">План (мес)</th>
                 <th class="right">Факт (мес)</th>
+                <th class="right">% от плана</th>
                 <th class="right">Средний чек</th>
               </tr>
             </thead>
@@ -368,6 +386,28 @@
       <button id="tabMonthly">Ежемесячно</button>
     </div>
   </div>
+
+<script>
+/* ===== Telegram WebApp: stop collapsing on scroll ===== */
+(function telegramFix(){
+  // hard lock page scroll; scroll is inside .wrap
+  const lock = (e) => {
+    // allow touches inside the inner scroller
+    if (e.target && e.target.closest && e.target.closest('#appScroll')) return;
+    e.preventDefault();
+  };
+
+  // iOS safari bounce protection
+  document.addEventListener('touchmove', lock, { passive: false });
+
+  // Telegram WebApp helpers
+  if (window.Telegram && Telegram.WebApp) {
+    const tg = Telegram.WebApp;
+    try { tg.expand(); } catch {}
+    try { tg.ready(); } catch {}
+  }
+})();
+</script>
 
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbyU7ZHBh6tt0TkpvaoVJff5AVR_lXt3oVIEbH46ZT7zjHbonPzeOKX2T0KdT_N9XWJy/exec";
@@ -461,8 +501,7 @@ async function loadAll(force){
 }
 
 function cacheKey(entity){
-  // bump версии ключа, чтобы точно не мешал старый localStorage
-  return `bugatti_plans_v4::${GAS_URL}::${entity}`;
+  return `bugatti_plans_v3::${GAS_URL}::${entity}`;
 }
 
 async function fetchCached(entity, force){
@@ -555,7 +594,13 @@ function renderAll(){
     const fact = factRow ? netSales(factRow) : 0;
     const pct = planDay > 0 ? (fact / planDay) : null;
 
-    dailyRows.push({ dateKey, plan: planDay, fact, pct });
+    dailyRows.push({
+      dateKey,
+      dayShort: weekdayShortRU(dateKey),
+      plan: planDay,
+      fact,
+      pct
+    });
   }
 
   const cutoff = maxDateKey(storeRows.map(r => r.reportDateKey));
@@ -589,15 +634,15 @@ function renderAll(){
     kpiCard("Дней до конца", String(daysLeft), "От среза до конца месяца")
   ].join("");
 
-  // ЕЖЕДНЕВНО: Дата → % → План → Факт
   dailyBody.innerHTML = dailyRows.map(r => {
     const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
     return `
       <tr>
         <td><span class="linkish">${shortDate(r.dateKey)}</span></td>
-        <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
+        <td class="center">${r.dayShort}</td>
         <td class="right">${r.plan ? money(r.plan) : "—"}</td>
         <td class="right">${r.fact ? `<span class="linkish">${money(r.fact)}</span>` : "—"}</td>
+        <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
       </tr>
     `;
   }).join("");
@@ -624,7 +669,14 @@ function renderAll(){
       const pctValue = planMonthValue > 0 ? (factValue / planMonthValue) : null;
       const cutoffValue = maxDateKey(rows.map(r => r.reportDateKey));
 
-      return { store, planMonth: planMonthValue, fact: factValue, avgCheck: avgValue, pct: pctValue, cutoff: cutoffValue };
+      return {
+        store,
+        planMonth: planMonthValue,
+        fact: factValue,
+        avgCheck: avgValue,
+        pct: pctValue,
+        cutoff: cutoffValue
+      };
     });
 
     const globalCutoff = maxDateKey(monthlyRows.map(r => r.cutoff).filter(Boolean));
@@ -636,15 +688,14 @@ function renderAll(){
       return bv - av;
     });
 
-    // ЕЖЕМЕСЯЧНО: Магазин → % → План → Факт → Ср.чек
     monthlyBody.innerHTML = monthlyRows.map(r => {
       const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
       return `
         <tr>
           <td>${escapeHtml(r.store)}</td>
-          <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
           <td class="right">${r.planMonth ? money(r.planMonth) : "—"}</td>
           <td class="right">${r.fact ? money(r.fact) : "0 ₸"}</td>
+          <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
           <td class="right">${r.avgCheck ? money(r.avgCheck) : "—"}</td>
         </tr>
       `;
@@ -683,6 +734,13 @@ function netSales(r){
 function maxDateKey(keys){
   if (!keys || !keys.length) return null;
   return keys.reduce((max, key) => (!max || key > max) ? key : max, null);
+}
+
+function weekdayShortRU(dateKey){
+  const [y,m,d] = dateKey.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m-1, d));
+  const map = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
+  return map[dt.getUTCDay()];
 }
 
 function shortDate(dateKey){
