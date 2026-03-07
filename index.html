@@ -1,10 +1,11 @@
-<!doctype html>
+from pathlib import Path
+
+html = r'''<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Планы продаж</title>
-
+  <title>Bugatti Analytics</title>
   <style>
     :root{
       --bg0:#070a14;
@@ -18,6 +19,12 @@
       --good:#34d399;
       --warn:#fbbf24;
       --bad:#fb7185;
+
+      --blueA: rgba(99,102,241,.35);
+      --blueB: rgba(59,130,246,.20);
+
+      --orangeA: rgba(249,115,22,.34);
+      --orangeB: rgba(245,158,11,.18);
 
       --glow1: rgba(109,40,217,.18);
       --glow2: rgba(59,130,246,.18);
@@ -38,20 +45,36 @@
         linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow:hidden;
       height:100vh;
-      overscroll-behavior: none;
-      -webkit-overflow-scrolling: auto;
+      overscroll-behavior:none;
+      -webkit-overflow-scrolling:auto;
+    }
+
+    body.theme-sales{
+      background:
+        radial-gradient(900px 450px at 20% 10%, rgba(59,130,246,.18), transparent 60%),
+        radial-gradient(900px 450px at 85% 18%, rgba(109,40,217,.18), transparent 62%),
+        radial-gradient(700px 380px at 50% 92%, rgba(16,185,129,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+    }
+
+    body.theme-staff{
+      background:
+        radial-gradient(900px 450px at 18% 10%, rgba(249,115,22,.16), transparent 60%),
+        radial-gradient(900px 450px at 84% 16%, rgba(245,158,11,.14), transparent 62%),
+        radial-gradient(700px 380px at 50% 92%, rgba(251,191,36,.10), transparent 60%),
+        linear-gradient(180deg, #120b08, #19110c 55%, #140e0a);
     }
 
     .wrap{
-      max-width:1100px;
+      max-width:1200px;
       margin:0 auto;
       padding:18px 14px calc(96px + env(safe-area-inset-bottom));
       height:calc(100vh - (78px + env(safe-area-inset-bottom)));
       overflow-y:auto;
       overflow-x:hidden;
       -webkit-overflow-scrolling:touch;
-      overscroll-behavior: contain;
-      touch-action: pan-y;
+      overscroll-behavior:contain;
+      touch-action:pan-y;
     }
 
     .top{
@@ -119,6 +142,54 @@
       box-shadow:0 0 0 4px rgba(251,191,36,.14);
     }
 
+    .moduleSwitch{
+      margin-top:12px;
+      border:1px solid var(--stroke);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border-radius:18px;
+      padding:10px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      box-shadow:0 18px 50px rgba(0,0,0,.28);
+    }
+
+    .moduleBtn{
+      border:1px solid var(--stroke2);
+      background:rgba(10,16,35,.55);
+      color:var(--muted);
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:900;
+      cursor:pointer;
+      text-align:left;
+      transition:.18s ease;
+    }
+    .moduleBtn.active.sales{
+      color:var(--text);
+      border-color:rgba(99,102,241,.45);
+      background:linear-gradient(180deg, var(--blueA), var(--blueB));
+      box-shadow:0 18px 50px rgba(59,130,246,.14);
+    }
+    .moduleBtn.active.staff{
+      color:var(--text);
+      border-color:rgba(249,115,22,.50);
+      background:linear-gradient(180deg, var(--orangeA), var(--orangeB));
+      box-shadow:0 18px 50px rgba(249,115,22,.14);
+    }
+    .moduleBtn .label{
+      display:block;
+      font-size:14px;
+      margin-bottom:4px;
+    }
+    .moduleBtn .desc{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+    }
+    .moduleBtn.active .desc{ color:#f2f4ff }
+
     .controls{
       margin-top:12px;
       border:1px solid var(--stroke);
@@ -153,6 +224,12 @@
       cursor:pointer;
       white-space:nowrap;
     }
+
+    body.theme-staff .btn.staffAccent{
+      border-color:rgba(249,115,22,.45);
+      background:linear-gradient(180deg, rgba(249,115,22,.35), rgba(245,158,11,.18));
+    }
+
     .btn:active{transform:translateY(1px)}
 
     .grid{
@@ -169,6 +246,11 @@
       padding:14px 14px 12px;
       box-shadow:0 16px 48px rgba(0,0,0,.26);
       min-height:92px;
+    }
+
+    body.theme-staff .card{
+      border-color:#3d2a1d;
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
     }
 
     .k{color:var(--muted2);font-size:12px;margin-bottom:6px}
@@ -191,10 +273,9 @@
     .badge.good{border-color:rgba(52,211,153,.35); color:#b7ffe3}
     .badge.warn{border-color:rgba(251,191,36,.35); color:#fff1c2}
     .badge.bad{border-color:rgba(251,113,133,.35); color:#ffd2dc}
+    .badge.orange{border-color:rgba(249,115,22,.40); color:#ffd9bd}
 
-    .section{
-      margin-top:18px;
-    }
+    .section{ margin-top:18px; }
     .section h2{
       margin:0 0 10px 4px;
       font-size:16px;
@@ -209,6 +290,8 @@
       box-shadow:0 18px 50px rgba(0,0,0,.30);
     }
 
+    body.theme-staff .tableWrap{ border-color:#3d2a1d; }
+
     .scrollX{
       overflow-x:auto;
       -webkit-overflow-scrolling:touch;
@@ -220,6 +303,8 @@
       border-spacing:0;
       min-width:620px;
     }
+
+    .wideTable{ min-width:1500px; }
 
     thead th{
       position:sticky;
@@ -234,6 +319,10 @@
       padding:12px 12px;
       white-space:nowrap;
     }
+    body.theme-staff thead th{
+      background:rgba(26,18,12,.92);
+      border-bottom-color:#3d2a1d;
+    }
 
     tbody td{
       padding:12px 12px;
@@ -241,6 +330,7 @@
       font-variant-numeric: tabular-nums;
       white-space:nowrap;
     }
+    body.theme-staff tbody td{ border-bottom-color:rgba(94,63,36,.45); }
 
     tbody tr:hover td{
       background:rgba(255,255,255,.03);
@@ -258,9 +348,14 @@
       font-weight:900;
       border-left:1px solid rgba(35,49,86,.45);
     }
+    body.theme-staff .pct{ border-left-color:rgba(94,63,36,.45); }
     .pct.good{color:var(--good); background:linear-gradient(90deg, rgba(52,211,153,.14), rgba(52,211,153,.02))}
     .pct.warn{color:var(--warn); background:linear-gradient(90deg, rgba(251,191,36,.14), rgba(251,191,36,.02))}
     .pct.bad{color:var(--bad); background:linear-gradient(90deg, rgba(251,113,133,.14), rgba(251,113,133,.02))}
+
+    .col-accent{
+      background:linear-gradient(90deg, rgba(249,115,22,.16), rgba(249,115,22,.04));
+    }
 
     .tabs{
       position:fixed;
@@ -272,7 +367,7 @@
     }
 
     .seg{
-      max-width:1100px;
+      max-width:1200px;
       margin:0 auto;
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -316,10 +411,7 @@
       box-shadow:0 24px 80px rgba(0,0,0,.45);
       padding:16px;
     }
-    .modal h3{
-      margin:0 0 8px 0;
-      font-size:16px;
-    }
+    .modal h3{ margin:0 0 8px 0; font-size:16px; }
     .modal p{
       margin:0 0 12px 0;
       color:var(--muted);
@@ -327,11 +419,7 @@
       line-height:1.35;
       white-space:pre-line;
     }
-    .modal .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+    .modal .row{ display:flex; gap:10px; flex-wrap:wrap; }
     .modal .btn2{
       flex:1;
       border:1px solid rgba(99,102,241,.35);
@@ -366,92 +454,162 @@
       letter-spacing: .3px;
     }
 
-    @media (max-width: 820px){
+    .emptyState{
+      margin-top:12px;
+      border:1px dashed var(--stroke2);
+      border-radius:18px;
+      padding:22px;
+      color:var(--muted);
+      text-align:center;
+      background:rgba(255,255,255,.02);
+    }
+
+    @media (max-width: 920px){
       .controls{grid-template-columns:1fr 1fr}
       .controls .btn{grid-column:1 / -1}
       .grid{grid-template-columns:1fr 1fr}
+      .moduleSwitch{grid-template-columns:1fr}
       h1{font-size:22px}
-      table{min-width:560px}
       tbody td, thead th{padding:10px 10px}
-      .wrap{height:calc(100vh - (86px + env(safe-area-inset-bottom))); }
+      .wrap{height:calc(100vh - (86px + env(safe-area-inset-bottom)));}
     }
 
     @media (max-width: 420px){
       .grid{grid-template-columns:1fr}
       .v{font-size:28px}
-      table{min-width:520px}
     }
   </style>
 </head>
-
-<body>
+<body class="theme-sales">
   <div class="wrap" id="scrollRoot">
     <div class="top">
       <div>
-        <h1>Планы продаж</h1>
+        <h1 id="pageTitle">Планы продаж</h1>
         <div class="sub" id="subtitle"></div>
       </div>
       <div class="pill" id="gasPill" title="Статус подключения">
         <span class="dot" id="gasDot"></span>
-        <span>GAS • <strong id="gasStatus">…</strong></span>
+        <span>API • <strong id="gasStatus">…</strong></span>
         <button class="pillBtn" id="btnChangeCode" type="button">Код</button>
       </div>
     </div>
 
-    <div class="controls">
+    <div class="moduleSwitch">
+      <button class="moduleBtn active sales" id="moduleSales" type="button">
+        <span class="label">Планы продаж</span>
+        <span class="desc">Ежедневно и ежемесячно по магазинам</span>
+      </button>
+      <button class="moduleBtn staff" id="moduleStaff" type="button">
+        <span class="label">Показатели магазина</span>
+        <span class="desc">Сотрудники, чеки, возвраты, средний чек</span>
+      </button>
+    </div>
+
+    <div class="controls" id="controlsSales">
       <select id="yearSel" class="sel"></select>
       <select id="monthSel" class="sel"></select>
       <select id="storeSel" class="sel"></select>
       <button class="btn" id="refreshBtn">Обновить</button>
     </div>
 
+    <div class="controls" id="controlsStaff" style="display:none;">
+      <select id="staffYearSel" class="sel"></select>
+      <select id="staffMonthSel" class="sel"></select>
+      <select id="staffStoreSel" class="sel"></select>
+      <button class="btn staffAccent" id="staffRefreshBtn">Обновить</button>
+    </div>
+
     <div class="grid" id="kpiGrid"></div>
 
-    <div class="section" id="dailySection">
-      <h2>Ежедневные данные</h2>
-      <div class="tableWrap">
-        <div class="scrollX">
-          <table>
-            <thead>
-              <tr>
-                <th>Дата</th>
-                <th class="right">% от плана</th>
-                <th class="right">План</th>
-                <th class="right">Факт</th>
-              </tr>
-            </thead>
-            <tbody id="dailyBody"></tbody>
-          </table>
+    <div id="salesModule">
+      <div class="section" id="dailySection">
+        <h2>Ежедневные данные</h2>
+        <div class="tableWrap">
+          <div class="scrollX">
+            <table>
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th class="right">% от плана</th>
+                  <th class="right">План</th>
+                  <th class="right">Факт</th>
+                </tr>
+              </thead>
+              <tbody id="dailyBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="monthlySection" style="display:none;">
+        <h2>Ежемесячные данные (все магазины)</h2>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
+          <span class="badge"><span class="muted">Срез:</span> <strong id="cutoffText">—</strong></span>
+          <span class="badge"><span class="muted">Сортировка:</span> <strong>по % выполнения</strong></span>
+          <span class="badge bad">Правило %: &lt;80</span>
+          <span class="badge warn">80–100</span>
+          <span class="badge good">&gt;100</span>
+        </div>
+        <div class="tableWrap">
+          <div class="scrollX">
+            <table>
+              <thead>
+                <tr>
+                  <th>Магазин</th>
+                  <th class="right">% от плана</th>
+                  <th class="right">План (мес)</th>
+                  <th class="right">Факт (мес)</th>
+                  <th class="right">Средний чек</th>
+                </tr>
+              </thead>
+              <tbody id="monthlyBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="section" id="monthlySection" style="display:none;">
-      <h2>Ежемесячные данные (все магазины)</h2>
-
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
-        <span class="badge"><span class="muted">Срез:</span> <strong id="cutoffText">—</strong></span>
-        <span class="badge"><span class="muted">Сортировка:</span> <strong>по % выполнения</strong></span>
-        <span class="badge bad">Правило %: &lt;80</span>
-        <span class="badge warn">80–100</span>
-        <span class="badge good">&gt;100</span>
+    <div id="staffModule" style="display:none;">
+      <div class="section">
+        <h2>Показатели сотрудников</h2>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;">
+          <span class="badge orange"><span class="muted">Режим:</span> <strong>внутри магазина</strong></span>
+          <span class="badge orange"><span class="muted">Источник:</span> <strong>отдельный endpoint</strong></span>
+          <span class="badge orange"><span class="muted">Сортировка:</span> <strong>по сумме продаж</strong></span>
+        </div>
       </div>
 
-      <div class="tableWrap">
-        <div class="scrollX">
-          <table>
-            <thead>
-              <tr>
-                <th>Магазин</th>
-                <th class="right">% от плана</th>
-                <th class="right">План (мес)</th>
-                <th class="right">Факт (мес)</th>
-                <th class="right">Средний чек</th>
-              </tr>
-            </thead>
-            <tbody id="monthlyBody"></tbody>
-          </table>
+      <div class="section">
+        <h2>Сотрудники магазина</h2>
+        <div class="tableWrap">
+          <div class="scrollX">
+            <table class="wideTable">
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>Продавец</th>
+                  <th class="right">Сумма</th>
+                  <th class="right">% доли</th>
+                  <th class="right">Кол-во смен</th>
+                  <th class="right">Индивид. продажи</th>
+                  <th class="right">Коллективные продажи</th>
+                  <th class="right">Индивид. чеки</th>
+                  <th class="right">Коллективные чеки</th>
+                  <th class="right">Сумма возвратов</th>
+                  <th class="right">Чеки возвратов</th>
+                  <th class="right col-accent">Средний чек</th>
+                  <th class="right">Ср. чек индивид.</th>
+                  <th class="right">Ср. чек коллективн.</th>
+                </tr>
+              </thead>
+              <tbody id="staffBody"></tbody>
+            </table>
+          </div>
         </div>
+      </div>
+
+      <div id="staffEmpty" class="emptyState" style="display:none;">
+        Нет данных по выбранным параметрам.
       </div>
     </div>
 
@@ -491,28 +649,41 @@
   </div>
 
 <script>
-/** ====== CONFIG ====== */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyOKpobb3yHVC8FXzWlqJZbLDE_HU96dqWAiPexWHwJ_D8uTGqsu8Mwc7scDZGYtOKA/exec";
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const SALES_GAS_URL = "https://script.google.com/macros/s/AKfycbyOKpobb3yHVC8FXzWlqJZbLDE_HU96dqWAiPexWHwJ_D8uTGqsu8Mwc7scDZGYtOKA/exec";
+const STAFF_GAS_URL = "https://script.google.com/macros/s/AKfycbxTuLAXa50Ea0uyxmxcz1_bQwtQ9tf5j2v2JTAA3aKWYrZS9Oi14VXD5xm4icaFP7r0/exec";
 
-const ACCESS_CODE_STORAGE_KEY = "bugatti_access_code_v2";
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const ACCESS_CODE_STORAGE_KEY = "bugatti_access_code_v3";
 
 const MONTHS_RU = [
   "Январь","Февраль","Март","Апрель","Май","Июнь",
   "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
 ];
 
-/** ====== DOM ====== */
 const yearSel = document.getElementById("yearSel");
 const monthSel = document.getElementById("monthSel");
 const storeSel = document.getElementById("storeSel");
 const refreshBtn = document.getElementById("refreshBtn");
 
+const staffYearSel = document.getElementById("staffYearSel");
+const staffMonthSel = document.getElementById("staffMonthSel");
+const staffStoreSel = document.getElementById("staffStoreSel");
+const staffRefreshBtn = document.getElementById("staffRefreshBtn");
+
 const subtitle = document.getElementById("subtitle");
+const pageTitle = document.getElementById("pageTitle");
 const gasStatus = document.getElementById("gasStatus");
 const gasDot = document.getElementById("gasDot");
-
 const btnChangeCode = document.getElementById("btnChangeCode");
+
+const moduleSalesBtn = document.getElementById("moduleSales");
+const moduleStaffBtn = document.getElementById("moduleStaff");
+
+const controlsSales = document.getElementById("controlsSales");
+const controlsStaff = document.getElementById("controlsStaff");
+
+const salesModule = document.getElementById("salesModule");
+const staffModule = document.getElementById("staffModule");
 
 const kpiGrid = document.getElementById("kpiGrid");
 const dailyBody = document.getElementById("dailyBody");
@@ -524,10 +695,12 @@ const monthlySection = document.getElementById("monthlySection");
 const tabDaily = document.getElementById("tabDaily");
 const tabMonthly = document.getElementById("tabMonthly");
 
-/* overlays */
+const staffBody = document.getElementById("staffBody");
+const staffEmpty = document.getElementById("staffEmpty");
+
 const overlayCode = document.getElementById("overlayCode");
 const codeTitle = document.getElementById("codeTitle");
-const codeText  = document.getElementById("codeText");
+const codeText = document.getElementById("codeText");
 const codeInput = document.getElementById("codeInput");
 const codeDebug = document.getElementById("codeDebug");
 const btnSaveCode = document.getElementById("btnSaveCode");
@@ -535,17 +708,21 @@ const btnCancelCode = document.getElementById("btnCancelCode");
 
 const overlayError = document.getElementById("overlayError");
 const errTitle = document.getElementById("errTitle");
-const errText  = document.getElementById("errText");
+const errText = document.getElementById("errText");
 const errDebug = document.getElementById("errDebug");
 const btnRetry = document.getElementById("btnRetry");
 const btnCloseErr = document.getElementById("btnCloseErr");
 
-/** ====== STATE ====== */
-let META = null;
-let RAW = [];
-let PLANS = [];
-let activeView = "daily";
 let ACCESS_CODE = "";
+let activeModule = "sales";
+let activeView = "daily";
+
+let SALES_META = null;
+let SALES_RAW = [];
+let SALES_PLANS = [];
+
+let STAFF_META = null;
+let STAFF_REPORT = null;
 
 init();
 
@@ -560,25 +737,67 @@ async function init(){
     return;
   }
 
-  await loadAll(false);
-  buildSelectors();
+  await loadSalesAll(false);
+  buildSalesSelectors();
   renderAll();
+
+  loadStaffMeta(false)
+    .then(() => {
+      buildStaffSelectors();
+      if (activeModule === "staff") loadAndRenderStaffReport(false);
+    })
+    .catch(console.error);
 }
 
 function wireUI(){
-  tabDaily.addEventListener("click", () => setView("daily"));
-  tabMonthly.addEventListener("click", () => setView("monthly"));
-
-  ["change","input"].forEach(evt=>{
-    yearSel.addEventListener(evt, renderAll);
-    monthSel.addEventListener(evt, renderAll);
-    storeSel.addEventListener(evt, renderAll);
+  moduleSalesBtn.addEventListener("click", async () => {
+    activeModule = "sales";
+    applyModuleTheme();
+    renderAll();
+    if (!STAFF_META) {
+      await loadStaffMeta(false);
+      buildStaffSelectors();
+    }
   });
 
-  refreshBtn.addEventListener("click", async () => {
-    await loadAll(true);
-    buildSelectors(true);
+  moduleStaffBtn.addEventListener("click", async () => {
+    activeModule = "staff";
+    applyModuleTheme();
+    if (!STAFF_META) {
+      await loadStaffMeta(false);
+      buildStaffSelectors();
+    }
+    await loadAndRenderStaffReport(false);
+  });
+
+  tabDaily.addEventListener("click", () => {
+    activeView = "daily";
     renderAll();
+  });
+
+  tabMonthly.addEventListener("click", () => {
+    activeView = "monthly";
+    renderAll();
+  });
+
+  [yearSel, monthSel, storeSel].forEach(el => el.addEventListener("change", renderAll));
+
+  [staffYearSel, staffMonthSel, staffStoreSel].forEach(el => el.addEventListener("change", async () => {
+    if (activeModule === "staff") {
+      await loadAndRenderStaffReport(true);
+    }
+  }));
+
+  refreshBtn.addEventListener("click", async () => {
+    await loadSalesAll(true);
+    buildSalesSelectors(true);
+    renderAll();
+  });
+
+  staffRefreshBtn.addEventListener("click", async () => {
+    await loadStaffMeta(true);
+    buildStaffSelectors(true);
+    await loadAndRenderStaffReport(true);
   });
 
   btnChangeCode.addEventListener("click", () => {
@@ -591,167 +810,149 @@ function wireUI(){
       codeDebug.textContent = "Код слишком короткий.";
       return;
     }
+
     ACCESS_CODE = c;
     localStorage.setItem(ACCESS_CODE_STORAGE_KEY, ACCESS_CODE);
     overlayCode.classList.remove("show");
-    await loadAll(true);
-    buildSelectors(true);
-    renderAll();
+
+    SALES_META = null;
+    SALES_RAW = [];
+    SALES_PLANS = [];
+    STAFF_META = null;
+    STAFF_REPORT = null;
+
+    if (activeModule === "sales") {
+      await loadSalesAll(true);
+      buildSalesSelectors();
+      renderAll();
+      try {
+        await loadStaffMeta(false);
+        buildStaffSelectors();
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      await loadStaffMeta(true);
+      buildStaffSelectors();
+      await loadAndRenderStaffReport(true);
+      try {
+        await loadSalesAll(false);
+        buildSalesSelectors();
+      } catch (e) {
+        console.error(e);
+      }
+    }
   });
 
   btnCancelCode.addEventListener("click", () => overlayCode.classList.remove("show"));
 
   btnRetry.addEventListener("click", async () => {
     overlayError.classList.remove("show");
-    await loadAll(true);
-    buildSelectors(true);
-    renderAll();
+    if (activeModule === "sales") {
+      await loadSalesAll(true);
+      buildSalesSelectors(true);
+      renderAll();
+    } else {
+      await loadStaffMeta(true);
+      buildStaffSelectors(true);
+      await loadAndRenderStaffReport(true);
+    }
   });
+
   btnCloseErr.addEventListener("click", () => overlayError.classList.remove("show"));
 
-  codeInput.addEventListener("keydown", (e) => {
+  codeInput.addEventListener("keydown", e => {
     if (e.key === "Enter") btnSaveCode.click();
   });
 }
 
-function setView(v){
-  activeView = v;
-  tabDaily.classList.toggle("active", v==="daily");
-  tabMonthly.classList.toggle("active", v==="monthly");
-  dailySection.style.display = v==="daily" ? "" : "none";
-  monthlySection.style.display = v==="monthly" ? "" : "none";
-  renderAll();
+function applyModuleTheme(){
+  document.body.classList.toggle("theme-sales", activeModule === "sales");
+  document.body.classList.toggle("theme-staff", activeModule === "staff");
+
+  moduleSalesBtn.classList.toggle("active", activeModule === "sales");
+  moduleStaffBtn.classList.toggle("active", activeModule === "staff");
+
+  controlsSales.style.display = activeModule === "sales" ? "" : "none";
+  controlsStaff.style.display = activeModule === "staff" ? "" : "none";
+
+  salesModule.style.display = activeModule === "sales" ? "" : "none";
+  staffModule.style.display = activeModule === "staff" ? "" : "none";
+
+  document.querySelector(".tabs").style.display = activeModule === "sales" ? "" : "none";
 }
 
-/** ====== DATA LOADING ====== */
-async function loadAll(force){
+async function loadSalesAll(force){
   setGas("…", "warn");
   subtitle.innerHTML = `<span class="muted">Загрузка…</span>`;
 
   try{
     const [meta, raw, plans] = await Promise.all([
-      fetchCached("meta", force),
-      fetchCached("raw", force),
-      fetchCached("plans", force),
+      fetchCached(SALES_GAS_URL, "meta", force),
+      fetchCached(SALES_GAS_URL, "raw", force),
+      fetchCached(SALES_GAS_URL, "plans", force),
     ]);
 
-    META = meta;
-    RAW = Array.isArray(raw?.rows) ? raw.rows : [];
-    PLANS = Array.isArray(plans?.rows) ? plans.rows : [];
-
+    SALES_META = meta;
+    SALES_RAW = Array.isArray(raw?.rows) ? raw.rows : [];
+    SALES_PLANS = Array.isArray(plans?.rows) ? plans.rows : [];
     setGas("OK", "good");
-    overlayError.classList.remove("show");
   }catch(err){
-    console.error(err);
-
-    if (err && err.code === "invalid_code"){
-      setGas("LOCK", "bad");
-      localStorage.removeItem(ACCESS_CODE_STORAGE_KEY);
-      ACCESS_CODE = "";
-      openCodeModal("❌ Неверный код", "Код не подходит. Введи правильный код доступа.", err.message || "");
-      META = { stores:[], years:[] };
-      RAW = [];
-      PLANS = [];
-      return;
-    }
-
-    setGas("ERR", "bad");
-    showError(
-      "⚠️ Ошибка загрузки",
-      "Не удалось получить данные.\n\nНажми «Проверить снова».\nЕсли не помогает — проверь код доступа.",
-      `details=${(err && (err.message||err.toString())) ? (err.message||err.toString()) : "unknown"}\nurl=${GAS_URL}`
-    );
-
-    META = { stores:[], years:[] };
-    RAW = [];
-    PLANS = [];
+    handleLoadError(err, SALES_GAS_URL);
+    SALES_META = { stores:[], years:[] };
+    SALES_RAW = [];
+    SALES_PLANS = [];
   }
 }
 
-function openCodeModal(title, text, debug){
-  codeTitle.textContent = title;
-  codeText.textContent = text;
-  codeDebug.textContent = debug || "";
-  codeInput.value = ACCESS_CODE || "";
-  overlayCode.classList.add("show");
-  setTimeout(()=>codeInput.focus(), 50);
-}
-
-function showError(title, text, debug){
-  errTitle.textContent = title;
-  errText.textContent = text;
-  errDebug.textContent = debug || "";
-  overlayError.classList.add("show");
-}
-
-function cacheKey(entity){
-  return `bugatti_plans_codeauth_v1::${GAS_URL}::${entity}::${(ACCESS_CODE||"").slice(0,6)}`;
-}
-
-async function fetchCached(entity, force){
-  const key = cacheKey(entity);
-  if (!force){
-    const cached = safeJsonParse(localStorage.getItem(key));
-    if (cached && cached.ts && (Date.now() - cached.ts) < CACHE_TTL_MS){
-      return cached.data;
-    }
-  }
-  const data = await fetchEntity(entity);
-  localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
-  return data;
-}
-
-async function fetchEntity(entity){
-  if (!ACCESS_CODE || ACCESS_CODE.length < 3){
-    const e = new Error("no_code");
-    e.code = "invalid_code";
-    throw e;
-  }
-
-  const res = await fetch(GAS_URL, {
-    method: "POST",
-    cache: "no-store",
-    headers: {
-      "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify({ entity, accessCode: ACCESS_CODE })
-  });
-
-  if (!res.ok){
-    throw new Error(`HTTP ${res.status}`);
-  }
-
-  const json = await res.json();
-  console.log("GAS response", entity, json);
-
-  if (!json || json.ok !== true){
-    const code = (json && json.error) ? String(json.error) : "bad_response";
-    const err = new Error(code);
-    err.code = (code === "invalid_code" || code === "unauthorized") ? "invalid_code" : code;
-    err.message = json && (json.message || json.details) ? (json.message || json.details) : code;
+async function loadStaffMeta(force){
+  try{
+    setGas("…", "warn");
+    const meta = await fetchCached(STAFF_GAS_URL, "meta", force);
+    STAFF_META = meta;
+    setGas("OK", "good");
+  }catch(err){
+    handleLoadError(err, STAFF_GAS_URL);
+    STAFF_META = { years:[], months:[], stores:[] };
     throw err;
   }
-
-  return json;
 }
 
-/** ====== UI BUILD ====== */
-function setGas(text, mode){
-  gasStatus.textContent = text;
-  gasDot.classList.remove("good","warn","bad");
-  if (mode) gasDot.classList.add(mode);
+async function loadAndRenderStaffReport(force){
+  if (!STAFF_META) return;
+
+  const year = Number(staffYearSel.value);
+  const month = Number(staffMonthSel.value);
+  const store = String(staffStoreSel.value || "").trim();
+
+  if (!year || !month || !store){
+    STAFF_REPORT = null;
+    renderAll();
+    return;
+  }
+
+  try{
+    setGas("…", "warn");
+    STAFF_REPORT = await fetchStaffReport(force, year, month, store);
+    setGas("OK", "good");
+    renderAll();
+  }catch(err){
+    handleLoadError(err, STAFF_GAS_URL);
+    STAFF_REPORT = null;
+    renderAll();
+  }
 }
 
-function buildSelectors(keepSelection=false){
-  const years = (META?.years || []).slice().map(Number).filter(Boolean).sort((a,b)=>b-a);
-  const stores = (META?.stores || []).slice().map(String).filter(Boolean).sort((a,b)=>a.localeCompare(b,"ru"));
+function buildSalesSelectors(keepSelection=false){
+  const years = (SALES_META?.years || []).slice().map(Number).filter(Boolean).sort((a,b)=>b-a);
+  const stores = (SALES_META?.stores || []).slice().map(String).filter(Boolean).sort((a,b)=>a.localeCompare(b,"ru"));
 
   const prevYear = yearSel.value;
   const prevMonth = monthSel.value;
   const prevStore = storeSel.value;
 
   yearSel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join("");
-  monthSel.innerHTML = MONTHS_RU.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join("");
+  monthSel.innerHTML = MONTHS_RU.map((m, i) => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join("");
   storeSel.innerHTML = stores.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
 
   if (keepSelection){
@@ -760,25 +961,66 @@ function buildSelectors(keepSelection=false){
     if (prevStore && stores.includes(prevStore)) storeSel.value = prevStore;
   } else {
     if (years.length) yearSel.value = String(years[0]);
-
     const now = new Date();
     const currentMonth = MONTHS_RU[now.getMonth()] || MONTHS_RU[0] || "";
     monthSel.value = MONTHS_RU.includes(currentMonth) ? currentMonth : (MONTHS_RU[0] || "");
-
     if (stores.includes("Астана")) storeSel.value = "Астана";
     else if (stores.length) storeSel.value = stores[0];
   }
 }
 
-/** ====== RENDER ====== */
+function buildStaffSelectors(keepSelection=false){
+  const years = (STAFF_META?.years || []).slice().map(Number).filter(Boolean).sort((a,b)=>b-a);
+  const months = (STAFF_META?.months || []).slice().sort((a,b)=>Number(a.month)-Number(b.month));
+  const stores = (STAFF_META?.stores || []).slice().map(String).filter(Boolean).sort((a,b)=>a.localeCompare(b,"ru"));
+
+  const prevYear = staffYearSel.value;
+  const prevMonth = staffMonthSel.value;
+  const prevStore = staffStoreSel.value;
+
+  staffYearSel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join("");
+  staffMonthSel.innerHTML = months.map(m => `<option value="${Number(m.month)}">${escapeHtml(m.monthName || monthNameRu(Number(m.month)))}</option>`).join("");
+  staffStoreSel.innerHTML = stores.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+
+  if (keepSelection){
+    if (prevYear && years.includes(Number(prevYear))) staffYearSel.value = prevYear;
+    if (prevMonth && months.some(m => String(m.month) === String(prevMonth))) staffMonthSel.value = prevMonth;
+    if (prevStore && stores.includes(prevStore)) staffStoreSel.value = prevStore;
+  } else {
+    if (years.length) staffYearSel.value = String(years[0]);
+    const nowMonth = new Date().getMonth() + 1;
+    if (months.some(m => Number(m.month) === nowMonth)) staffMonthSel.value = String(nowMonth);
+    else if (months.length) staffMonthSel.value = String(months[0].month);
+
+    if (stores.includes("Магазин Абайка")) staffStoreSel.value = "Магазин Абайка";
+    else if (stores.length) staffStoreSel.value = stores[0];
+  }
+}
+
 function renderAll(){
+  applyModuleTheme();
+
+  if (activeModule === "sales") {
+    renderSalesModule();
+  } else {
+    renderStaffModule();
+  }
+}
+
+function renderSalesModule(){
+  pageTitle.textContent = "Планы продаж";
+  tabDaily.classList.toggle("active", activeView === "daily");
+  tabMonthly.classList.toggle("active", activeView === "monthly");
+  dailySection.style.display = activeView === "daily" ? "" : "none";
+  monthlySection.style.display = activeView === "monthly" ? "" : "none";
+
   const selectedYear = Number(yearSel.value);
   const selectedMonth = String(monthSel.value).trim();
   const selectedStore = String(storeSel.value).trim();
   const monthIndex = MONTHS_RU.indexOf(selectedMonth);
 
   if (!selectedYear || monthIndex < 0 || !selectedStore) {
-    subtitle.innerHTML = `<span class="muted">Выбери год/месяц/магазин</span>`;
+    subtitle.innerHTML = `<span class="muted">Выбери год, месяц и магазин</span>`;
     kpiGrid.innerHTML = "";
     dailyBody.innerHTML = "";
     monthlyBody.innerHTML = "";
@@ -786,14 +1028,14 @@ function renderAll(){
   }
 
   const ymPrefix = `${selectedYear}-${String(monthIndex+1).padStart(2,"0")}-`;
-  const dedup = dedupRaw(RAW);
+  const dedup = dedupRaw(SALES_RAW);
 
   const storeRows = dedup.filter(r =>
     normalizeText(r.store) === normalizeText(selectedStore) &&
     String(r.reportDateKey).startsWith(ymPrefix)
   );
 
-  const planRow = PLANS.find(p =>
+  const planRow = SALES_PLANS.find(p =>
     Number(p.year) === selectedYear &&
     normalizeText(p.month) === normalizeText(selectedMonth) &&
     normalizeText(p.store) === normalizeText(selectedStore)
@@ -810,7 +1052,6 @@ function renderAll(){
     const factRow = storeRows.find(r => r.reportDateKey === dateKey);
     const fact = factRow ? netSales(factRow) : 0;
     const pct = planDay > 0 ? (fact / planDay) : null;
-
     dailyRows.push({ dateKey, plan: planDay, fact, pct });
   }
 
@@ -829,9 +1070,9 @@ function renderAll(){
   const needPerDay = daysLeft > 0 ? (remain / daysLeft) : null;
 
   subtitle.innerHTML = [
-    `<span class="muted">Период:</span> <strong>${escapeHtml(selectedMonth)} ${selectedYear}</strong>`,
-    `<span class="muted">• Магазин:</span> <strong>${escapeHtml(selectedStore)}</strong>`,
-    `<span class="muted">• Обновлено:</span> <strong>${timeNow()}</strong>`
+    `<span class="muted">Раздел:</span> <strong>Планы продаж</strong>`,
+    `<span class="muted">• Период:</span> <strong>${escapeHtml(selectedMonth)} ${selectedYear}</strong>`,
+    `<span class="muted">• Магазин:</span> <strong>${escapeHtml(selectedStore)}</strong>`
   ].join(" ");
 
   kpiGrid.innerHTML = [
@@ -859,7 +1100,7 @@ function renderAll(){
   }).join("");
 
   if (activeView === "monthly"){
-    const allStores = (META?.stores || []).slice().map(String).filter(Boolean);
+    const allStores = (SALES_META?.stores || []).slice().map(String).filter(Boolean);
 
     const monthlyRows = allStores.map(store => {
       const rows = dedup.filter(r =>
@@ -867,7 +1108,7 @@ function renderAll(){
         String(r.reportDateKey).startsWith(ymPrefix)
       );
 
-      const plan = PLANS.find(p =>
+      const plan = SALES_PLANS.find(p =>
         Number(p.year) === selectedYear &&
         normalizeText(p.month) === normalizeText(selectedMonth) &&
         normalizeText(p.store) === normalizeText(store)
@@ -907,7 +1148,198 @@ function renderAll(){
   }
 }
 
-/** ====== HELPERS ====== */
+function renderStaffModule(){
+  pageTitle.textContent = "Показатели магазина";
+
+  const year = Number(staffYearSel.value);
+  const month = Number(staffMonthSel.value);
+  const store = String(staffStoreSel.value || "").trim();
+
+  if (!year || !month || !store){
+    subtitle.innerHTML = `<span class="muted">Выбери год, месяц и магазин</span>`;
+    kpiGrid.innerHTML = "";
+    staffBody.innerHTML = "";
+    staffEmpty.style.display = "";
+    return;
+  }
+
+  const monthName = monthNameRu(month);
+
+  subtitle.innerHTML = [
+    `<span class="muted">Раздел:</span> <strong>Показатели магазина</strong>`,
+    `<span class="muted">• Период:</span> <strong>${escapeHtml(monthName)} ${year}</strong>`,
+    `<span class="muted">• Магазин:</span> <strong>${escapeHtml(store)}</strong>`
+  ].join(" ");
+
+  if (!STAFF_REPORT || !Array.isArray(STAFF_REPORT.employees)) {
+    kpiGrid.innerHTML = [
+      kpiCard("План магазина", "—", "Ожидание данных"),
+      kpiCard("Факт магазина", "—", "Ожидание данных"),
+      kpiCard("% выполнения", `<span class="badge orange">—</span>`, "План / факт", true),
+      kpiCard("Сотрудников", "—", "Нет загруженного отчёта")
+    ].join("");
+    staffBody.innerHTML = "";
+    staffEmpty.style.display = "";
+    return;
+  }
+
+  const summary = STAFF_REPORT.summary || {};
+  const totals = STAFF_REPORT.totals || {};
+  const employees = STAFF_REPORT.employees || [];
+
+  kpiGrid.innerHTML = [
+    kpiCard("План магазина", summary.planMonth ? money(summary.planMonth) : "—", "План на выбранный месяц"),
+    kpiCard("Факт магазина", summary.factStoreSales ? money(summary.factStoreSales) : "0 ₸", "Сумма продаж магазина"),
+    kpiCard("% выполнения", `<span class="badge ${pctClass((Number(summary.planPct||0))*100)}">${pctText(Number(summary.planPct||0))}</span>`, "Факт / план", true),
+    kpiCard("Сотрудников", String(employees.length), "Попали в расчёт"),
+
+    kpiCard("Индивид. продажи", totals.individualSales ? money(totals.individualSales) : "0 ₸", "По магазину"),
+    kpiCard("Коллективные продажи", totals.collectiveSales ? money(totals.collectiveSales) : "0 ₸", "По магазину"),
+    kpiCard("Возвраты", totals.returnsAmount ? signedMoney(totals.returnsAmount) : "0 ₸", "Сумма возвратов"),
+    kpiCard("Средний чек", totals.avgCheck ? money(totals.avgCheck) : "—", "По магазину")
+  ].join("");
+
+  if (!employees.length){
+    staffBody.innerHTML = "";
+    staffEmpty.style.display = "";
+    return;
+  }
+
+  staffEmpty.style.display = "none";
+
+  staffBody.innerHTML = employees.map((e, idx) => `
+    <tr>
+      <td class="center">${idx + 1}</td>
+      <td>${escapeHtml(e.name || "")}</td>
+      <td class="right">${money(e.totalSales || 0)}</td>
+      <td class="right pct ${pctClass((Number(e.share || 0))*100)}">${pctText(Number(e.share || 0))}</td>
+      <td class="right">${intFmt(e.shiftDays || 0)}</td>
+      <td class="right">${money(e.individualSales || 0)}</td>
+      <td class="right">${money(e.collectiveSales || 0)}</td>
+      <td class="right">${intFmt(e.individualChecks || 0)}</td>
+      <td class="right">${intFmt(e.collectiveChecks || 0)}</td>
+      <td class="right">${signedMoney(e.returnsAmount || 0)}</td>
+      <td class="right">${intFmt(e.returnChecks || 0)}</td>
+      <td class="right col-accent"><span class="linkish">${money(e.avgCheck || 0)}</span></td>
+      <td class="right">${money(e.avgCheckIndividual || 0)}</td>
+      <td class="right">${money(e.avgCheckCollective || 0)}</td>
+    </tr>
+  `).join("");
+}
+
+function handleLoadError(err, url){
+  console.error(err);
+
+  if (err && err.code === "invalid_code"){
+    setGas("LOCK", "bad");
+    localStorage.removeItem(ACCESS_CODE_STORAGE_KEY);
+    ACCESS_CODE = "";
+    openCodeModal("❌ Неверный код", "Код не подходит. Введи правильный код доступа.", err.message || "");
+    return;
+  }
+
+  setGas("ERR", "bad");
+  showError(
+    "⚠️ Ошибка загрузки",
+    "Не удалось получить данные.\n\nНажми «Проверить снова».\nЕсли не помогает — проверь код доступа или deployment.",
+    `details=${(err && (err.message||err.toString())) ? (err.message||err.toString()) : "unknown"}\nurl=${url}`
+  );
+}
+
+function openCodeModal(title, text, debug){
+  codeTitle.textContent = title;
+  codeText.textContent = text;
+  codeDebug.textContent = debug || "";
+  codeInput.value = ACCESS_CODE || "";
+  overlayCode.classList.add("show");
+  setTimeout(() => codeInput.focus(), 50);
+}
+
+function showError(title, text, debug){
+  errTitle.textContent = title;
+  errText.textContent = text;
+  errDebug.textContent = debug || "";
+  overlayError.classList.add("show");
+}
+
+function setGas(text, mode){
+  gasStatus.textContent = text;
+  gasDot.classList.remove("good","warn","bad");
+  if (mode) gasDot.classList.add(mode);
+}
+
+function cacheKey(url, key){
+  return `bugatti_multi_v1::${url}::${key}::${(ACCESS_CODE||"").slice(0,10)}`;
+}
+
+async function fetchCached(url, entity, force){
+  const key = cacheKey(url, entity);
+  if (!force){
+    const cached = safeJsonParse(localStorage.getItem(key));
+    if (cached && cached.ts && (Date.now() - cached.ts) < CACHE_TTL_MS){
+      return cached.data;
+    }
+  }
+  const data = await fetchEntity(url, { entity, accessCode: ACCESS_CODE });
+  localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  return data;
+}
+
+async function fetchStaffReport(force, year, month, store){
+  const entity = "report";
+  const key = cacheKey(STAFF_GAS_URL, `${entity}::${year}::${month}::${store}`);
+  if (!force){
+    const cached = safeJsonParse(localStorage.getItem(key));
+    if (cached && cached.ts && (Date.now() - cached.ts) < CACHE_TTL_MS){
+      return cached.data;
+    }
+  }
+
+  const data = await fetchEntity(STAFF_GAS_URL, {
+    entity,
+    accessCode: ACCESS_CODE,
+    year,
+    month,
+    store
+  });
+
+  localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  return data;
+}
+
+async function fetchEntity(url, payload){
+  if (!ACCESS_CODE || ACCESS_CODE.length < 3){
+    const e = new Error("no_code");
+    e.code = "invalid_code";
+    throw e;
+  }
+
+  const res = await fetch(url, {
+    method: "POST",
+    cache: "no-store",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok){
+    throw new Error(`HTTP ${res.status}`);
+  }
+
+  const json = await res.json();
+  console.log("API response", url, payload.entity, json);
+
+  if (!json || json.ok !== true){
+    const code = (json && json.error) ? String(json.error) : "bad_response";
+    const err = new Error(code);
+    err.code = (code === "invalid_code" || code === "unauthorized") ? "invalid_code" : code;
+    err.message = json && (json.message || json.details) ? (json.message || json.details) : code;
+    throw err;
+  }
+
+  return json;
+}
+
+/* helpers from sales module */
 function dedupRaw(rows){
   const map = new Map();
   for (const r of rows){
@@ -950,6 +1382,18 @@ function money(value){
   return `${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₸`;
 }
 
+function signedMoney(value){
+  const n = Math.round(Number(value || 0));
+  const sign = n < 0 ? "-" : "";
+  const abs = Math.abs(n);
+  return `${sign}${abs.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₸`;
+}
+
+function intFmt(value){
+  const n = Math.round(Number(value || 0));
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
 function pctText(ratio){
   return `${(Number(ratio || 0) * 100).toFixed(1)}%`;
 }
@@ -971,13 +1415,9 @@ function kpiCard(title, valueHtml, hint, isHtml=false){
   `;
 }
 
-function timeNow(){
-  const d = new Date();
-  const dd = String(d.getDate()).padStart(2,"0");
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const hh = String(d.getHours()).padStart(2,"0");
-  const mi = String(d.getMinutes()).padStart(2,"0");
-  return `${dd}.${mm}, ${hh}:${mi}`;
+function monthNameRu(n){
+  const idx = Number(n || 0) - 1;
+  return (idx >= 0 && idx < MONTHS_RU.length) ? MONTHS_RU[idx] : "";
 }
 
 function normalizeText(s){
@@ -1004,3 +1444,8 @@ function safeJsonParse(s){
 </script>
 </body>
 </html>
+'''
+
+out = Path('/mnt/data/index_bugatti_two_modules.html')
+out.write_text(html, encoding='utf-8')
+print(out)
