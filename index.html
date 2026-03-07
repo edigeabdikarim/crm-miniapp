@@ -27,7 +27,6 @@
     *{box-sizing:border-box}
     html,body{height:100%}
 
-    /* IMPORTANT: body без скролла (анти-сворачивание Telegram WebApp) */
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue";
@@ -37,13 +36,12 @@
         radial-gradient(900px 450px at 85% 18%, var(--glow1), transparent 62%),
         radial-gradient(700px 380px at 50% 92%, var(--glow3), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow:hidden; /* ключевое */
+      overflow:hidden;
       height:100vh;
       overscroll-behavior: none;
       -webkit-overflow-scrolling: auto;
     }
 
-    /* Скролл делаем внутри */
     .wrap{
       max-width:1100px;
       margin:0 auto;
@@ -299,7 +297,6 @@
       box-shadow:0 18px 50px rgba(59,130,246,.14);
     }
 
-    /* Overlay: код доступа / ошибка */
     .overlay{
       position:fixed;
       inset:0;
@@ -468,7 +465,6 @@
     </div>
   </div>
 
-  <!-- Overlay: ввод кода -->
   <div class="overlay" id="overlayCode">
     <div class="modal">
       <h3 id="codeTitle">🔒 Код доступа</h3>
@@ -482,7 +478,6 @@
     </div>
   </div>
 
-  <!-- Overlay: ошибка -->
   <div class="overlay" id="overlayError">
     <div class="modal">
       <h3 id="errTitle">⚠️ Ошибка</h3>
@@ -497,10 +492,10 @@
 
 <script>
 /** ====== CONFIG ====== */
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz7jHtJfrnz9iUGCl5ujC40W9nrkQaNF0BDxYKqMFyeJF6cDEIA-RmESGHNONt5vyxA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyOKpobb3yHVC8FXzWlqJZbLDE_HU96dqWAiPexWHwJ_D8uTGqsu8Mwc7scDZGYtOKA/exec";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-const ACCESS_CODE_STORAGE_KEY = "bugatti_access_code_v1";
+const ACCESS_CODE_STORAGE_KEY = "bugatti_access_code_v2";
 
 const MONTHS_RU = [
   "Январь","Февраль","Март","Апрель","Май","Июнь",
@@ -614,7 +609,6 @@ function wireUI(){
   });
   btnCloseErr.addEventListener("click", () => overlayError.classList.remove("show"));
 
-  // Enter = сохранить код
   codeInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") btnSaveCode.click();
   });
@@ -650,13 +644,14 @@ async function loadAll(force){
   }catch(err){
     console.error(err);
 
-    // "Ожидаемые" ошибки
     if (err && err.code === "invalid_code"){
       setGas("LOCK", "bad");
       localStorage.removeItem(ACCESS_CODE_STORAGE_KEY);
       ACCESS_CODE = "";
       openCodeModal("❌ Неверный код", "Код не подходит. Введи правильный код доступа.", err.message || "");
-      META = { stores:[], years:[] }; RAW = []; PLANS = [];
+      META = { stores:[], years:[] };
+      RAW = [];
+      PLANS = [];
       return;
     }
 
@@ -716,6 +711,9 @@ async function fetchEntity(entity){
   const res = await fetch(GAS_URL, {
     method: "POST",
     cache: "no-store",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
     body: JSON.stringify({ entity, accessCode: ACCESS_CODE })
   });
 
@@ -729,15 +727,8 @@ async function fetchEntity(entity){
   if (!json || json.ok !== true){
     const code = (json && json.error) ? String(json.error) : "bad_response";
     const err = new Error(code);
-    err.code = code;
-
-    if (code === "invalid_code" || code === "unauthorized"){
-      err.code = "invalid_code";
-      err.message = json.message || "invalid_code";
-    }
-    if (code === "server_error"){
-      err.message = `server_error: ${json.details || ""}`;
-    }
+    err.code = (code === "invalid_code" || code === "unauthorized") ? "invalid_code" : code;
+    err.message = json && (json.message || json.details) ? (json.message || json.details) : code;
     throw err;
   }
 
@@ -769,7 +760,11 @@ function buildSelectors(keepSelection=false){
     if (prevStore && stores.includes(prevStore)) storeSel.value = prevStore;
   } else {
     if (years.length) yearSel.value = String(years[0]);
-    monthSel.value = MONTHS_RU.includes("Февраль") ? "Февраль" : (MONTHS_RU[0] || "");
+
+    const now = new Date();
+    const currentMonth = MONTHS_RU[now.getMonth()] || MONTHS_RU[0] || "";
+    monthSel.value = MONTHS_RU.includes(currentMonth) ? currentMonth : (MONTHS_RU[0] || "");
+
     if (stores.includes("Астана")) storeSel.value = "Астана";
     else if (stores.length) storeSel.value = stores[0];
   }
@@ -851,7 +846,6 @@ function renderAll(){
     kpiCard("Дней до конца", String(daysLeft), "От среза до конца месяца")
   ].join("");
 
-  // DAILY: дата | % | план | факт
   dailyBody.innerHTML = dailyRows.map(r => {
     const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
     return `
@@ -898,7 +892,6 @@ function renderAll(){
       return bv - av;
     });
 
-    // MONTHLY: магазин | % | план | факт | ср.чек
     monthlyBody.innerHTML = monthlyRows.map(r => {
       const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
       return `
