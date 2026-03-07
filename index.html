@@ -64,7 +64,6 @@
       margin-bottom:14px;
     }
 
-    
     h1{
       font-size:26px;
       margin:0 0 4px 0;
@@ -651,7 +650,7 @@ async function loadAll(force){
   }catch(err){
     console.error(err);
 
-    // “Ожидаемые” ошибки
+    // "Ожидаемые" ошибки
     if (err && err.code === "invalid_code"){
       setGas("LOCK", "bad");
       localStorage.removeItem(ACCESS_CODE_STORAGE_KEY);
