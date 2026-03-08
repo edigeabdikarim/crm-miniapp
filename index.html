@@ -175,7 +175,7 @@
       border-radius:var(--radius-lg);
       padding:6px;
       display:grid;
-      grid-template-columns:1fr 1fr;
+      grid-template-columns:repeat(3, 1fr);
       gap:6px;
       box-shadow:var(--shadow-md);
     }
@@ -556,6 +556,70 @@
       font-weight:500;
       background:var(--surface);
     }
+
+    body.theme-finance{
+      background-color:#06110e;
+      background-image:
+        radial-gradient(ellipse 1200px 600px at 15% 8%, rgba(16,185,129,.10), transparent),
+        radial-gradient(ellipse 1000px 500px at 85% 12%, rgba(20,184,166,.08), transparent),
+        radial-gradient(ellipse 800px 400px at 50% 95%, rgba(34,197,94,.05), transparent);
+    }
+    .moduleBtn.active.finance{
+      color:var(--text);
+      border-color:rgba(16,185,129,.35);
+      background:linear-gradient(135deg, rgba(16,185,129,.28), rgba(20,184,166,.14));
+      box-shadow:0 4px 24px rgba(16,185,129,.15);
+    }
+    .controls.financeControls{
+      grid-template-columns:1fr 1fr auto;
+      align-items:stretch;
+    }
+    .toggleRow{
+      grid-column:1 / -1;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .toggleBtn{
+      border:1px solid var(--stroke2);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      border-radius:var(--radius-pill);
+      padding:10px 14px;
+      font-size:12px;
+      font-weight:700;
+      font-family:inherit;
+      cursor:pointer;
+      transition:var(--transition);
+      letter-spacing:.01em;
+    }
+    .toggleBtn:hover{background:rgba(255,255,255,.08);color:var(--text2);border-color:var(--stroke-hover)}
+    .toggleBtn.active{
+      color:var(--text);
+      border-color:rgba(16,185,129,.35);
+      background:linear-gradient(135deg, rgba(16,185,129,.22), rgba(20,184,166,.10));
+      box-shadow:0 4px 18px rgba(16,185,129,.12);
+    }
+    .toggleBtn.important.active{
+      border-color:rgba(52,211,153,.4);
+      background:linear-gradient(135deg, rgba(34,197,94,.26), rgba(16,185,129,.12));
+    }
+    body.theme-finance .sel{background:#0b1a16}
+    body.theme-finance .sel option{background:#0f231c;color:#dff8ef}
+    body.theme-finance .sel option:checked{background:#174438}
+    body.theme-finance .sel:hover{background:#10241d}
+    body.theme-finance .sel:focus{border-color:rgba(16,185,129,.45);box-shadow:0 0 0 3px rgba(16,185,129,.12)}
+    body.theme-finance .btn.financeAccent{
+      border-color:rgba(16,185,129,.38);
+      background:linear-gradient(135deg, rgba(16,185,129,.28), rgba(20,184,166,.12));
+    }
+    body.theme-finance .btn.financeAccent:hover{
+      background:linear-gradient(135deg, rgba(16,185,129,.42), rgba(20,184,166,.22));
+      box-shadow:0 4px 20px rgba(16,185,129,.18);
+    }
+    body.theme-finance .card{border-color:rgba(22,101,52,.35)}
+    body.theme-finance .card:hover{border-color:rgba(16,185,129,.28)}
+    body.theme-finance .tableWrap{border-color:rgba(16,185,129,.18)}
   </style>
 </head>
 <body class="theme-sales">
@@ -581,6 +645,10 @@
         <span class="label">Показатели магазина</span>
         <span class="desc">Сотрудники, чеки, возвраты, средний чек</span>
       </button>
+      <button class="moduleBtn finance" id="moduleFinance" type="button">
+        <span class="label">Финансы</span>
+        <span class="desc">Сводка ДДС, статьи, кошельки</span>
+      </button>
     </div>
 
     <div class="controls" id="controlsSales">
@@ -595,6 +663,19 @@
       <select id="staffMonthSel" class="sel"></select>
       <select id="staffStoreSel" class="sel"></select>
       <button class="btn staffAccent" id="staffRefreshBtn">Обновить</button>
+    </div>
+
+    <div class="controls financeControls" id="controlsFinance" style="display:none;">
+      <select id="financeYearSel" class="sel"></select>
+      <select id="financeMonthSel" class="sel"></select>
+      <button class="btn financeAccent" id="financeRefreshBtn">Обновить</button>
+      <div class="toggleRow">
+        <button class="toggleBtn important" id="financeOnlyImportantBtn" type="button">Только важное</button>
+        <button class="toggleBtn" id="financeShowTransfersBtn" type="button">Переводы</button>
+        <button class="toggleBtn" id="financeShowEmptyBtn" type="button">Пустые строки</button>
+        <button class="toggleBtn" id="financeShowOpeningBtn" type="button">Остаток на начало</button>
+        <button class="toggleBtn" id="financeShowClosingBtn" type="button">Остаток на конец</button>
+      </div>
     </div>
 
     <div class="grid" id="kpiGrid"></div>
@@ -687,6 +768,62 @@
       <div id="staffEmpty" class="emptyState" style="display:none;">Нет данных по выбранным параметрам.</div>
     </div>
 
+    <div id="financeModule" style="display:none;">
+      <div class="section">
+        <h2>Финансовая сводка</h2>
+        <div id="financeMetaBadges" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;"></div>
+        <div id="financeControlBadges" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:0 0 10px 4px;"></div>
+      </div>
+      <div class="section" id="financeTransfersSection" style="display:none;">
+        <h2>Технические переводы</h2>
+        <div class="tableWrap">
+          <div class="scrollX">
+            <table>
+              <thead>
+                <tr>
+                  <th>Показатель</th>
+                  <th class="right">Сумма</th>
+                </tr>
+              </thead>
+              <tbody id="financeTransfersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <h2>Статьи ДДС</h2>
+        <div class="tableWrap">
+          <div class="scrollX">
+            <table>
+              <thead>
+                <tr>
+                  <th>Статья</th>
+                  <th>Раздел</th>
+                  <th>Группа</th>
+                  <th class="right">Сумма</th>
+                </tr>
+              </thead>
+              <tbody id="financeArticlesBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <h2>Кошельки</h2>
+        <div class="tableWrap">
+          <div class="scrollX">
+            <table>
+              <thead>
+                <tr id="financeWalletHead"></tr>
+              </thead>
+              <tbody id="financeWalletBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="financeEmpty" class="emptyState" style="display:none;">Нет финансовых данных по выбранному периоду.</div>
+    </div>
+
     <div style="height:14px"></div>
   </div>
 
@@ -752,6 +889,7 @@ window.addEventListener("unhandledrejection", function(event) {
 
 var SALES_GAS_URL = "https://script.google.com/macros/s/AKfycbyOKpobb3yHVC8FXzWlqJZbLDE_HU96dqWAiPexWHwJ_D8uTGqsu8Mwc7scDZGYtOKA/exec";
 var STAFF_GAS_URL = "https://script.google.com/macros/s/AKfycbx8gTv-eyFMqJNsoM2Es2uj9NCFv_8cwo26Evcrlib8j1ESEhwIp2ZDPN6KJ-YCAIQY/exec";
+var FINANCE_GAS_URL = "https://script.google.com/macros/s/AKfycbyQaE6txVqtlEnXSvNFwW5IJp1TeDcHP0mpn39VRbqZF--InY26qCgIsldOICws3WU5XQ/exec";
 
 var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 var ACCESS_CODE_STORAGE_KEY = "bugatti_access_code_v5";
@@ -779,12 +917,15 @@ var btnChangeCode = document.getElementById("btnChangeCode");
 
 var moduleSalesBtn = document.getElementById("moduleSales");
 var moduleStaffBtn = document.getElementById("moduleStaff");
+var moduleFinanceBtn = document.getElementById("moduleFinance");
 
 var controlsSales = document.getElementById("controlsSales");
 var controlsStaff = document.getElementById("controlsStaff");
+var controlsFinance = document.getElementById("controlsFinance");
 
 var salesModule = document.getElementById("salesModule");
 var staffModule = document.getElementById("staffModule");
+var financeModule = document.getElementById("financeModule");
 
 var kpiGrid = document.getElementById("kpiGrid");
 var dailyBody = document.getElementById("dailyBody");
@@ -798,6 +939,23 @@ var tabMonthly = document.getElementById("tabMonthly");
 
 var staffBody = document.getElementById("staffBody");
 var staffEmpty = document.getElementById("staffEmpty");
+
+var financeYearSel = document.getElementById("financeYearSel");
+var financeMonthSel = document.getElementById("financeMonthSel");
+var financeRefreshBtn = document.getElementById("financeRefreshBtn");
+var financeOnlyImportantBtn = document.getElementById("financeOnlyImportantBtn");
+var financeShowTransfersBtn = document.getElementById("financeShowTransfersBtn");
+var financeShowEmptyBtn = document.getElementById("financeShowEmptyBtn");
+var financeShowOpeningBtn = document.getElementById("financeShowOpeningBtn");
+var financeShowClosingBtn = document.getElementById("financeShowClosingBtn");
+var financeMetaBadges = document.getElementById("financeMetaBadges");
+var financeControlBadges = document.getElementById("financeControlBadges");
+var financeArticlesBody = document.getElementById("financeArticlesBody");
+var financeTransfersSection = document.getElementById("financeTransfersSection");
+var financeTransfersBody = document.getElementById("financeTransfersBody");
+var financeWalletHead = document.getElementById("financeWalletHead");
+var financeWalletBody = document.getElementById("financeWalletBody");
+var financeEmpty = document.getElementById("financeEmpty");
 
 var overlayCode = document.getElementById("overlayCode");
 var codeTitle = document.getElementById("codeTitle");
@@ -827,8 +985,12 @@ var STAFF_META = null;
 var STAFF_RAW = [];
 var STAFF_PLANS = [];
 
+var FINANCE_META = null;
+var FINANCE_SUMMARY = [];
+
 var _loadingSales = false;
 var _loadingStaff = false;
+var _loadingFinance = false;
 
 init();
 
@@ -849,6 +1011,7 @@ async function init(){
 
   var salesOk = false;
   var staffOk = false;
+  var financeOk = false;
 
   try {
     await loadSalesAll(false);
@@ -866,7 +1029,15 @@ async function init(){
     console.error("[init] staff failed:", err);
   }
 
-  if (!salesOk && !staffOk && ACCESS_CODE) {
+  try {
+    await loadFinanceAll(false);
+    buildFinanceSelectors(false);
+    financeOk = true;
+  } catch (err) {
+    console.error("[init] finance failed:", err);
+  }
+
+  if (!salesOk && !staffOk && !financeOk && ACCESS_CODE) {
     subtitle.innerHTML = '<span class="muted">Ошибка загрузки. Нажми «Обновить» или смени код.</span>';
   }
 
@@ -899,10 +1070,46 @@ function wireUI(){
   });
 
   tabDaily.addEventListener("click", function() { activeView = "daily"; renderAll(); });
+  moduleFinanceBtn.addEventListener("click", async function() {
+    activeModule = "finance";
+    applyModuleTheme();
+    if (!hasFinanceMeta()) {
+      try {
+        await loadFinanceAll(false);
+        buildFinanceSelectors(false);
+      } catch(e) { console.error(e); }
+    }
+    renderAll();
+  });
+
   tabMonthly.addEventListener("click", function() { activeView = "monthly"; renderAll(); });
 
   [yearSel, monthSel, storeSel].forEach(function(el) { el.addEventListener("change", renderAll); });
   [staffYearSel, staffMonthSel, staffStoreSel].forEach(function(el) { el.addEventListener("change", renderAll); });
+
+
+  financeYearSel.addEventListener("change", function() {
+    syncFinanceMonthOptions(financeMonthSel.value);
+    saveFinanceFilters();
+    renderAll();
+  });
+  financeMonthSel.addEventListener("change", function() {
+    saveFinanceFilters();
+    renderAll();
+  });
+
+  [
+    { btn: financeOnlyImportantBtn, key: "onlyImportant" },
+    { btn: financeShowTransfersBtn, key: "showTransfers" },
+    { btn: financeShowEmptyBtn, key: "showEmptyRows" },
+    { btn: financeShowOpeningBtn, key: "showWalletOpening" },
+    { btn: financeShowClosingBtn, key: "showWalletClosing" }
+  ].forEach(function(item) {
+    item.btn.addEventListener("click", function() {
+      toggleFinanceFlag(item.key);
+      renderAll();
+    });
+  });
 
   refreshBtn.addEventListener("click", async function() {
     try { await loadSalesAll(true); buildSalesSelectors(true); renderAll(); }
@@ -911,6 +1118,11 @@ function wireUI(){
 
   staffRefreshBtn.addEventListener("click", async function() {
     try { await loadStaffAll(true); buildStaffSelectors(true); renderAll(); }
+    catch(e) { console.error(e); }
+  });
+
+  financeRefreshBtn.addEventListener("click", async function() {
+    try { await loadFinanceAll(true); buildFinanceSelectors(true); renderAll(); }
     catch(e) { console.error(e); }
   });
 
@@ -928,6 +1140,7 @@ function wireUI(){
 
     SALES_META = null; SALES_RAW = []; SALES_PLANS = [];
     STAFF_META = null; STAFF_RAW = []; STAFF_PLANS = [];
+    FINANCE_META = null; FINANCE_SUMMARY = [];
 
     subtitle.innerHTML = '<span class="muted">Загрузка данных…</span>';
 
@@ -935,6 +1148,9 @@ function wireUI(){
     catch (err) { console.error(err); }
 
     try { await loadStaffAll(true); buildStaffSelectors(false); }
+    catch (err) { console.error(err); }
+
+    try { await loadFinanceAll(true); buildFinanceSelectors(false); }
     catch (err) { console.error(err); }
 
     renderAll();
@@ -946,6 +1162,7 @@ function wireUI(){
     clearAllCache();
     SALES_META = null; SALES_RAW = []; SALES_PLANS = [];
     STAFF_META = null; STAFF_RAW = []; STAFF_PLANS = [];
+    FINANCE_META = null; FINANCE_SUMMARY = [];
     codeDebug.textContent = "Кэш очищен. Введи код и нажми «Сохранить».";
   });
 
@@ -953,7 +1170,8 @@ function wireUI(){
     overlayError.classList.remove("show");
     try {
       if (activeModule === "sales") { await loadSalesAll(true); buildSalesSelectors(true); }
-      else { await loadStaffAll(true); buildStaffSelectors(true); }
+      else if (activeModule === "staff") { await loadStaffAll(true); buildStaffSelectors(true); }
+      else { await loadFinanceAll(true); buildFinanceSelectors(true); }
       renderAll();
     } catch(e) { console.error(e); }
   });
@@ -970,15 +1188,23 @@ function hasStaffMeta() {
   return STAFF_META && Array.isArray(STAFF_META.stores) && STAFF_META.stores.length > 0;
 }
 
+function hasFinanceMeta() {
+  return FINANCE_META && Array.isArray(FINANCE_META.years);
+}
+
 function applyModuleTheme(){
   document.body.classList.toggle("theme-sales", activeModule === "sales");
   document.body.classList.toggle("theme-staff", activeModule === "staff");
+  document.body.classList.toggle("theme-finance", activeModule === "finance");
   moduleSalesBtn.classList.toggle("active", activeModule === "sales");
   moduleStaffBtn.classList.toggle("active", activeModule === "staff");
+  moduleFinanceBtn.classList.toggle("active", activeModule === "finance");
   controlsSales.style.display = activeModule === "sales" ? "" : "none";
   controlsStaff.style.display = activeModule === "staff" ? "" : "none";
+  controlsFinance.style.display = activeModule === "finance" ? "" : "none";
   salesModule.style.display = activeModule === "sales" ? "" : "none";
   staffModule.style.display = activeModule === "staff" ? "" : "none";
+  financeModule.style.display = activeModule === "finance" ? "" : "none";
   document.querySelector(".tabs").style.display = activeModule === "sales" ? "" : "none";
 }
 
@@ -1031,6 +1257,29 @@ async function loadStaffAll(force){
     throw err;
   } finally {
     _loadingStaff = false;
+  }
+}
+
+async function loadFinanceAll(force){
+  if (_loadingFinance) return;
+  _loadingFinance = true;
+  setGas("…", "warn");
+  try {
+    var results = await Promise.all([
+      fetchCached(FINANCE_GAS_URL, "meta", force),
+      fetchCached(FINANCE_GAS_URL, "summary", force)
+    ]);
+    FINANCE_META = results[0];
+    FINANCE_SUMMARY = Array.isArray(results[1] && results[1].rows) ? results[1].rows : [];
+    setGas("OK", "good");
+    console.log("[finance OK] years:", (FINANCE_META.years||[]).length, "rows:", FINANCE_SUMMARY.length);
+  } catch(err) {
+    handleLoadError(err, FINANCE_GAS_URL);
+    FINANCE_META = null;
+    FINANCE_SUMMARY = [];
+    throw err;
+  } finally {
+    _loadingFinance = false;
   }
 }
 
@@ -1096,6 +1345,98 @@ function buildStaffSelectors(keepSelection){
   }
 }
 
+function buildFinanceSelectors(keepSelection){
+  if (!hasFinanceMeta()) return;
+
+  var years = (FINANCE_META && FINANCE_META.years || []).slice().map(Number).filter(Boolean).sort(function(a,b){return b-a});
+  var defaults = (FINANCE_META && FINANCE_META.defaultFilters) || {};
+  var saved = keepSelection ? getFinanceCurrentFilters() : loadFinanceStoredFilters();
+
+  financeYearSel.innerHTML = years.map(function(y){return '<option value="'+y+'">'+y+'</option>';}).join("");
+
+  var targetYear = Number(saved.year || defaults.year || years[0] || 0);
+  if (!years.includes(targetYear) && years.length) targetYear = years[0];
+  if (targetYear) financeYearSel.value = String(targetYear);
+
+  syncFinanceMonthOptions(saved.monthNum || defaults.monthNum);
+
+  setFinanceToggleState(financeOnlyImportantBtn, boolVal(saved.onlyImportant, defaults.onlyImportant));
+  setFinanceToggleState(financeShowTransfersBtn, boolVal(saved.showTransfers, defaults.showTransfers));
+  setFinanceToggleState(financeShowEmptyBtn, boolVal(saved.showEmptyRows, defaults.showEmptyRows));
+  setFinanceToggleState(financeShowOpeningBtn, boolVal(saved.showWalletOpening, defaults.showWalletOpening));
+  setFinanceToggleState(financeShowClosingBtn, boolVal(saved.showWalletClosing, defaults.showWalletClosing, true));
+
+  saveFinanceFilters();
+}
+
+function syncFinanceMonthOptions(preferredMonthNum){
+  if (!hasFinanceMeta()) return;
+  var year = String(financeYearSel.value || "");
+  var months = (FINANCE_META.availableMonthsByYear && FINANCE_META.availableMonthsByYear[year]) || [];
+  var prev = String(preferredMonthNum || financeMonthSel.value || "");
+
+  financeMonthSel.innerHTML = months.map(function(m){
+    return '<option value="'+Number(m.num)+'">'+escapeHtml(m.name || monthNameRu(Number(m.num)))+'</option>';
+  }).join("");
+
+  if (prev && months.some(function(m){ return String(m.num) === prev; })) {
+    financeMonthSel.value = prev;
+  } else if (months.length) {
+    financeMonthSel.value = String(months[months.length - 1].num);
+  }
+}
+
+function getFinanceStorageKey(){
+  return (FINANCE_META && FINANCE_META.storageKeys && FINANCE_META.storageKeys.filters) || "finance_filters_v1";
+}
+
+function loadFinanceStoredFilters(){
+  var raw = lsGet(getFinanceStorageKey());
+  var data = safeJsonParse(raw);
+  return data && typeof data === "object" ? data : {};
+}
+
+function getFinanceCurrentFilters(){
+  return {
+    year: Number(financeYearSel.value || 0),
+    monthNum: Number(financeMonthSel.value || 0),
+    onlyImportant: financeOnlyImportantBtn.classList.contains("active"),
+    showTransfers: financeShowTransfersBtn.classList.contains("active"),
+    showEmptyRows: financeShowEmptyBtn.classList.contains("active"),
+    showWalletOpening: financeShowOpeningBtn.classList.contains("active"),
+    showWalletClosing: financeShowClosingBtn.classList.contains("active")
+  };
+}
+
+function saveFinanceFilters(){
+  lsSet(getFinanceStorageKey(), JSON.stringify(getFinanceCurrentFilters()));
+}
+
+function toggleFinanceFlag(key){
+  var map = {
+    onlyImportant: financeOnlyImportantBtn,
+    showTransfers: financeShowTransfersBtn,
+    showEmptyRows: financeShowEmptyBtn,
+    showWalletOpening: financeShowOpeningBtn,
+    showWalletClosing: financeShowClosingBtn
+  };
+  var btn = map[key];
+  if (!btn) return;
+  setFinanceToggleState(btn, !btn.classList.contains("active"));
+  saveFinanceFilters();
+}
+
+function setFinanceToggleState(btn, active){
+  btn.classList.toggle("active", !!active);
+  btn.setAttribute("aria-pressed", active ? "true" : "false");
+}
+
+function boolVal(primary, fallback, fallbackDefault){
+  if (primary === true || primary === false) return primary;
+  if (fallback === true || fallback === false) return fallback;
+  return !!fallbackDefault;
+}
+
 // Deduplicate stores: "Магазин Абайка" and "Абайка" → keep short name "Абайка"
 function deduplicateStores(rawStores) {
   var seen = {};
@@ -1116,7 +1457,8 @@ function deduplicateStores(rawStores) {
 function renderAll(){
   applyModuleTheme();
   if (activeModule === "sales") renderSalesModule();
-  else renderStaffModule();
+  else if (activeModule === "staff") renderStaffModule();
+  else renderFinanceModule();
 }
 
 function renderSalesModule(){
@@ -1289,6 +1631,146 @@ function renderStaffModule(){
       '<td class="right">' + money(e.avgCheckIndividual||0) + '</td>' +
       '<td class="right">' + money(e.avgCheckCollective||0) + '</td></tr>';
   }).join("");
+}
+
+function renderFinanceModule(){
+  pageTitle.textContent = "Финансы";
+
+  if (!hasFinanceMeta() || !Array.isArray(FINANCE_SUMMARY) || !FINANCE_SUMMARY.length){
+    subtitle.innerHTML = '<span class="muted">Нет данных финансового модуля</span>';
+    kpiGrid.innerHTML = "";
+    financeMetaBadges.innerHTML = "";
+    financeControlBadges.innerHTML = "";
+    financeArticlesBody.innerHTML = "";
+    financeTransfersBody.innerHTML = "";
+    financeWalletHead.innerHTML = "";
+    financeWalletBody.innerHTML = "";
+    financeTransfersSection.style.display = "none";
+    financeEmpty.style.display = "";
+    return;
+  }
+
+  var filters = getFinanceCurrentFilters();
+  var year = Number(filters.year || financeYearSel.value || 0);
+  var monthNum = Number(filters.monthNum || financeMonthSel.value || 0);
+  var row = FINANCE_SUMMARY.find(function(item){ return Number(item.year) === year && Number(item.monthNum) === monthNum; });
+
+  if (!row){
+    subtitle.innerHTML = '<span class="muted">Выбери доступный период</span>';
+    kpiGrid.innerHTML = "";
+    financeMetaBadges.innerHTML = "";
+    financeControlBadges.innerHTML = "";
+    financeArticlesBody.innerHTML = "";
+    financeTransfersBody.innerHTML = "";
+    financeWalletHead.innerHTML = "";
+    financeWalletBody.innerHTML = "";
+    financeTransfersSection.style.display = "none";
+    financeEmpty.style.display = "";
+    return;
+  }
+
+  financeEmpty.style.display = "none";
+
+  var effectiveShowTransfers = filters.onlyImportant ? false : !!filters.showTransfers;
+  var effectiveShowEmptyRows = filters.onlyImportant ? false : !!filters.showEmptyRows;
+  var effectiveShowWalletOpening = filters.onlyImportant ? false : !!filters.showWalletOpening;
+  var effectiveShowWalletClosing = !!filters.showWalletClosing;
+
+  subtitle.innerHTML =
+    '<span class="muted">Раздел:</span> <strong>Финансы</strong> ' +
+    '<span class="muted">• Период:</span> <strong>' + escapeHtml(row.monthName) + ' ' + row.year + '</strong> ' +
+    '<span class="muted">• Статус:</span> <strong>' + escapeHtml(row.monthStatusLabel || '—') + '</strong>';
+
+  kpiGrid.innerHTML = [
+    kpiCard("Денег на начало", money(row.kpi.openingBalance || 0), "Остаток на начало месяца"),
+    kpiCard("Операционный поток", signedMoney(row.kpi.operatingCf || 0), "Операционная деятельность"),
+    kpiCard("Инвестиционный поток", signedMoney(row.kpi.investingCf || 0), "Инвестиционная деятельность"),
+    kpiCard("Финансовый поток", signedMoney(row.kpi.financingCf || 0), "Финансовая деятельность"),
+    kpiCard("Изменение за месяц", signedMoney(row.kpi.netChange || 0), "Чистое изменение денег"),
+    kpiCard("Денег на конец", money(row.kpi.closingBalance || 0), "Остаток на конец месяца")
+  ].join("");
+
+  financeMetaBadges.innerHTML = [
+    '<span class="badge ' + financeMonthStatusClass(row.monthStatus) + '"><span class="muted">Статус месяца:</span> <strong>' + escapeHtml(row.monthStatusLabel || '—') + '</strong></span>',
+    '<span class="badge"><span class="muted">Период:</span> <strong>' + escapeHtml(row.monthName) + ' ' + row.year + '</strong></span>',
+    '<span class="badge"><span class="muted">Режим:</span> <strong>' + (filters.onlyImportant ? 'Только важное' : 'Полный просмотр') + '</strong></span>',
+    '<span class="badge"><span class="muted">Источник:</span> <strong>сводные данные</strong></span>'
+  ].join("");
+
+  financeControlBadges.innerHTML = [
+    '<span class="badge ' + financeControlBadgeClass(row.control.reconciliationStatus) + '"><span class="muted">Сходимость ДДС:</span> <strong>' + escapeHtml(row.control.reconciliationLabel || '—') + '</strong>' + (isTruthyNumber(row.control.reconciliationValue) ? ' <span class="muted">(' + escapeHtml(signedMoney(row.control.reconciliationValue)) + ')</span>' : '') + '</span>',
+    '<span class="badge ' + financeControlBadgeClass(row.control.transferStatus) + '"><span class="muted">Сходимость перебросов:</span> <strong>' + escapeHtml(row.control.transferLabel || '—') + '</strong>' + (isTruthyNumber(row.control.transferValue) ? ' <span class="muted">(' + escapeHtml(signedMoney(row.control.transferValue)) + ')</span>' : '') + '</span>',
+    '<span class="badge"><span class="muted">Пустые строки:</span> <strong>' + (effectiveShowEmptyRows ? 'показаны' : 'скрыты') + '</strong></span>',
+    '<span class="badge"><span class="muted">Переводы:</span> <strong>' + (effectiveShowTransfers ? 'показаны' : 'скрыты') + '</strong></span>'
+  ].join("");
+
+  var transferRows = (row.transfers && Array.isArray(row.transfers.rows) ? row.transfers.rows : []).filter(function(item){
+    return effectiveShowEmptyRows || !isNearZero(item.amount);
+  });
+  if (effectiveShowTransfers && transferRows.length) {
+    financeTransfersSection.style.display = "";
+    financeTransfersBody.innerHTML = transferRows.map(function(item){
+      return '<tr><td>' + escapeHtml(item.name || '') + '</td><td class="right">' + signedMoney(item.amount || 0) + '</td></tr>';
+    }).join("");
+  } else {
+    financeTransfersSection.style.display = "none";
+    financeTransfersBody.innerHTML = "";
+  }
+
+  var articles = (row.articles || []).slice().filter(function(item){
+    return effectiveShowEmptyRows || !item.isZero;
+  }).sort(function(a,b){
+    return Math.abs(Number(b.amount || 0)) - Math.abs(Number(a.amount || 0));
+  });
+
+  financeArticlesBody.innerHTML = articles.length ? articles.map(function(item){
+    return '<tr>' +
+      '<td>' + escapeHtml(item.name || '') + '</td>' +
+      '<td>' + escapeHtml(item.sectionTitle || '') + '</td>' +
+      '<td>' + escapeHtml(item.group || item.direction || '—') + '</td>' +
+      '<td class="right">' + signedMoney(item.amount || 0) + '</td>' +
+      '</tr>';
+  }).join("") : '<tr><td colspan="4" class="center muted">Нет статей по выбранным настройкам.</td></tr>';
+
+  var wallets = (row.wallets || []).slice().filter(function(item){
+    return effectiveShowEmptyRows || !item.isZero;
+  });
+
+  var walletHead = ['<th>Кошелёк</th>', '<th>Валюта</th>'];
+  if (effectiveShowWalletOpening) walletHead.push('<th class="right">Остаток на начало</th>');
+  walletHead.push('<th class="right">Изменение</th>');
+  if (effectiveShowWalletClosing) walletHead.push('<th class="right">Остаток на конец</th>');
+  financeWalletHead.innerHTML = walletHead.join("");
+
+  financeWalletBody.innerHTML = wallets.length ? wallets.map(function(item){
+    var cells = [
+      '<td>' + escapeHtml(item.walletName || '') + '</td>',
+      '<td>' + escapeHtml(item.currency || 'KZT') + '</td>'
+    ];
+    if (effectiveShowWalletOpening) cells.push('<td class="right">' + money(item.openingBalance || 0) + '</td>');
+    cells.push('<td class="right">' + signedMoney(item.delta || 0) + '</td>');
+    if (effectiveShowWalletClosing) cells.push('<td class="right">' + money(item.closingBalance || 0) + '</td>');
+    return '<tr>' + cells.join("") + '</tr>';
+  }).join("") : '<tr><td colspan="' + walletHead.length + '" class="center muted">Нет кошельков по выбранным настройкам.</td></tr>';
+}
+
+function financeMonthStatusClass(status){
+  if (status === 'closed') return 'good';
+  if (status === 'in_progress') return 'warn';
+  return 'bad';
+}
+
+function financeControlBadgeClass(status){
+  return status === 'ok' ? 'good' : 'bad';
+}
+
+function isTruthyNumber(v){
+  var n = Number(v || 0);
+  return isFinite(n) && Math.abs(n) > 0.000001;
+}
+
+function isNearZero(v){
+  return Math.abs(Number(v || 0)) <= 0.000001;
 }
 
 function buildStaffReport(year, month, store){
