@@ -228,9 +228,8 @@
 
     .sel{
       width:100%;
-      appearance:none;
       border:1px solid var(--stroke);
-      background:rgba(255,255,255,.04);
+      background:#0e1330;
       color:var(--text);
       border-radius:var(--radius-pill);
       padding:10px 16px;
@@ -241,8 +240,14 @@
       cursor:pointer;
       transition:var(--transition);
     }
-    .sel:hover{border-color:var(--stroke-hover);background:rgba(255,255,255,.07)}
+    .sel option{background:#141a38;color:#e0e6ff;padding:8px 12px}
+    .sel option:checked{background:#243068}
+    .sel:hover{border-color:var(--stroke-hover);background:#121840}
     .sel:focus{border-color:rgba(99,102,241,.5);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+    body.theme-staff .sel{background:#1a1108}
+    body.theme-staff .sel option{background:#1e1610;color:#f0e0d0}
+    body.theme-staff .sel option:checked{background:#3a2818}
+    body.theme-staff .sel:hover{background:#221a0c}
 
     .btn{
       border:1px solid rgba(99,102,241,.4);
@@ -1266,11 +1271,13 @@ function renderStaffModule(){
   staffEmpty.style.display = "none";
 
   staffBody.innerHTML = report.employees.map(function(e, idx){
+    var total = report.employees.length;
+    var shareColor = staffShareColor(idx, total);
     return '<tr>' +
       '<td class="center">' + (idx+1) + '</td>' +
       '<td>' + escapeHtml(e.name||"") + '</td>' +
       '<td class="right">' + money(e.totalSales||0) + '</td>' +
-      '<td class="right pct ' + pctClass(Number(e.share||0)*100) + '">' + pctText(Number(e.share||0)) + '</td>' +
+      '<td class="right pct" style="color:' + shareColor + ';border-left:1px solid rgba(80,55,32,.3)">' + pctText(Number(e.share||0)) + '</td>' +
       '<td class="right">' + intFmt(e.shiftDays||0) + '</td>' +
       '<td class="right">' + money(e.individualSales||0) + '</td>' +
       '<td class="right">' + money(e.collectiveSales||0) + '</td>' +
@@ -1546,6 +1553,26 @@ function pctClass(p){
   if (p<80) return "bad";
   if (p<=100) return "warn";
   return "good";
+}
+
+// Gradient color for staff share: top (idx=0) is green, bottom is red
+function staffShareColor(idx, total) {
+  if (total <= 1) return "#34d399";
+  var t = idx / (total - 1); // 0 = top, 1 = bottom
+  // Green (#34d399) → Yellow (#fbbf24) → Red (#fb7185)
+  var r, g, b;
+  if (t <= 0.5) {
+    var p = t * 2; // 0..1 within first half
+    r = Math.round(52 + (251 - 52) * p);
+    g = Math.round(211 + (191 - 211) * p);
+    b = Math.round(153 + (36 - 153) * p);
+  } else {
+    var p = (t - 0.5) * 2; // 0..1 within second half
+    r = Math.round(251 + (251 - 251) * p);
+    g = Math.round(191 + (113 - 191) * p);
+    b = Math.round(36 + (133 - 36) * p);
+  }
+  return "rgb(" + r + "," + g + "," + b + ")";
 }
 
 function kpiCard(t,vh,h,isH){
