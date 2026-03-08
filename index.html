@@ -24,10 +24,8 @@
       --glow2: rgba(59,130,246,.18);
       --glow3: rgba(16,185,129,.12);
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
-
     body{
       margin:0;
       font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans","Helvetica Neue";
@@ -42,7 +40,6 @@
       overscroll-behavior:none;
       -webkit-overflow-scrolling:auto;
     }
-
     body.theme-sales{
       background:
         radial-gradient(900px 450px at 20% 10%, rgba(59,130,246,.18), transparent 60%),
@@ -50,7 +47,6 @@
         radial-gradient(700px 380px at 50% 92%, rgba(16,185,129,.12), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
     }
-
     body.theme-staff{
       background:
         radial-gradient(900px 450px at 18% 10%, rgba(249,115,22,.16), transparent 60%),
@@ -58,7 +54,6 @@
         radial-gradient(700px 380px at 50% 92%, rgba(251,191,36,.10), transparent 60%),
         linear-gradient(180deg, #120b08, #19110c 55%, #140e0a);
     }
-
     .wrap{
       max-width:1200px;
       margin:0 auto;
@@ -70,7 +65,6 @@
       overscroll-behavior:contain;
       touch-action:pan-y;
     }
-
     .top{
       display:flex;
       align-items:flex-start;
@@ -78,456 +72,89 @@
       gap:12px;
       margin-bottom:14px;
     }
-
-    h1{
-      font-size:26px;
-      margin:0 0 4px 0;
-      letter-spacing:.2px;
-    }
-
-    .sub{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.25;
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      min-height:18px;
-    }
-
-    .pill{
-      border:1px solid var(--stroke);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border-radius:999px;
-      padding:8px 10px;
-      font-size:12px;
-      color:var(--muted);
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      white-space:nowrap;
-      box-shadow:0 8px 30px rgba(0,0,0,.25);
-      user-select:none;
-    }
-
-    .pill strong{
-      color:var(--text);
-      font-weight:700;
-    }
-
-    .pillBtn{
-      margin-left:6px;
-      border:1px solid var(--stroke2);
-      background:rgba(10,16,35,.55);
-      color:var(--text);
-      border-radius:999px;
-      padding:6px 10px;
-      font-weight:800;
-      cursor:pointer;
-      font-size:12px;
-    }
-
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--good);
-      box-shadow:0 0 0 4px rgba(52,211,153,.14);
-    }
-
-    .dot.bad{
-      background:var(--bad);
-      box-shadow:0 0 0 4px rgba(251,113,133,.14);
-    }
-
-    .dot.warn{
-      background:var(--warn);
-      box-shadow:0 0 0 4px rgba(251,191,36,.14);
-    }
-
-    .moduleSwitch{
-      margin-top:12px;
-      border:1px solid var(--stroke);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border-radius:18px;
-      padding:10px;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      box-shadow:0 18px 50px rgba(0,0,0,.28);
-    }
-
-    .moduleBtn{
-      border:1px solid var(--stroke2);
-      background:rgba(10,16,35,.55);
-      color:var(--muted);
-      border-radius:14px;
-      padding:12px 14px;
-      font-weight:900;
-      cursor:pointer;
-      text-align:left;
-      transition:.18s ease;
-    }
-
-    .moduleBtn.active.sales{
-      color:var(--text);
-      border-color:rgba(99,102,241,.45);
-      background:linear-gradient(180deg, var(--blueA), var(--blueB));
-      box-shadow:0 18px 50px rgba(59,130,246,.14);
-    }
-
-    .moduleBtn.active.staff{
-      color:var(--text);
-      border-color:rgba(249,115,22,.50);
-      background:linear-gradient(180deg, var(--orangeA), var(--orangeB));
-      box-shadow:0 18px 50px rgba(249,115,22,.14);
-    }
-
-    .moduleBtn .label{
-      display:block;
-      font-size:14px;
-      margin-bottom:4px;
-    }
-
-    .moduleBtn .desc{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      font-weight:700;
-    }
-
-    .moduleBtn.active .desc{
-      color:#f2f4ff;
-    }
-
-    .controls{
-      margin-top:12px;
-      border:1px solid var(--stroke);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border-radius:18px;
-      padding:12px;
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr auto;
-      gap:10px;
-      box-shadow:0 18px 50px rgba(0,0,0,.28);
-    }
-
-    .sel{
-      width:100%;
-      appearance:none;
-      border:1px solid var(--stroke2);
-      background:rgba(10,16,35,.6);
-      color:var(--text);
-      border-radius:999px;
-      padding:11px 12px;
-      font-size:14px;
-      outline:none;
-    }
-
-    .btn{
-      border:1px solid rgba(99,102,241,.35);
-      background:linear-gradient(180deg, rgba(99,102,241,.35), rgba(59,130,246,.20));
-      color:var(--text);
-      border-radius:999px;
-      padding:11px 14px;
-      font-weight:700;
-      cursor:pointer;
-      white-space:nowrap;
-    }
-
-    body.theme-staff .btn.staffAccent{
-      border-color:rgba(249,115,22,.45);
-      background:linear-gradient(180deg, rgba(249,115,22,.35), rgba(245,158,11,.18));
-    }
-
-    .btn:active{ transform:translateY(1px); }
-
-    .grid{
-      margin-top:12px;
-      display:grid;
-      grid-template-columns:repeat(4, 1fr);
-      gap:10px;
-    }
-
-    .card{
-      border:1px solid var(--stroke);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border-radius:18px;
-      padding:14px 14px 12px;
-      box-shadow:0 16px 48px rgba(0,0,0,.26);
-      min-height:92px;
-    }
-
-    body.theme-staff .card{
-      border-color:#3d2a1d;
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
-    }
-
-    .k{ color:var(--muted2); font-size:12px; margin-bottom:6px; }
-    .v{ font-size:30px; font-weight:800; letter-spacing:.3px; }
-    .hint{ margin-top:6px; color:var(--muted2); font-size:12px; }
-    .v.small{ font-size:22px; }
-    .v.mono{ font-variant-numeric:tabular-nums; }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      border:1px solid var(--stroke2);
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      color:var(--muted);
-      background:rgba(10,16,35,.55);
-    }
-
-    .badge.good{ border-color:rgba(52,211,153,.35); color:#b7ffe3; }
-    .badge.warn{ border-color:rgba(251,191,36,.35); color:#fff1c2; }
-    .badge.bad{ border-color:rgba(251,113,133,.35); color:#ffd2dc; }
-    .badge.orange{ border-color:rgba(249,115,22,.40); color:#ffd9bd; }
-
-    .section{ margin-top:18px; }
-
-    .section h2{
-      margin:0 0 10px 4px;
-      font-size:16px;
-      color:var(--text);
-    }
-
-    .tableWrap{
-      border:1px solid var(--stroke);
-      border-radius:18px;
-      overflow:hidden;
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
-      box-shadow:0 18px 50px rgba(0,0,0,.30);
-    }
-
-    body.theme-staff .tableWrap{
-      border-color:#3d2a1d;
-    }
-
-    .scrollX{
-      overflow-x:auto;
-      -webkit-overflow-scrolling:touch;
-    }
-
-    table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-      min-width:620px;
-    }
-
-    .wideTable{ min-width:1500px; }
-
-    thead th{
-      position:sticky;
-      top:0;
-      z-index:2;
-      background:rgba(9,14,31,.88);
-      backdrop-filter:blur(10px);
-      border-bottom:1px solid var(--stroke);
-      color:var(--muted);
-      font-size:12px;
-      font-weight:700;
-      padding:12px 12px;
-      white-space:nowrap;
-    }
-
-    body.theme-staff thead th{
-      background:rgba(26,18,12,.92);
-      border-bottom-color:#3d2a1d;
-    }
-
-    tbody td{
-      padding:12px 12px;
-      border-bottom:1px solid rgba(35,49,86,.45);
-      font-variant-numeric:tabular-nums;
-      white-space:nowrap;
-    }
-
-    body.theme-staff tbody td{
-      border-bottom-color:rgba(94,63,36,.45);
-    }
-
-    tbody tr:hover td{
-      background:rgba(255,255,255,.03);
-    }
-
-    .right{ text-align:right; }
-    .center{ text-align:center; }
-    .muted{ color:var(--muted); }
-
-    .linkish{
-      border-bottom:1px solid rgba(233,238,255,.35);
-      padding-bottom:1px;
-    }
-
-    .pct{
-      font-weight:900;
-      border-left:1px solid rgba(35,49,86,.45);
-    }
-
-    body.theme-staff .pct{
-      border-left-color:rgba(94,63,36,.45);
-    }
-
-    .pct.good{
-      color:var(--good);
-      background:linear-gradient(90deg, rgba(52,211,153,.14), rgba(52,211,153,.02));
-    }
-
-    .pct.warn{
-      color:var(--warn);
-      background:linear-gradient(90deg, rgba(251,191,36,.14), rgba(251,191,36,.02));
-    }
-
-    .pct.bad{
-      color:var(--bad);
-      background:linear-gradient(90deg, rgba(251,113,133,.14), rgba(251,113,133,.02));
-    }
-
-    .col-accent{
-      background:linear-gradient(90deg, rgba(249,115,22,.16), rgba(249,115,22,.04));
-    }
-
-    .tabs{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      padding:10px 14px calc(16px + env(safe-area-inset-bottom));
-      background:linear-gradient(180deg, rgba(7,10,20,0), rgba(7,10,20,.75) 25%, rgba(7,10,20,.95));
-      backdrop-filter:blur(8px);
-      z-index:50;
-    }
-
-    .seg{
-      max-width:1200px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
-    .seg button{
-      border:1px solid var(--stroke);
-      background:rgba(10,16,35,.55);
-      color:var(--muted);
-      border-radius:16px;
-      padding:12px 14px;
-      font-weight:900;
-      font-size:14px;
-      cursor:pointer;
-    }
-
-    .seg button.active{
-      color:var(--text);
-      border-color:rgba(99,102,241,.45);
-      background:linear-gradient(180deg, rgba(99,102,241,.35), rgba(59,130,246,.18));
-      box-shadow:0 18px 50px rgba(59,130,246,.14);
-    }
-
-    .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index:100;
-    }
-
-    .overlay.show{ display:flex; }
-
-    .modal{
-      width:min(520px, 100%);
-      border:1px solid var(--stroke);
-      border-radius:18px;
-      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-      box-shadow:0 24px 80px rgba(0,0,0,.45);
-      padding:16px;
-    }
-
-    .modal h3{
-      margin:0 0 8px 0;
-      font-size:16px;
-    }
-
-    .modal p{
-      margin:0 0 12px 0;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-      white-space:pre-line;
-    }
-
-    .modal .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .modal .btn2{
-      flex:1;
-      border:1px solid rgba(99,102,241,.35);
-      background:rgba(10,16,35,.55);
-      color:var(--text);
-      border-radius:14px;
-      padding:12px 14px;
-      font-weight:800;
-      cursor:pointer;
-      text-align:center;
-    }
-
-    .modal .btn2.primary{
-      background:linear-gradient(180deg, rgba(99,102,241,.35), rgba(59,130,246,.20));
-    }
-
-    .mini{
-      font-size:12px;
-      color:var(--muted2);
-      margin-top:10px;
-      word-break:break-word;
-    }
-
-    .inp{
-      width:100%;
-      border:1px solid var(--stroke2);
-      background:rgba(10,16,35,.6);
-      color:var(--text);
-      border-radius:14px;
-      padding:12px 12px;
-      font-size:14px;
-      outline:none;
-      margin:10px 0 12px 0;
-      letter-spacing:.3px;
-    }
-
-    .emptyState{
-      margin-top:12px;
-      border:1px dashed var(--stroke2);
-      border-radius:18px;
-      padding:22px;
-      color:var(--muted);
-      text-align:center;
-      background:rgba(255,255,255,.02);
-    }
-
+    h1{font-size:26px;margin:0 0 4px 0;letter-spacing:.2px;}
+    .sub{color:var(--muted);font-size:13px;line-height:1.25;display:flex;flex-wrap:wrap;gap:6px;min-height:18px;}
+    .pill{border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));border-radius:999px;padding:8px 10px;font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:8px;white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,.25);user-select:none;}
+    .pill strong{color:var(--text);font-weight:700;}
+    .pillBtn{margin-left:6px;border:1px solid var(--stroke2);background:rgba(10,16,35,.55);color:var(--text);border-radius:999px;padding:6px 10px;font-weight:800;cursor:pointer;font-size:12px;}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 4px rgba(52,211,153,.14);}
+    .dot.bad{background:var(--bad);box-shadow:0 0 0 4px rgba(251,113,133,.14);}
+    .dot.warn{background:var(--warn);box-shadow:0 0 0 4px rgba(251,191,36,.14);}
+    .moduleSwitch{margin-top:12px;border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));border-radius:18px;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;box-shadow:0 18px 50px rgba(0,0,0,.28);}
+    .moduleBtn{border:1px solid var(--stroke2);background:rgba(10,16,35,.55);color:var(--muted);border-radius:14px;padding:12px 14px;font-weight:900;cursor:pointer;text-align:left;transition:.18s ease;}
+    .moduleBtn.active.sales{color:var(--text);border-color:rgba(99,102,241,.45);background:linear-gradient(180deg, var(--blueA), var(--blueB));box-shadow:0 18px 50px rgba(59,130,246,.14);}
+    .moduleBtn.active.staff{color:var(--text);border-color:rgba(249,115,22,.50);background:linear-gradient(180deg, var(--orangeA), var(--orangeB));box-shadow:0 18px 50px rgba(249,115,22,.14);}
+    .moduleBtn .label{display:block;font-size:14px;margin-bottom:4px;}
+    .moduleBtn .desc{display:block;font-size:12px;color:var(--muted);font-weight:700;}
+    .moduleBtn.active .desc{color:#f2f4ff;}
+    .controls{margin-top:12px;border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));border-radius:18px;padding:12px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;box-shadow:0 18px 50px rgba(0,0,0,.28);}
+    .sel{width:100%;appearance:none;border:1px solid var(--stroke2);background:rgba(10,16,35,.6);color:var(--text);border-radius:999px;padding:11px 12px;font-size:14px;outline:none;}
+    .btn{border:1px solid rgba(99,102,241,.35);background:linear-gradient(180deg, rgba(99,102,241,.35), rgba(59,130,246,.20));color:var(--text);border-radius:999px;padding:11px 14px;font-weight:700;cursor:pointer;white-space:nowrap;}
+    body.theme-staff .btn.staffAccent{border-color:rgba(249,115,22,.45);background:linear-gradient(180deg, rgba(249,115,22,.35), rgba(245,158,11,.18));}
+    .btn:active{transform:translateY(1px);}
+    .grid{margin-top:12px;display:grid;grid-template-columns:repeat(4, 1fr);gap:10px;}
+    .card{border:1px solid var(--stroke);background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));border-radius:18px;padding:14px 14px 12px;box-shadow:0 16px 48px rgba(0,0,0,.26);min-height:92px;}
+    body.theme-staff .card{border-color:#3d2a1d;background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.018));}
+    .k{color:var(--muted2);font-size:12px;margin-bottom:6px;}
+    .v{font-size:30px;font-weight:800;letter-spacing:.3px;}
+    .hint{margin-top:6px;color:var(--muted2);font-size:12px;}
+    .v.small{font-size:22px;}
+    .v.mono{font-variant-numeric:tabular-nums;}
+    .badge{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--stroke2);padding:6px 10px;border-radius:999px;font-size:12px;color:var(--muted);background:rgba(10,16,35,.55);}
+    .badge.good{border-color:rgba(52,211,153,.35);color:#b7ffe3;}
+    .badge.warn{border-color:rgba(251,191,36,.35);color:#fff1c2;}
+    .badge.bad{border-color:rgba(251,113,133,.35);color:#ffd2dc;}
+    .badge.orange{border-color:rgba(249,115,22,.40);color:#ffd9bd;}
+    .section{margin-top:18px;}
+    .section h2{margin:0 0 10px 4px;font-size:16px;color:var(--text);}
+    .tableWrap{border:1px solid var(--stroke);border-radius:18px;overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));box-shadow:0 18px 50px rgba(0,0,0,.30);}
+    body.theme-staff .tableWrap{border-color:#3d2a1d;}
+    .scrollX{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    table{width:100%;border-collapse:separate;border-spacing:0;min-width:620px;}
+    .wideTable{min-width:1500px;}
+    thead th{position:sticky;top:0;z-index:2;background:rgba(9,14,31,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--stroke);color:var(--muted);font-size:12px;font-weight:700;padding:12px 12px;white-space:nowrap;}
+    body.theme-staff thead th{background:rgba(26,18,12,.92);border-bottom-color:#3d2a1d;}
+    tbody td{padding:12px 12px;border-bottom:1px solid rgba(35,49,86,.45);font-variant-numeric:tabular-nums;white-space:nowrap;}
+    body.theme-staff tbody td{border-bottom-color:rgba(94,63,36,.45);}
+    tbody tr:hover td{background:rgba(255,255,255,.03);}
+    .right{text-align:right;}
+    .center{text-align:center;}
+    .muted{color:var(--muted);}
+    .linkish{border-bottom:1px solid rgba(233,238,255,.35);padding-bottom:1px;}
+    .pct{font-weight:900;border-left:1px solid rgba(35,49,86,.45);}
+    body.theme-staff .pct{border-left-color:rgba(94,63,36,.45);}
+    .pct.good{color:var(--good);background:linear-gradient(90deg, rgba(52,211,153,.14), rgba(52,211,153,.02));}
+    .pct.warn{color:var(--warn);background:linear-gradient(90deg, rgba(251,191,36,.14), rgba(251,191,36,.02));}
+    .pct.bad{color:var(--bad);background:linear-gradient(90deg, rgba(251,113,133,.14), rgba(251,113,133,.02));}
+    .col-accent{background:linear-gradient(90deg, rgba(249,115,22,.16), rgba(249,115,22,.04));}
+    .tabs{position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(180deg, rgba(7,10,20,0), rgba(7,10,20,.75) 25%, rgba(7,10,20,.95));backdrop-filter:blur(8px);z-index:50;}
+    .seg{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .seg button{border:1px solid var(--stroke);background:rgba(10,16,35,.55);color:var(--muted);border-radius:16px;padding:12px 14px;font-weight:900;font-size:14px;cursor:pointer;}
+    .seg button.active{color:var(--text);border-color:rgba(99,102,241,.45);background:linear-gradient(180deg, rgba(99,102,241,.35), rgba(59,130,246,.18));box-shadow:0 18px 50px rgba(59,130,246,.14);}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:100;}
+    .overlay.show{display:flex;}
+    .modal{width:min(520px, 100%);border:1px solid var(--stroke);border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));box-shadow:0 24px 80px rgba(0,0,0,.45);padding:16px;}
+    .modal h3{margin:0 0 8px 0;font-size:16px;}
+    .modal p{margin:0 0 12px 0;color:var(--muted);font-size:13px;line-height:1.35;white-space:pre-line;}
+    .modal .row{display:flex;gap:10px;flex-wrap:wrap;}
+    .modal .btn2{flex:1;border:1px solid rgba(99,102,241,.35);background:rgba(10,16,35,.55);color:var(--text);border-radius:14px;padding:12px 14px;font-weight:800;cursor:pointer;text-align:center;}
+    .modal .btn2.primary{background:linear-gradient(180deg, rgba(99,102,241,.35), rgba(59,130,246,.20));}
+    .modal .btn2.danger{border-color:rgba(251,113,133,.35);background:linear-gradient(180deg, rgba(251,113,133,.18), rgba(251,113,133,.08));}
+    .mini{font-size:12px;color:var(--muted2);margin-top:10px;word-break:break-word;}
+    .inp{width:100%;border:1px solid var(--stroke2);background:rgba(10,16,35,.6);color:var(--text);border-radius:14px;padding:12px 12px;font-size:14px;outline:none;margin:10px 0 12px 0;letter-spacing:.3px;}
+    .emptyState{margin-top:12px;border:1px dashed var(--stroke2);border-radius:18px;padding:22px;color:var(--muted);text-align:center;background:rgba(255,255,255,.02);}
     @media (max-width:920px){
-      .controls{ grid-template-columns:1fr 1fr; }
-      .controls .btn{ grid-column:1 / -1; }
-      .grid{ grid-template-columns:1fr 1fr; }
-      .moduleSwitch{ grid-template-columns:1fr; }
-      h1{ font-size:22px; }
-      tbody td, thead th{ padding:10px 10px; }
-      .wrap{ height:calc(100vh - (86px + env(safe-area-inset-bottom))); }
+      .controls{grid-template-columns:1fr 1fr;}
+      .controls .btn{grid-column:1 / -1;}
+      .grid{grid-template-columns:1fr 1fr;}
+      .moduleSwitch{grid-template-columns:1fr;}
+      h1{font-size:22px;}
+      tbody td, thead th{padding:10px 10px;}
+      .wrap{height:calc(100vh - (86px + env(safe-area-inset-bottom)));}
     }
-
     @media (max-width:420px){
-      .grid{ grid-template-columns:1fr; }
-      .v{ font-size:28px; }
+      .grid{grid-template-columns:1fr;}
+      .v{font-size:28px;}
     }
   </style>
 </head>
@@ -538,7 +165,6 @@
         <h1 id="pageTitle">Планы продаж</h1>
         <div class="sub" id="subtitle"></div>
       </div>
-
       <div class="pill" title="Статус подключения">
         <span class="dot" id="gasDot"></span>
         <span>API • <strong id="gasStatus">…</strong></span>
@@ -551,7 +177,6 @@
         <span class="label">Планы продаж</span>
         <span class="desc">Ежедневно и ежемесячно по магазинам</span>
       </button>
-
       <button class="moduleBtn staff" id="moduleStaff" type="button">
         <span class="label">Показатели магазина</span>
         <span class="desc">Сотрудники, чеки, возвраты, средний чек</span>
@@ -603,7 +228,6 @@
           <span class="badge warn">80–100</span>
           <span class="badge good">&gt;100</span>
         </div>
-
         <div class="tableWrap">
           <div class="scrollX">
             <table>
@@ -632,7 +256,6 @@
           <span class="badge orange"><span class="muted">Сортировка:</span> <strong>по сумме продаж</strong></span>
         </div>
       </div>
-
       <div class="section">
         <h2>Сотрудники магазина</h2>
         <div class="tableWrap">
@@ -661,7 +284,6 @@
           </div>
         </div>
       </div>
-
       <div id="staffEmpty" class="emptyState" style="display:none;">Нет данных по выбранным параметрам.</div>
     </div>
 
@@ -684,6 +306,9 @@
         <button class="btn2 primary" id="btnSaveCode" type="button">Сохранить и загрузить</button>
         <button class="btn2" id="btnCancelCode" type="button">Закрыть</button>
       </div>
+      <div class="row" style="margin-top:8px;">
+        <button class="btn2 danger" id="btnClearCache" type="button">🗑 Сбросить кэш</button>
+      </div>
       <div class="mini" id="codeDebug"></div>
     </div>
   </div>
@@ -701,301 +326,325 @@
   </div>
 
 <script>
-const SALES_GAS_URL = "https://script.google.com/macros/s/AKfycbyOKpobb3yHVC8FXzWlqJZbLDE_HU96dqWAiPexWHwJ_D8uTGqsu8Mwc7scDZGYtOKA/exec";
-const STAFF_GAS_URL = "https://script.google.com/macros/s/AKfycbx8gTv-eyFMqJNsoM2Es2uj9NCFv_8cwo26Evcrlib8j1ESEhwIp2ZDPN6KJ-YCAIQY/exec";
+/* ============================================================
+   Bugatti Analytics — Fixed version
+   ============================================================
+   Fixes:
+   1. SALES_META/STAFF_META = null on error (was truthy empty obj)
+   2. hasSalesMeta()/hasStaffMeta() checks data quality, not just truthy
+   3. localStorage wrapped in try-catch (lsGet/lsSet/lsRemove)
+   4. Cache validated: must have ok:true, otherwise discarded
+   5. fetch: catch network TypeError, handle non-JSON responses
+   6. "Clear cache" button added to code modal
+   7. catch(e) parameter everywhere for Safari compatibility
+   8. Loading state prevents double-loads
+   9. Global window.onerror for uncaught exceptions
+   10. Arrow functions replaced with function() for max compat
+   ============================================================ */
 
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const ACCESS_CODE_STORAGE_KEY = "bugatti_access_code_v5";
+window.onerror = function(msg, src, line, col, err) {
+  console.error("Global error:", msg, "at", src, line, col, err);
+};
 
-const MONTHS_RU = [
+window.addEventListener("unhandledrejection", function(event) {
+  console.error("Unhandled promise rejection:", event.reason);
+});
+
+var SALES_GAS_URL = "https://script.google.com/macros/s/AKfycbyOKpobb3yHVC8FXzWlqJZbLDE_HU96dqWAiPexWHwJ_D8uTGqsu8Mwc7scDZGYtOKA/exec";
+var STAFF_GAS_URL = "https://script.google.com/macros/s/AKfycbx8gTv-eyFMqJNsoM2Es2uj9NCFv_8cwo26Evcrlib8j1ESEhwIp2ZDPN6KJ-YCAIQY/exec";
+
+var CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+var ACCESS_CODE_STORAGE_KEY = "bugatti_access_code_v5";
+
+var MONTHS_RU = [
   "Январь","Февраль","Март","Апрель","Май","Июнь",
   "Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"
 ];
 
-const yearSel = document.getElementById("yearSel");
-const monthSel = document.getElementById("monthSel");
-const storeSel = document.getElementById("storeSel");
-const refreshBtn = document.getElementById("refreshBtn");
+var yearSel = document.getElementById("yearSel");
+var monthSel = document.getElementById("monthSel");
+var storeSel = document.getElementById("storeSel");
+var refreshBtn = document.getElementById("refreshBtn");
 
-const staffYearSel = document.getElementById("staffYearSel");
-const staffMonthSel = document.getElementById("staffMonthSel");
-const staffStoreSel = document.getElementById("staffStoreSel");
-const staffRefreshBtn = document.getElementById("staffRefreshBtn");
+var staffYearSel = document.getElementById("staffYearSel");
+var staffMonthSel = document.getElementById("staffMonthSel");
+var staffStoreSel = document.getElementById("staffStoreSel");
+var staffRefreshBtn = document.getElementById("staffRefreshBtn");
 
-const subtitle = document.getElementById("subtitle");
-const pageTitle = document.getElementById("pageTitle");
-const gasStatus = document.getElementById("gasStatus");
-const gasDot = document.getElementById("gasDot");
-const btnChangeCode = document.getElementById("btnChangeCode");
+var subtitle = document.getElementById("subtitle");
+var pageTitle = document.getElementById("pageTitle");
+var gasStatus = document.getElementById("gasStatus");
+var gasDot = document.getElementById("gasDot");
+var btnChangeCode = document.getElementById("btnChangeCode");
 
-const moduleSalesBtn = document.getElementById("moduleSales");
-const moduleStaffBtn = document.getElementById("moduleStaff");
+var moduleSalesBtn = document.getElementById("moduleSales");
+var moduleStaffBtn = document.getElementById("moduleStaff");
 
-const controlsSales = document.getElementById("controlsSales");
-const controlsStaff = document.getElementById("controlsStaff");
+var controlsSales = document.getElementById("controlsSales");
+var controlsStaff = document.getElementById("controlsStaff");
 
-const salesModule = document.getElementById("salesModule");
-const staffModule = document.getElementById("staffModule");
+var salesModule = document.getElementById("salesModule");
+var staffModule = document.getElementById("staffModule");
 
-const kpiGrid = document.getElementById("kpiGrid");
-const dailyBody = document.getElementById("dailyBody");
-const monthlyBody = document.getElementById("monthlyBody");
-const cutoffText = document.getElementById("cutoffText");
+var kpiGrid = document.getElementById("kpiGrid");
+var dailyBody = document.getElementById("dailyBody");
+var monthlyBody = document.getElementById("monthlyBody");
+var cutoffText = document.getElementById("cutoffText");
 
-const dailySection = document.getElementById("dailySection");
-const monthlySection = document.getElementById("monthlySection");
-const tabDaily = document.getElementById("tabDaily");
-const tabMonthly = document.getElementById("tabMonthly");
+var dailySection = document.getElementById("dailySection");
+var monthlySection = document.getElementById("monthlySection");
+var tabDaily = document.getElementById("tabDaily");
+var tabMonthly = document.getElementById("tabMonthly");
 
-const staffBody = document.getElementById("staffBody");
-const staffEmpty = document.getElementById("staffEmpty");
+var staffBody = document.getElementById("staffBody");
+var staffEmpty = document.getElementById("staffEmpty");
 
-const overlayCode = document.getElementById("overlayCode");
-const codeTitle = document.getElementById("codeTitle");
-const codeText = document.getElementById("codeText");
-const codeInput = document.getElementById("codeInput");
-const codeDebug = document.getElementById("codeDebug");
-const btnSaveCode = document.getElementById("btnSaveCode");
-const btnCancelCode = document.getElementById("btnCancelCode");
+var overlayCode = document.getElementById("overlayCode");
+var codeTitle = document.getElementById("codeTitle");
+var codeText = document.getElementById("codeText");
+var codeInput = document.getElementById("codeInput");
+var codeDebug = document.getElementById("codeDebug");
+var btnSaveCode = document.getElementById("btnSaveCode");
+var btnCancelCode = document.getElementById("btnCancelCode");
+var btnClearCache = document.getElementById("btnClearCache");
 
-const overlayError = document.getElementById("overlayError");
-const errTitle = document.getElementById("errTitle");
-const errText = document.getElementById("errText");
-const errDebug = document.getElementById("errDebug");
-const btnRetry = document.getElementById("btnRetry");
-const btnCloseErr = document.getElementById("btnCloseErr");
+var overlayError = document.getElementById("overlayError");
+var errTitle = document.getElementById("errTitle");
+var errText = document.getElementById("errText");
+var errDebug = document.getElementById("errDebug");
+var btnRetry = document.getElementById("btnRetry");
+var btnCloseErr = document.getElementById("btnCloseErr");
 
-let ACCESS_CODE = "";
-let activeModule = "sales";
-let activeView = "daily";
+var ACCESS_CODE = "";
+var activeModule = "sales";
+var activeView = "daily";
 
-let SALES_META = null;
-let SALES_RAW = [];
-let SALES_PLANS = [];
+var SALES_META = null;
+var SALES_RAW = [];
+var SALES_PLANS = [];
 
-let STAFF_META = null;
-let STAFF_RAW = [];
-let STAFF_PLANS = [];
+var STAFF_META = null;
+var STAFF_RAW = [];
+var STAFF_PLANS = [];
+
+var _loadingSales = false;
+var _loadingStaff = false;
 
 init();
 
 async function init(){
+  console.log("[init] starting...");
   wireUI();
 
-  ACCESS_CODE = (localStorage.getItem(ACCESS_CODE_STORAGE_KEY) || "").trim();
+  ACCESS_CODE = (lsGet(ACCESS_CODE_STORAGE_KEY) || "").trim();
 
   if (!ACCESS_CODE){
     openCodeModal("🔒 Код доступа", "Введи код доступа, чтобы загрузить данные.", "");
     setGas("LOCK", "bad");
-    subtitle.innerHTML = `<span class="muted">Нужен код доступа</span>`;
+    subtitle.innerHTML = '<span class="muted">Нужен код доступа</span>';
     return;
   }
+
+  subtitle.innerHTML = '<span class="muted">Загрузка данных…</span>';
+
+  var salesOk = false;
+  var staffOk = false;
 
   try {
     await loadSalesAll(false);
     buildSalesSelectors(false);
+    salesOk = true;
   } catch (err) {
-    console.error(err);
+    console.error("[init] sales failed:", err);
   }
 
   try {
     await loadStaffAll(false);
     buildStaffSelectors(false);
+    staffOk = true;
   } catch (err) {
-    console.error(err);
+    console.error("[init] staff failed:", err);
+  }
+
+  if (!salesOk && !staffOk && ACCESS_CODE) {
+    subtitle.innerHTML = '<span class="muted">Ошибка загрузки. Нажми «Обновить» или смени код.</span>';
   }
 
   renderAll();
 }
 
 function wireUI(){
-  moduleSalesBtn.addEventListener("click", async () => {
+  moduleSalesBtn.addEventListener("click", async function() {
     activeModule = "sales";
     applyModuleTheme();
-
-    if (!SALES_META) {
-      await loadSalesAll(false);
-      buildSalesSelectors(false);
+    if (!hasSalesMeta()) {
+      try {
+        await loadSalesAll(false);
+        buildSalesSelectors(false);
+      } catch(e) { console.error(e); }
     }
-
     renderAll();
   });
 
-  moduleStaffBtn.addEventListener("click", async () => {
+  moduleStaffBtn.addEventListener("click", async function() {
     activeModule = "staff";
     applyModuleTheme();
-
-    if (!STAFF_META) {
-      await loadStaffAll(false);
-      buildStaffSelectors(false);
+    if (!hasStaffMeta()) {
+      try {
+        await loadStaffAll(false);
+        buildStaffSelectors(false);
+      } catch(e) { console.error(e); }
     }
-
     renderAll();
   });
 
-  tabDaily.addEventListener("click", () => {
-    activeView = "daily";
-    renderAll();
+  tabDaily.addEventListener("click", function() { activeView = "daily"; renderAll(); });
+  tabMonthly.addEventListener("click", function() { activeView = "monthly"; renderAll(); });
+
+  [yearSel, monthSel, storeSel].forEach(function(el) { el.addEventListener("change", renderAll); });
+  [staffYearSel, staffMonthSel, staffStoreSel].forEach(function(el) { el.addEventListener("change", renderAll); });
+
+  refreshBtn.addEventListener("click", async function() {
+    try { await loadSalesAll(true); buildSalesSelectors(true); renderAll(); }
+    catch(e) { console.error(e); }
   });
 
-  tabMonthly.addEventListener("click", () => {
-    activeView = "monthly";
-    renderAll();
+  staffRefreshBtn.addEventListener("click", async function() {
+    try { await loadStaffAll(true); buildStaffSelectors(true); renderAll(); }
+    catch(e) { console.error(e); }
   });
 
-  [yearSel, monthSel, storeSel].forEach(el => el.addEventListener("change", renderAll));
-  [staffYearSel, staffMonthSel, staffStoreSel].forEach(el => el.addEventListener("change", renderAll));
-
-  refreshBtn.addEventListener("click", async () => {
-    await loadSalesAll(true);
-    buildSalesSelectors(true);
-    renderAll();
-  });
-
-  staffRefreshBtn.addEventListener("click", async () => {
-    await loadStaffAll(true);
-    buildStaffSelectors(true);
-    renderAll();
-  });
-
-  btnChangeCode.addEventListener("click", () => {
+  btnChangeCode.addEventListener("click", function() {
     openCodeModal("🔒 Сменить код", "Введи новый код доступа.", "");
   });
 
-  btnSaveCode.addEventListener("click", async () => {
-    const c = String(codeInput.value || "").trim();
-
-    if (c.length < 3){
-      codeDebug.textContent = "Код слишком короткий.";
-      return;
-    }
+  btnSaveCode.addEventListener("click", async function() {
+    var c = String(codeInput.value || "").trim();
+    if (c.length < 3){ codeDebug.textContent = "Код слишком короткий."; return; }
 
     ACCESS_CODE = c;
-    localStorage.setItem(ACCESS_CODE_STORAGE_KEY, ACCESS_CODE);
+    lsSet(ACCESS_CODE_STORAGE_KEY, ACCESS_CODE);
     overlayCode.classList.remove("show");
 
-    SALES_META = null;
-    SALES_RAW = [];
-    SALES_PLANS = [];
-    STAFF_META = null;
-    STAFF_RAW = [];
-    STAFF_PLANS = [];
+    SALES_META = null; SALES_RAW = []; SALES_PLANS = [];
+    STAFF_META = null; STAFF_RAW = []; STAFF_PLANS = [];
 
-    try {
-      await loadSalesAll(true);
-      buildSalesSelectors(false);
-    } catch (err) {
-      console.error(err);
-    }
+    subtitle.innerHTML = '<span class="muted">Загрузка данных…</span>';
 
-    try {
-      await loadStaffAll(true);
-      buildStaffSelectors(false);
-    } catch (err) {
-      console.error(err);
-    }
+    try { await loadSalesAll(true); buildSalesSelectors(false); }
+    catch (err) { console.error(err); }
+
+    try { await loadStaffAll(true); buildStaffSelectors(false); }
+    catch (err) { console.error(err); }
 
     renderAll();
   });
 
-  btnCancelCode.addEventListener("click", () => overlayCode.classList.remove("show"));
+  btnCancelCode.addEventListener("click", function() { overlayCode.classList.remove("show"); });
 
-  btnRetry.addEventListener("click", async () => {
+  btnClearCache.addEventListener("click", function() {
+    clearAllCache();
+    SALES_META = null; SALES_RAW = []; SALES_PLANS = [];
+    STAFF_META = null; STAFF_RAW = []; STAFF_PLANS = [];
+    codeDebug.textContent = "Кэш очищен. Введи код и нажми «Сохранить».";
+  });
+
+  btnRetry.addEventListener("click", async function() {
     overlayError.classList.remove("show");
-
-    if (activeModule === "sales") {
-      await loadSalesAll(true);
-      buildSalesSelectors(true);
-    } else {
-      await loadStaffAll(true);
-      buildStaffSelectors(true);
-    }
-
-    renderAll();
+    try {
+      if (activeModule === "sales") { await loadSalesAll(true); buildSalesSelectors(true); }
+      else { await loadStaffAll(true); buildStaffSelectors(true); }
+      renderAll();
+    } catch(e) { console.error(e); }
   });
 
-  btnCloseErr.addEventListener("click", () => overlayError.classList.remove("show"));
+  btnCloseErr.addEventListener("click", function() { overlayError.classList.remove("show"); });
+  codeInput.addEventListener("keydown", function(e) { if (e.key === "Enter") btnSaveCode.click(); });
+}
 
-  codeInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") btnSaveCode.click();
-  });
+function hasSalesMeta() {
+  return SALES_META && Array.isArray(SALES_META.stores) && SALES_META.stores.length > 0;
+}
+
+function hasStaffMeta() {
+  return STAFF_META && Array.isArray(STAFF_META.stores) && STAFF_META.stores.length > 0;
 }
 
 function applyModuleTheme(){
   document.body.classList.toggle("theme-sales", activeModule === "sales");
   document.body.classList.toggle("theme-staff", activeModule === "staff");
-
   moduleSalesBtn.classList.toggle("active", activeModule === "sales");
   moduleStaffBtn.classList.toggle("active", activeModule === "staff");
-
   controlsSales.style.display = activeModule === "sales" ? "" : "none";
   controlsStaff.style.display = activeModule === "staff" ? "" : "none";
-
   salesModule.style.display = activeModule === "sales" ? "" : "none";
   staffModule.style.display = activeModule === "staff" ? "" : "none";
-
   document.querySelector(".tabs").style.display = activeModule === "sales" ? "" : "none";
 }
 
 async function loadSalesAll(force){
+  if (_loadingSales) return;
+  _loadingSales = true;
   setGas("…", "warn");
-
-  try{
-    const [meta, raw, plans] = await Promise.all([
+  try {
+    var results = await Promise.all([
       fetchCached(SALES_GAS_URL, "meta", force),
       fetchCached(SALES_GAS_URL, "raw", force),
       fetchCached(SALES_GAS_URL, "plans", force)
     ]);
-
-    SALES_META = meta;
-    SALES_RAW = Array.isArray(raw?.rows) ? raw.rows : [];
-    SALES_PLANS = Array.isArray(plans?.rows) ? plans.rows : [];
-
+    SALES_META = results[0];
+    SALES_RAW = Array.isArray(results[1] && results[1].rows) ? results[1].rows : [];
+    SALES_PLANS = Array.isArray(results[2] && results[2].rows) ? results[2].rows : [];
     setGas("OK", "good");
-  }catch(err){
+    console.log("[sales OK] stores:", (SALES_META.stores||[]).length, "raw:", SALES_RAW.length);
+  } catch(err) {
     handleLoadError(err, SALES_GAS_URL);
-    SALES_META = { years:[], stores:[] };
+    SALES_META = null;
     SALES_RAW = [];
     SALES_PLANS = [];
     throw err;
+  } finally {
+    _loadingSales = false;
   }
 }
 
 async function loadStaffAll(force){
+  if (_loadingStaff) return;
+  _loadingStaff = true;
   setGas("…", "warn");
-
-  try{
-    const [meta, raw, plans] = await Promise.all([
+  try {
+    var results = await Promise.all([
       fetchCached(STAFF_GAS_URL, "meta", force),
       fetchCached(STAFF_GAS_URL, "raw", force),
       fetchCached(STAFF_GAS_URL, "plans", force)
     ]);
-
-    STAFF_META = meta;
-    STAFF_RAW = Array.isArray(raw?.rows) ? raw.rows : [];
-    STAFF_PLANS = Array.isArray(plans?.rows) ? plans.rows : [];
-
+    STAFF_META = results[0];
+    STAFF_RAW = Array.isArray(results[1] && results[1].rows) ? results[1].rows : [];
+    STAFF_PLANS = Array.isArray(results[2] && results[2].rows) ? results[2].rows : [];
     setGas("OK", "good");
-  }catch(err){
+    console.log("[staff OK] stores:", (STAFF_META.stores||[]).length, "raw:", STAFF_RAW.length);
+  } catch(err) {
     handleLoadError(err, STAFF_GAS_URL);
-    STAFF_META = { years:[], months:[], stores:[] };
+    STAFF_META = null;
     STAFF_RAW = [];
     STAFF_PLANS = [];
     throw err;
+  } finally {
+    _loadingStaff = false;
   }
 }
 
 function buildSalesSelectors(keepSelection){
-  const years = (SALES_META?.years || []).slice().map(Number).filter(Boolean).sort((a,b)=>b-a);
-  const stores = (SALES_META?.stores || []).slice().map(String).filter(Boolean).sort((a,b)=>a.localeCompare(b,"ru"));
+  var years = (SALES_META && SALES_META.years || []).slice().map(Number).filter(Boolean).sort(function(a,b){return b-a});
+  var stores = (SALES_META && SALES_META.stores || []).slice().map(String).filter(Boolean).sort(function(a,b){return a.localeCompare(b,"ru")});
 
-  const prevYear = yearSel.value;
-  const prevMonth = monthSel.value;
-  const prevStore = storeSel.value;
+  var prevYear = yearSel.value;
+  var prevMonth = monthSel.value;
+  var prevStore = storeSel.value;
 
-  yearSel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join("");
-  monthSel.innerHTML = MONTHS_RU.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join("");
-  storeSel.innerHTML = stores.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+  yearSel.innerHTML = years.map(function(y){return '<option value="'+y+'">'+y+'</option>'}).join("");
+  monthSel.innerHTML = MONTHS_RU.map(function(m){return '<option value="'+escapeHtml(m)+'">'+escapeHtml(m)+'</option>'}).join("");
+  storeSel.innerHTML = stores.map(function(s){return '<option value="'+escapeHtml(s)+'">'+escapeHtml(s)+'</option>'}).join("");
 
   if (keepSelection){
     if (prevYear && years.includes(Number(prevYear))) yearSel.value = prevYear;
@@ -1003,40 +652,36 @@ function buildSalesSelectors(keepSelection){
     if (prevStore && stores.includes(prevStore)) storeSel.value = prevStore;
   } else {
     if (years.length) yearSel.value = String(years[0]);
-
-    const currentMonth = MONTHS_RU[new Date().getMonth()] || MONTHS_RU[0] || "";
+    var currentMonth = MONTHS_RU[new Date().getMonth()] || MONTHS_RU[0] || "";
     if (MONTHS_RU.includes(currentMonth)) monthSel.value = currentMonth;
     else if (MONTHS_RU.length) monthSel.value = MONTHS_RU[0];
-
     if (stores.includes("Астана")) storeSel.value = "Астана";
     else if (stores.length) storeSel.value = stores[0];
   }
 }
 
 function buildStaffSelectors(keepSelection){
-  const years = (STAFF_META?.years || []).slice().map(Number).filter(Boolean).sort((a,b)=>b-a);
-  const months = (STAFF_META?.months || []).slice().sort((a,b)=>Number(a.month)-Number(b.month));
-  const stores = (STAFF_META?.stores || []).slice().map(String).filter(Boolean).sort((a,b)=>a.localeCompare(b,"ru"));
+  var years = (STAFF_META && STAFF_META.years || []).slice().map(Number).filter(Boolean).sort(function(a,b){return b-a});
+  var months = (STAFF_META && STAFF_META.months || []).slice().sort(function(a,b){return Number(a.month)-Number(b.month)});
+  var stores = (STAFF_META && STAFF_META.stores || []).slice().map(String).filter(Boolean).sort(function(a,b){return a.localeCompare(b,"ru")});
 
-  const prevYear = staffYearSel.value;
-  const prevMonth = staffMonthSel.value;
-  const prevStore = staffStoreSel.value;
+  var prevYear = staffYearSel.value;
+  var prevMonth = staffMonthSel.value;
+  var prevStore = staffStoreSel.value;
 
-  staffYearSel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join("");
-  staffMonthSel.innerHTML = months.map(m => `<option value="${Number(m.month)}">${escapeHtml(m.monthName || monthNameRu(Number(m.month)))}</option>`).join("");
-  staffStoreSel.innerHTML = stores.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+  staffYearSel.innerHTML = years.map(function(y){return '<option value="'+y+'">'+y+'</option>'}).join("");
+  staffMonthSel.innerHTML = months.map(function(m){return '<option value="'+Number(m.month)+'">'+escapeHtml(m.monthName || monthNameRu(Number(m.month)))+'</option>'}).join("");
+  staffStoreSel.innerHTML = stores.map(function(s){return '<option value="'+escapeHtml(s)+'">'+escapeHtml(s)+'</option>'}).join("");
 
   if (keepSelection){
     if (prevYear && years.includes(Number(prevYear))) staffYearSel.value = prevYear;
-    if (prevMonth && months.some(m => String(m.month) === String(prevMonth))) staffMonthSel.value = prevMonth;
+    if (prevMonth && months.some(function(m){return String(m.month) === String(prevMonth)})) staffMonthSel.value = prevMonth;
     if (prevStore && stores.includes(prevStore)) staffStoreSel.value = prevStore;
   } else {
     if (years.length) staffYearSel.value = String(years[0]);
-
-    const nowMonth = new Date().getMonth() + 1;
-    if (months.some(m => Number(m.month) === nowMonth)) staffMonthSel.value = String(nowMonth);
+    var nowMonth = new Date().getMonth() + 1;
+    if (months.some(function(m){return Number(m.month) === nowMonth})) staffMonthSel.value = String(nowMonth);
     else if (months.length) staffMonthSel.value = String(months[0].month);
-
     if (stores.includes("Магазин Абайка")) staffStoreSel.value = "Магазин Абайка";
     else if (stores.includes("Магазин Есентай")) staffStoreSel.value = "Магазин Есентай";
     else if (stores.length) staffStoreSel.value = stores[0];
@@ -1045,84 +690,74 @@ function buildStaffSelectors(keepSelection){
 
 function renderAll(){
   applyModuleTheme();
-
   if (activeModule === "sales") renderSalesModule();
   else renderStaffModule();
 }
 
 function renderSalesModule(){
   pageTitle.textContent = "Планы продаж";
-
   tabDaily.classList.toggle("active", activeView === "daily");
   tabMonthly.classList.toggle("active", activeView === "monthly");
-
   dailySection.style.display = activeView === "daily" ? "" : "none";
   monthlySection.style.display = activeView === "monthly" ? "" : "none";
 
-  const selectedYear = Number(yearSel.value);
-  const selectedMonth = String(monthSel.value || "").trim();
-  const selectedStore = String(storeSel.value || "").trim();
-  const monthIndex = MONTHS_RU.indexOf(selectedMonth);
+  var selectedYear = Number(yearSel.value);
+  var selectedMonth = String(monthSel.value || "").trim();
+  var selectedStore = String(storeSel.value || "").trim();
+  var monthIndex = MONTHS_RU.indexOf(selectedMonth);
 
   if (!selectedYear || monthIndex < 0 || !selectedStore){
-    subtitle.innerHTML = `<span class="muted">Выбери год, месяц и магазин</span>`;
-    kpiGrid.innerHTML = "";
-    dailyBody.innerHTML = "";
-    monthlyBody.innerHTML = "";
+    subtitle.innerHTML = '<span class="muted">Выбери год, месяц и магазин</span>';
+    kpiGrid.innerHTML = ""; dailyBody.innerHTML = ""; monthlyBody.innerHTML = "";
     return;
   }
 
-  const ymPrefix = `${selectedYear}-${String(monthIndex + 1).padStart(2,"0")}-`;
-  const dedup = dedupSalesRaw(SALES_RAW);
+  var ymPrefix = selectedYear + "-" + String(monthIndex + 1).padStart(2,"0") + "-";
+  var dedup = dedupSalesRaw(SALES_RAW);
 
-  const storeRows = dedup.filter(r =>
-    normalizeText(r.store) === normalizeText(selectedStore) &&
-    String(r.reportDateKey || "").startsWith(ymPrefix)
-  );
+  var storeRows = dedup.filter(function(r){
+    return normalizeText(r.store) === normalizeText(selectedStore) && String(r.reportDateKey || "").startsWith(ymPrefix);
+  });
 
-  const planRow = SALES_PLANS.find(p =>
-    Number(p.year) === selectedYear &&
-    normalizeText(p.month) === normalizeText(selectedMonth) &&
-    normalizeText(p.store) === normalizeText(selectedStore)
-  );
+  var planRow = SALES_PLANS.find(function(p){
+    return Number(p.year) === selectedYear && normalizeText(p.month) === normalizeText(selectedMonth) && normalizeText(p.store) === normalizeText(selectedStore);
+  });
 
-  const planMonth = planRow ? Number(planRow.planMonth || 0) : 0;
-  const planDay = planRow ? Number(planRow.planDay || 0) : 0;
-  const totalDaysInMonth = new Date(Date.UTC(selectedYear, monthIndex + 1, 0)).getUTCDate();
+  var planMonth = planRow ? Number(planRow.planMonth || 0) : 0;
+  var planDay = planRow ? Number(planRow.planDay || 0) : 0;
+  var totalDaysInMonth = new Date(Date.UTC(selectedYear, monthIndex + 1, 0)).getUTCDate();
 
-  const dailyRows = [];
-  for (let day = 1; day <= totalDaysInMonth; day++){
-    const dateKey = `${selectedYear}-${String(monthIndex + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
-    const factRow = storeRows.find(r => r.reportDateKey === dateKey);
-    const fact = factRow ? netSales(factRow) : 0;
-    const pct = planDay > 0 ? (fact / planDay) : null;
-
-    dailyRows.push({ dateKey, plan:planDay, fact, pct });
+  var dailyRows = [];
+  for (var d = 1; d <= totalDaysInMonth; d++){
+    var dateKey = selectedYear + "-" + String(monthIndex + 1).padStart(2,"0") + "-" + String(d).padStart(2,"0");
+    var factRow = storeRows.find(function(r){return r.reportDateKey === dateKey});
+    var fact = factRow ? netSales(factRow) : 0;
+    var pct = planDay > 0 ? (fact / planDay) : null;
+    dailyRows.push({ dateKey:dateKey, plan:planDay, fact:fact, pct:pct });
   }
 
-  const cutoff = maxDateKey(storeRows.map(r => r.reportDateKey));
-  const cutoffLabel = cutoff || `${selectedYear}-${String(monthIndex + 1).padStart(2,"0")}-01`;
+  var cutoff = maxDateKey(storeRows.map(function(r){return r.reportDateKey}));
+  var cutoffLabel = cutoff || (selectedYear + "-" + String(monthIndex + 1).padStart(2,"0") + "-01");
 
-  const monthFact = storeRows.reduce((sum, r) => sum + netSales(r), 0);
-  const monthPct = planMonth > 0 ? (monthFact / planMonth) : null;
-  const checks = storeRows.reduce((sum, r) => sum + Number(r.checksNew || 0) + Number(r.checksOld || 0), 0);
-  const avgCheck = checks > 0 ? (monthFact / checks) : 0;
+  var monthFact = storeRows.reduce(function(sum, r){return sum + netSales(r)}, 0);
+  var monthPct = planMonth > 0 ? (monthFact / planMonth) : null;
+  var checks = storeRows.reduce(function(sum, r){return sum + Number(r.checksNew || 0) + Number(r.checksOld || 0)}, 0);
+  var avgCheck = checks > 0 ? (monthFact / checks) : 0;
 
-  const remain = Math.max(0, planMonth - monthFact);
-  const cutoffDay = cutoff ? Number(cutoff.slice(8,10)) : 0;
-  const daysLeft = cutoffDay ? Math.max(0, totalDaysInMonth - cutoffDay) : 0;
-  const needPerDay = daysLeft > 0 ? (remain / daysLeft) : null;
+  var remain = Math.max(0, planMonth - monthFact);
+  var cutoffDay = cutoff ? Number(cutoff.slice(8,10)) : 0;
+  var daysLeft = cutoffDay ? Math.max(0, totalDaysInMonth - cutoffDay) : 0;
+  var needPerDay = daysLeft > 0 ? (remain / daysLeft) : null;
 
-  subtitle.innerHTML = [
-    `<span class="muted">Раздел:</span> <strong>Планы продаж</strong>`,
-    `<span class="muted">• Период:</span> <strong>${escapeHtml(selectedMonth)} ${selectedYear}</strong>`,
-    `<span class="muted">• Магазин:</span> <strong>${escapeHtml(selectedStore)}</strong>`
-  ].join(" ");
+  subtitle.innerHTML =
+    '<span class="muted">Раздел:</span> <strong>Планы продаж</strong> ' +
+    '<span class="muted">• Период:</span> <strong>' + escapeHtml(selectedMonth) + ' ' + selectedYear + '</strong> ' +
+    '<span class="muted">• Магазин:</span> <strong>' + escapeHtml(selectedStore) + '</strong>';
 
   kpiGrid.innerHTML = [
     kpiCard("План (мес)", planMonth ? money(planMonth) : "—", "Установленный план"),
-    kpiCard("Факт (мес)", monthFact ? money(monthFact) : "0 ₸", `С учётом возвратов • Срез: ${cutoffLabel}`),
-    kpiCard("% от плана", monthPct == null ? `<span class="badge bad">—</span>` : `<span class="badge ${pctClass(monthPct * 100)}">${pctText(monthPct)}</span>`, "Факт / План", true),
+    kpiCard("Факт (мес)", monthFact ? money(monthFact) : "0 ₸", "С учётом возвратов • Срез: " + cutoffLabel),
+    kpiCard("% от плана", monthPct == null ? '<span class="badge bad">—</span>' : '<span class="badge ' + pctClass(monthPct * 100) + '">' + pctText(monthPct) + '</span>', "Факт / План", true),
     kpiCard("Средний чек", avgCheck ? money(avgCheck) : "0 ₸", "Факт / Чеки"),
     kpiCard("Осталось до плана", planMonth ? money(remain) : "—", "Макс(0, План − Факт)"),
     kpiCard("Нужно в день", needPerDay ? money(needPerDay) : "—", "Чтобы закрыть план до конца месяца"),
@@ -1130,96 +765,76 @@ function renderSalesModule(){
     kpiCard("Дней до конца", String(daysLeft), "От среза до конца месяца")
   ].join("");
 
-  dailyBody.innerHTML = dailyRows.map(r => {
-    const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
-
-    return `
-      <tr>
-        <td><span class="linkish">${shortDate(r.dateKey)}</span></td>
-        <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
-        <td class="right">${r.plan ? money(r.plan) : "—"}</td>
-        <td class="right">${r.fact ? `<span class="linkish">${money(r.fact)}</span>` : "—"}</td>
-      </tr>
-    `;
+  dailyBody.innerHTML = dailyRows.map(function(r){
+    var cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
+    return '<tr><td><span class="linkish">' + shortDate(r.dateKey) + '</span></td>' +
+      '<td class="right pct ' + cls + '">' + (r.pct == null ? "—" : pctText(r.pct)) + '</td>' +
+      '<td class="right">' + (r.plan ? money(r.plan) : "—") + '</td>' +
+      '<td class="right">' + (r.fact ? '<span class="linkish">' + money(r.fact) + '</span>' : "—") + '</td></tr>';
   }).join("");
 
   if (activeView === "monthly"){
-    const allStores = (SALES_META?.stores || []).slice().map(String).filter(Boolean);
+    var allStores = (SALES_META && SALES_META.stores || []).slice().map(String).filter(Boolean);
 
-    const monthlyRows = allStores.map(store => {
-      const rows = dedup.filter(r =>
-        normalizeText(r.store) === normalizeText(store) &&
-        String(r.reportDateKey || "").startsWith(ymPrefix)
-      );
-
-      const plan = SALES_PLANS.find(p =>
-        Number(p.year) === selectedYear &&
-        normalizeText(p.month) === normalizeText(selectedMonth) &&
-        normalizeText(p.store) === normalizeText(store)
-      );
-
-      const planMonthValue = plan ? Number(plan.planMonth || 0) : 0;
-      const factValue = rows.reduce((sum, r) => sum + netSales(r), 0);
-      const checksValue = rows.reduce((sum, r) => sum + Number(r.checksNew || 0) + Number(r.checksOld || 0), 0);
-      const avgValue = checksValue > 0 ? (factValue / checksValue) : 0;
-      const pctValue = planMonthValue > 0 ? (factValue / planMonthValue) : null;
-      const cutoffValue = maxDateKey(rows.map(r => r.reportDateKey));
-
-      return { store, planMonth:planMonthValue, fact:factValue, avgCheck:avgValue, pct:pctValue, cutoff:cutoffValue };
+    var monthlyRows = allStores.map(function(store){
+      var rows = dedup.filter(function(r){
+        return normalizeText(r.store) === normalizeText(store) && String(r.reportDateKey || "").startsWith(ymPrefix);
+      });
+      var plan = SALES_PLANS.find(function(p){
+        return Number(p.year) === selectedYear && normalizeText(p.month) === normalizeText(selectedMonth) && normalizeText(p.store) === normalizeText(store);
+      });
+      var pmv = plan ? Number(plan.planMonth || 0) : 0;
+      var fv = rows.reduce(function(s, r){return s + netSales(r)}, 0);
+      var cv = rows.reduce(function(s, r){return s + Number(r.checksNew || 0) + Number(r.checksOld || 0)}, 0);
+      var av = cv > 0 ? (fv / cv) : 0;
+      var pv = pmv > 0 ? (fv / pmv) : null;
+      var co = maxDateKey(rows.map(function(r){return r.reportDateKey}));
+      return { store:store, planMonth:pmv, fact:fv, avgCheck:av, pct:pv, cutoff:co };
     });
 
-    const globalCutoff = maxDateKey(monthlyRows.map(r => r.cutoff).filter(Boolean));
+    var globalCutoff = maxDateKey(monthlyRows.map(function(r){return r.cutoff}).filter(Boolean));
     cutoffText.textContent = globalCutoff || "—";
 
-    monthlyRows.sort((a,b) => {
-      const av = a.pct == null ? -1 : a.pct;
-      const bv = b.pct == null ? -1 : b.pct;
+    monthlyRows.sort(function(a,b){
+      var av = a.pct == null ? -1 : a.pct;
+      var bv = b.pct == null ? -1 : b.pct;
       return bv - av;
     });
 
-    monthlyBody.innerHTML = monthlyRows.map(r => {
-      const cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
-
-      return `
-        <tr>
-          <td>${escapeHtml(r.store)}</td>
-          <td class="right pct ${cls}">${r.pct == null ? "—" : pctText(r.pct)}</td>
-          <td class="right">${r.planMonth ? money(r.planMonth) : "—"}</td>
-          <td class="right">${r.fact ? money(r.fact) : "0 ₸"}</td>
-          <td class="right">${r.avgCheck ? money(r.avgCheck) : "—"}</td>
-        </tr>
-      `;
+    monthlyBody.innerHTML = monthlyRows.map(function(r){
+      var cls = r.pct == null ? "bad" : pctClass(r.pct * 100);
+      return '<tr><td>' + escapeHtml(r.store) + '</td>' +
+        '<td class="right pct ' + cls + '">' + (r.pct == null ? "—" : pctText(r.pct)) + '</td>' +
+        '<td class="right">' + (r.planMonth ? money(r.planMonth) : "—") + '</td>' +
+        '<td class="right">' + (r.fact ? money(r.fact) : "0 ₸") + '</td>' +
+        '<td class="right">' + (r.avgCheck ? money(r.avgCheck) : "—") + '</td></tr>';
     }).join("");
   }
 }
 
 function renderStaffModule(){
   pageTitle.textContent = "Показатели магазина";
-
-  const year = Number(staffYearSel.value);
-  const month = Number(staffMonthSel.value);
-  const store = String(staffStoreSel.value || "").trim();
+  var year = Number(staffYearSel.value);
+  var month = Number(staffMonthSel.value);
+  var store = String(staffStoreSel.value || "").trim();
 
   if (!year || !month || !store){
-    subtitle.innerHTML = `<span class="muted">Выбери год, месяц и магазин</span>`;
-    kpiGrid.innerHTML = "";
-    staffBody.innerHTML = "";
-    staffEmpty.style.display = "";
+    subtitle.innerHTML = '<span class="muted">Выбери год, месяц и магазин</span>';
+    kpiGrid.innerHTML = ""; staffBody.innerHTML = ""; staffEmpty.style.display = "";
     return;
   }
 
-  const report = buildStaffReport(year, month, store);
+  var report = buildStaffReport(year, month, store);
 
-  subtitle.innerHTML = [
-    `<span class="muted">Раздел:</span> <strong>Показатели магазина</strong>`,
-    `<span class="muted">• Период:</span> <strong>${escapeHtml(monthNameRu(month))} ${year}</strong>`,
-    `<span class="muted">• Магазин:</span> <strong>${escapeHtml(store)}</strong>`
-  ].join(" ");
+  subtitle.innerHTML =
+    '<span class="muted">Раздел:</span> <strong>Показатели магазина</strong> ' +
+    '<span class="muted">• Период:</span> <strong>' + escapeHtml(monthNameRu(month)) + ' ' + year + '</strong> ' +
+    '<span class="muted">• Магазин:</span> <strong>' + escapeHtml(store) + '</strong>';
 
   kpiGrid.innerHTML = [
     kpiCard("План магазина", report.summary.planMonth ? money(report.summary.planMonth) : "—", "План на выбранный месяц"),
     kpiCard("Факт магазина", report.summary.factStoreSales ? money(report.summary.factStoreSales) : "0 ₸", "Сумма продаж магазина"),
-    kpiCard("% выполнения", report.summary.planMonth > 0 ? `<span class="badge ${pctClass((Number(report.summary.planPct || 0)) * 100)}">${pctText(Number(report.summary.planPct || 0))}</span>` : `<span class="badge bad">—</span>`, "Факт / план", true),
+    kpiCard("% выполнения", report.summary.planMonth > 0 ? '<span class="badge ' + pctClass(Number(report.summary.planPct||0)*100) + '">' + pctText(Number(report.summary.planPct||0)) + '</span>' : '<span class="badge bad">—</span>', "Факт / план", true),
     kpiCard("Сотрудников", String(report.employees.length), "Попали в расчёт"),
     kpiCard("Индивид. продажи", report.totals.individualSales ? money(report.totals.individualSales) : "0 ₸", "По магазину"),
     kpiCard("Коллективные продажи", report.totals.collectiveSales ? money(report.totals.collectiveSales) : "0 ₸", "По магазину"),
@@ -1227,193 +842,124 @@ function renderStaffModule(){
     kpiCard("Средний чек", report.totals.avgCheck ? money(report.totals.avgCheck) : "—", "По магазину")
   ].join("");
 
-  if (!report.employees.length){
-    staffBody.innerHTML = "";
-    staffEmpty.style.display = "";
-    return;
-  }
-
+  if (!report.employees.length){ staffBody.innerHTML = ""; staffEmpty.style.display = ""; return; }
   staffEmpty.style.display = "none";
 
-  staffBody.innerHTML = report.employees.map((e, idx) => `
-    <tr>
-      <td class="center">${idx + 1}</td>
-      <td>${escapeHtml(e.name || "")}</td>
-      <td class="right">${money(e.totalSales || 0)}</td>
-      <td class="right pct ${pctClass((Number(e.share || 0)) * 100)}">${pctText(Number(e.share || 0))}</td>
-      <td class="right">${intFmt(e.shiftDays || 0)}</td>
-      <td class="right">${money(e.individualSales || 0)}</td>
-      <td class="right">${money(e.collectiveSales || 0)}</td>
-      <td class="right">${intFmt(e.individualChecks || 0)}</td>
-      <td class="right">${intFmt(e.collectiveChecks || 0)}</td>
-      <td class="right">${signedMoney(e.returnsAmount || 0)}</td>
-      <td class="right">${intFmt(e.returnChecks || 0)}</td>
-      <td class="right col-accent"><span class="linkish">${money(e.avgCheck || 0)}</span></td>
-      <td class="right">${money(e.avgCheckIndividual || 0)}</td>
-      <td class="right">${money(e.avgCheckCollective || 0)}</td>
-    </tr>
-  `).join("");
+  staffBody.innerHTML = report.employees.map(function(e, idx){
+    return '<tr>' +
+      '<td class="center">' + (idx+1) + '</td>' +
+      '<td>' + escapeHtml(e.name||"") + '</td>' +
+      '<td class="right">' + money(e.totalSales||0) + '</td>' +
+      '<td class="right pct ' + pctClass(Number(e.share||0)*100) + '">' + pctText(Number(e.share||0)) + '</td>' +
+      '<td class="right">' + intFmt(e.shiftDays||0) + '</td>' +
+      '<td class="right">' + money(e.individualSales||0) + '</td>' +
+      '<td class="right">' + money(e.collectiveSales||0) + '</td>' +
+      '<td class="right">' + intFmt(e.individualChecks||0) + '</td>' +
+      '<td class="right">' + intFmt(e.collectiveChecks||0) + '</td>' +
+      '<td class="right">' + signedMoney(e.returnsAmount||0) + '</td>' +
+      '<td class="right">' + intFmt(e.returnChecks||0) + '</td>' +
+      '<td class="right col-accent"><span class="linkish">' + money(e.avgCheck||0) + '</span></td>' +
+      '<td class="right">' + money(e.avgCheckIndividual||0) + '</td>' +
+      '<td class="right">' + money(e.avgCheckCollective||0) + '</td></tr>';
+  }).join("");
 }
 
 function buildStaffReport(year, month, store){
-  const storeNorm = normalizeText(store);
-  const shortStoreNorm = normalizeText(shortStoreName(store));
+  var storeNorm = normalizeText(store);
+  var shortStoreNorm = normalizeText(shortStoreName(store));
 
-  const rows = STAFF_RAW.filter(r =>
-    Number(r.year) === Number(year) &&
-    Number(r.monthNum) === Number(month) &&
-    (
-      normalizeText(r.store) === storeNorm ||
-      normalizeText(r.shortStore) === shortStoreNorm
-    ) &&
-    normalizeText(r.parent) !== "сертификат"
-  );
+  var rows = STAFF_RAW.filter(function(r){
+    return Number(r.year) === Number(year) &&
+      Number(r.monthNum) === Number(month) &&
+      (normalizeText(r.store) === storeNorm || normalizeText(r.shortStore) === shortStoreNorm) &&
+      normalizeText(r.parent) !== "сертификат";
+  });
 
-  const planRow = STAFF_PLANS.find(p =>
-    Number(p.year) === Number(year) &&
-    Number(p.monthNum) === Number(month) &&
-    (
-      normalizeText(p.store) === storeNorm ||
-      normalizeText(p.shortStore) === shortStoreNorm
-    )
-  );
+  var planRow = STAFF_PLANS.find(function(p){
+    return Number(p.year) === Number(year) && Number(p.monthNum) === Number(month) &&
+      (normalizeText(p.store) === storeNorm || normalizeText(p.shortStore) === shortStoreNorm);
+  });
 
-  const planMonth = planRow ? Number(planRow.planMonth || 0) : 0;
-  const planDay = planRow ? Number(planRow.planDay || 0) : 0;
+  var planMonth = planRow ? Number(planRow.planMonth || 0) : 0;
+  var employeesMap = new Map();
+  var allIndividualChecks = new Set();
+  var allCollectiveChecks = new Set();
+  var totalStoreSales = 0, totalIndividualSales = 0, totalCollectiveSales = 0, totalReturns = 0;
 
-  const employeesMap = new Map();
-  const allIndividualChecks = new Set();
-  const allCollectiveChecks = new Set();
-  const allReturnChecks = new Set();
-
-  let totalStoreSales = 0;
-  let totalIndividualSales = 0;
-  let totalCollectiveSales = 0;
-  let totalReturns = 0;
-
-  for (const r of rows){
-    const seller = String(r.seller || "").trim();
+  for (var i = 0; i < rows.length; i++){
+    var r = rows[i];
+    var seller = String(r.seller || "").trim();
     if (!seller) continue;
-
     if (!employeesMap.has(seller)){
       employeesMap.set(seller, {
-        name: seller,
-        totalSales: 0,
-        shiftDaysSet: new Set(),
-        individualSales: 0,
-        collectiveSales: 0,
-        individualChecksSet: new Set(),
-        collectiveChecksSet: new Set(),
-        returnsAmount: 0,
-        returnChecksSet: new Set()
+        name:seller, totalSales:0, shiftDaysSet:new Set(),
+        individualSales:0, collectiveSales:0,
+        individualChecksSet:new Set(), collectiveChecksSet:new Set(),
+        returnsAmount:0, returnChecksSet:new Set()
       });
     }
-
-    const emp = employeesMap.get(seller);
-    const amount = Number(r.salesAmount || 0);
-    const operation = String(r.operation || "").trim();
-    const checkNumber = String(r.checkNumber || "").trim();
-    const sellersInCheck = Number(r.sellersInCheck || 0);
-    const day = Number(r.day || 0);
+    var emp = employeesMap.get(seller);
+    var amount = Number(r.salesAmount || 0);
+    var operation = String(r.operation || "").trim();
+    var checkNumber = String(r.checkNumber || "").trim();
+    var sellersInCheck = Number(r.sellersInCheck || 0);
+    var dayNum = Number(r.day || 0);
 
     emp.totalSales += amount;
     totalStoreSales += amount;
-
-    if (day) emp.shiftDaysSet.add(day);
+    if (dayNum) emp.shiftDaysSet.add(dayNum);
 
     if (operation === "Продажа"){
       if (sellersInCheck <= 1){
-        emp.individualSales += amount;
-        totalIndividualSales += amount;
-
-        if (checkNumber){
-          emp.individualChecksSet.add(checkNumber);
-          allIndividualChecks.add(checkNumber);
-        }
+        emp.individualSales += amount; totalIndividualSales += amount;
+        if (checkNumber){ emp.individualChecksSet.add(checkNumber); allIndividualChecks.add(checkNumber); }
       } else {
-        emp.collectiveSales += amount;
-        totalCollectiveSales += amount;
-
-        if (checkNumber){
-          emp.collectiveChecksSet.add(checkNumber);
-          allCollectiveChecks.add(checkNumber);
-        }
+        emp.collectiveSales += amount; totalCollectiveSales += amount;
+        if (checkNumber){ emp.collectiveChecksSet.add(checkNumber); allCollectiveChecks.add(checkNumber); }
       }
     }
-
     if (operation === "Возврат"){
-      emp.returnsAmount += amount;
-      totalReturns += amount;
-
-      if (checkNumber){
-        emp.returnChecksSet.add(checkNumber);
-        allReturnChecks.add(checkNumber);
-      }
+      emp.returnsAmount += amount; totalReturns += amount;
+      if (checkNumber) emp.returnChecksSet.add(checkNumber);
     }
   }
 
-  const employees = Array.from(employeesMap.values()).map(emp => {
-    const individualChecks = emp.individualChecksSet.size;
-    const collectiveChecks = emp.collectiveChecksSet.size;
-    const totalChecks = individualChecks + collectiveChecks;
-
+  var employees = Array.from(employeesMap.values()).map(function(emp){
+    var ic = emp.individualChecksSet.size, cc = emp.collectiveChecksSet.size, tc = ic + cc;
     return {
-      name: emp.name,
-      totalSales: round2(emp.totalSales),
+      name:emp.name, totalSales:round2(emp.totalSales),
       share: totalStoreSales !== 0 ? round6(emp.totalSales / totalStoreSales) : 0,
-      shiftDays: emp.shiftDaysSet.size,
-      individualSales: round2(emp.individualSales),
-      collectiveSales: round2(emp.collectiveSales),
-      individualChecks,
-      collectiveChecks,
-      returnsAmount: round2(emp.returnsAmount),
-      returnChecks: emp.returnChecksSet.size,
-      avgCheck: totalChecks > 0 ? round2((emp.individualSales + emp.collectiveSales) / totalChecks) : 0,
-      avgCheckIndividual: individualChecks > 0 ? round2(emp.individualSales / individualChecks) : 0,
-      avgCheckCollective: collectiveChecks > 0 ? round2(emp.collectiveSales / collectiveChecks) : 0
+      shiftDays:emp.shiftDaysSet.size,
+      individualSales:round2(emp.individualSales), collectiveSales:round2(emp.collectiveSales),
+      individualChecks:ic, collectiveChecks:cc,
+      returnsAmount:round2(emp.returnsAmount), returnChecks:emp.returnChecksSet.size,
+      avgCheck: tc > 0 ? round2((emp.individualSales + emp.collectiveSales) / tc) : 0,
+      avgCheckIndividual: ic > 0 ? round2(emp.individualSales / ic) : 0,
+      avgCheckCollective: cc > 0 ? round2(emp.collectiveSales / cc) : 0
     };
-  }).sort((a,b) => b.totalSales - a.totalSales);
+  }).sort(function(a,b){return b.totalSales - a.totalSales});
 
-  const totalChecksAll = allIndividualChecks.size + allCollectiveChecks.size;
+  var totalChecksAll = allIndividualChecks.size + allCollectiveChecks.size;
 
   return {
-    summary: {
-      planMonth: round2(planMonth),
-      planDay: round2(planDay),
-      factStoreSales: round2(totalStoreSales),
-      planPct: planMonth > 0 ? round6(totalStoreSales / planMonth) : 0
-    },
-    totals: {
-      individualSales: round2(totalIndividualSales),
-      collectiveSales: round2(totalCollectiveSales),
-      returnsAmount: round2(totalReturns),
-      avgCheck: totalChecksAll > 0 ? round2((totalIndividualSales + totalCollectiveSales) / totalChecksAll) : 0
-    },
-    employees
+    summary: { planMonth:round2(planMonth), factStoreSales:round2(totalStoreSales), planPct: planMonth > 0 ? round6(totalStoreSales / planMonth) : 0 },
+    totals: { individualSales:round2(totalIndividualSales), collectiveSales:round2(totalCollectiveSales), returnsAmount:round2(totalReturns), avgCheck: totalChecksAll > 0 ? round2((totalIndividualSales + totalCollectiveSales) / totalChecksAll) : 0 },
+    employees: employees
   };
 }
 
 function handleLoadError(err, url){
-  console.error(err);
-
+  console.error("[handleLoadError]", err);
   if (err && err.code === "invalid_code"){
     setGas("LOCK", "bad");
-    localStorage.removeItem(ACCESS_CODE_STORAGE_KEY);
+    lsRemove(ACCESS_CODE_STORAGE_KEY);
     ACCESS_CODE = "";
     openCodeModal("❌ Неверный код", "Код не подходит. Введи правильный код доступа.", err.message || "");
     return;
   }
-
   setGas("ERR", "bad");
-
-  showError(
-    "⚠️ Ошибка загрузки",
-    "Не удалось получить данные.
-
-Нажми «Проверить снова».",
-    `details=${(err && (err.message || err.toString())) ? (err.message || err.toString()) : "unknown"}
-url=${url}`
-  );
+  var details = err ? (err.message || String(err)) : "unknown";
+  showError("⚠️ Ошибка загрузки", "Не удалось получить данные.\n\nНажми «Проверить снова» или смени код доступа.", "details=" + details + "\nurl=" + url);
 }
 
 function openCodeModal(title, text, debug){
@@ -1422,7 +968,7 @@ function openCodeModal(title, text, debug){
   codeDebug.textContent = debug || "";
   codeInput.value = ACCESS_CODE || "";
   overlayCode.classList.add("show");
-  setTimeout(() => codeInput.focus(), 50);
+  setTimeout(function(){codeInput.focus()}, 50);
 }
 
 function showError(title, text, debug){
@@ -1439,167 +985,170 @@ function setGas(text, mode){
 }
 
 function cacheKey(url, entity){
-  return `bugatti_multi_v5::${url}::${entity}::${(ACCESS_CODE || "").slice(0,10)}`;
+  return "bugatti_multi_v5::" + url + "::" + entity + "::" + (ACCESS_CODE || "").slice(0,10);
 }
 
 async function fetchCached(url, entity, force){
-  const key = cacheKey(url, entity);
-
+  var key = cacheKey(url, entity);
   if (!force){
-    const cached = safeJsonParse(localStorage.getItem(key));
-    if (cached && cached.ts && (Date.now() - cached.ts) < CACHE_TTL_MS){
-      return cached.data;
+    var cachedStr = lsGet(key);
+    if (cachedStr) {
+      var cached = safeJsonParse(cachedStr);
+      if (cached && cached.ts && cached.data && cached.data.ok === true && (Date.now() - cached.ts) < CACHE_TTL_MS){
+        console.log("[cache hit]", entity);
+        return cached.data;
+      }
+      if (cached && (!cached.data || cached.data.ok !== true)) {
+        console.log("[cache invalid]", entity, "— removing");
+        lsRemove(key);
+      }
     }
   }
-
-  const data = await fetchEntity(url, { entity, accessCode: ACCESS_CODE });
-  localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  var data = await fetchEntity(url, { entity: entity, accessCode: ACCESS_CODE });
+  try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data: data })); }
+  catch(e) { console.warn("[cache write failed]", e); }
   return data;
 }
 
 async function fetchEntity(url, payload){
   if (!ACCESS_CODE || ACCESS_CODE.length < 3){
-    const e = new Error("no_code");
-    e.code = "invalid_code";
-    throw e;
+    var e = new Error("no_code"); e.code = "invalid_code"; throw e;
+  }
+  console.log("[fetch]", payload.entity);
+
+  var res;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      redirect: "follow",
+      cache: "no-store",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+  } catch(fetchErr) {
+    console.error("[fetch network error]", fetchErr);
+    var netErr = new Error("Сетевая ошибка: " + (fetchErr.message || "нет соединения"));
+    netErr.code = "network_error";
+    throw netErr;
   }
 
-  const res = await fetch(url, {
-    method: "POST",
-    cache: "no-store",
-    headers: { "Content-Type":"text/plain;charset=utf-8" },
-    body: JSON.stringify(payload)
-  });
+  if (!res.ok) throw new Error("HTTP " + res.status);
 
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  var responseText;
+  try { responseText = await res.text(); }
+  catch(e) { throw new Error("Не удалось прочитать ответ"); }
 
-  const json = await res.json();
-  console.log("API response", payload.entity, json);
+  var json;
+  try { json = JSON.parse(responseText); }
+  catch(e) {
+    console.error("[fetch] not JSON:", responseText.slice(0, 300));
+    var err2 = new Error("Сервер вернул не JSON. Возможно, URL API устарел.");
+    err2.code = "bad_response";
+    throw err2;
+  }
 
   if (!json || json.ok !== true){
-    const code = (json && json.error) ? String(json.error) : "bad_response";
-    const err = new Error(code);
+    var code = (json && json.error) ? String(json.error) : "bad_response";
+    var err = new Error(code);
     err.code = (code === "invalid_code" || code === "unauthorized") ? "invalid_code" : code;
-    err.message = json && (json.message || json.details) ? (json.message || json.details) : code;
+    err.message = (json && (json.message || json.details)) || code;
     throw err;
   }
-
   return json;
 }
 
-function dedupSalesRaw(rows){
-  const map = new Map();
+/* === Safe localStorage === */
+function lsGet(key) { try { return localStorage.getItem(key) || ""; } catch(e) { return ""; } }
+function lsSet(key, val) { try { localStorage.setItem(key, val); } catch(e) { console.warn("lsSet fail", e); } }
+function lsRemove(key) { try { localStorage.removeItem(key); } catch(e) {} }
 
-  for (const r of rows){
-    const store = String(r.store || "").trim();
-    const dateKey = String(r.reportDateKey || "").trim();
-    if (!store || !dateKey) continue;
-
-    const key = `${normalizeText(store)}__${dateKey}`;
-    const prev = map.get(key);
-
-    const tsNew = r.ts ? Date.parse(r.ts) : 0;
-    const tsPrev = prev?.ts ? Date.parse(prev.ts) : 0;
-
-    if (!prev || tsNew >= tsPrev){
-      map.set(key, r);
+function clearAllCache() {
+  try {
+    var keys = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf("bugatti_") === 0) keys.push(k);
     }
-  }
+    keys.forEach(function(k) { localStorage.removeItem(k); });
+    console.log("[clearCache]", keys.length, "keys removed");
+  } catch(e) { console.warn("clearCache fail", e); }
+}
 
+/* === Helpers === */
+function dedupSalesRaw(rows){
+  var map = new Map();
+  for (var i = 0; i < rows.length; i++){
+    var r = rows[i];
+    var store = String(r.store || "").trim();
+    var dateKey = String(r.reportDateKey || "").trim();
+    if (!store || !dateKey) continue;
+    var key = normalizeText(store) + "__" + dateKey;
+    var prev = map.get(key);
+    var tsNew = r.ts ? Date.parse(r.ts) : 0;
+    var tsPrev = prev && prev.ts ? Date.parse(prev.ts) : 0;
+    if (!prev || tsNew >= tsPrev) map.set(key, r);
+  }
   return Array.from(map.values());
 }
 
 function netSales(r){
-  const gross = Number(r.salesNew || 0) + Number(r.salesOld || 0);
-  const returns = Number(r.returns || 0);
-  return Math.max(0, gross - returns);
+  return Math.max(0, Number(r.salesNew||0) + Number(r.salesOld||0) - Number(r.returns||0));
 }
 
-function shortStoreName(store){
-  return String(store || "").trim().replace(/^магазин\s+/i, "").trim();
-}
+function shortStoreName(s){ return String(s||"").trim().replace(/^магазин\s+/i,"").trim(); }
 
 function maxDateKey(keys){
   if (!keys || !keys.length) return null;
-  return keys.reduce((max, key) => (!max || key > max) ? key : max, null);
+  return keys.reduce(function(m,k){return (!m||k>m)?k:m}, null);
 }
 
-function shortDate(dateKey){
-  return `${dateKey.slice(8,10)}.${dateKey.slice(5,7)}`;
+function shortDate(dk){ return dk.slice(8,10)+"."+dk.slice(5,7); }
+
+function money(v){
+  var n = Math.round(Number(v||0));
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")+" ₸";
 }
 
-function money(value){
-  const n = Math.round(Number(value || 0));
-  return `${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₸`;
+function signedMoney(v){
+  var n = Math.round(Number(v||0));
+  var s = n<0?"-":"", a = Math.abs(n);
+  return s+a.toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")+" ₸";
 }
 
-function signedMoney(value){
-  const n = Math.round(Number(value || 0));
-  const sign = n < 0 ? "-" : "";
-  const abs = Math.abs(n);
-  return `${sign}${abs.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} ₸`;
+function intFmt(v){
+  return Math.round(Number(v||0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ");
 }
 
-function intFmt(value){
-  const n = Math.round(Number(value || 0));
-  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-}
+function pctText(r){ return (Number(r||0)*100).toFixed(1)+"%"; }
 
-function pctText(ratio){
-  return `${(Number(ratio || 0) * 100).toFixed(1)}%`;
-}
-
-function pctClass(pct){
-  if (!isFinite(pct)) return "bad";
-  if (pct < 80) return "bad";
-  if (pct <= 100) return "warn";
+function pctClass(p){
+  if (!isFinite(p)) return "bad";
+  if (p<80) return "bad";
+  if (p<=100) return "warn";
   return "good";
 }
 
-function kpiCard(title, valueHtml, hint, isHtml=false){
-  return `
-    <div class="card">
-      <div class="k">${title}</div>
-      ${isHtml ? `<div class="v small mono">${valueHtml}</div>` : `<div class="v mono">${valueHtml}</div>`}
-      <div class="hint">${hint}</div>
-    </div>
-  `;
+function kpiCard(t,vh,h,isH){
+  return '<div class="card"><div class="k">'+t+'</div>'+
+    (isH?'<div class="v small mono">'+vh+'</div>':'<div class="v mono">'+vh+'</div>')+
+    '<div class="hint">'+h+'</div></div>';
 }
 
-function monthNameRu(n){
-  const idx = Number(n || 0) - 1;
-  return (idx >= 0 && idx < MONTHS_RU.length) ? MONTHS_RU[idx] : "";
-}
-
-function round2(n){
-  return Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
-}
-
-function round6(n){
-  return Math.round((Number(n || 0) + Number.EPSILON) * 1000000) / 1000000;
-}
+function monthNameRu(n){ var i=Number(n||0)-1; return (i>=0&&i<12)?MONTHS_RU[i]:""; }
+function round2(n){ return Math.round((Number(n||0)+Number.EPSILON)*100)/100; }
+function round6(n){ return Math.round((Number(n||0)+Number.EPSILON)*1000000)/1000000; }
 
 function normalizeText(s){
-  return String(s || "")
-    .trim()
-    .toLowerCase()
-    .replace(/ё/g, "е")
-    .replace(/\s+/g, " ");
+  return String(s||"").trim().toLowerCase().replace(/ё/g,"е").replace(/\s+/g," ");
 }
 
 function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, c => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  }[c]));
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
 }
 
-function safeJsonParse(s){
-  try { return JSON.parse(s); } catch { return null; }
-}
+function safeJsonParse(s){ try{return JSON.parse(s)}catch(e){return null} }
 </script>
 </body>
 </html>
