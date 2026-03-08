@@ -663,7 +663,15 @@ function buildSalesSelectors(keepSelection){
 function buildStaffSelectors(keepSelection){
   var years = (STAFF_META && STAFF_META.years || []).slice().map(Number).filter(Boolean).sort(function(a,b){return b-a});
   var months = (STAFF_META && STAFF_META.months || []).slice().sort(function(a,b){return Number(a.month)-Number(b.month)});
-  var stores = (STAFF_META && STAFF_META.stores || []).slice().map(String).filter(Boolean).sort(function(a,b){return a.localeCompare(b,"ru")});
+
+  // FIX: Use SALES_META stores (clean list without duplicates).
+  // If not available, deduplicate STAFF_META stores by short name.
+  var stores;
+  if (SALES_META && Array.isArray(SALES_META.stores) && SALES_META.stores.length > 0) {
+    stores = SALES_META.stores.slice().map(String).filter(Boolean).sort(function(a,b){return a.localeCompare(b,"ru")});
+  } else {
+    stores = deduplicateStores(STAFF_META && STAFF_META.stores || []);
+  }
 
   var prevYear = staffYearSel.value;
   var prevMonth = staffMonthSel.value;
@@ -682,10 +690,27 @@ function buildStaffSelectors(keepSelection){
     var nowMonth = new Date().getMonth() + 1;
     if (months.some(function(m){return Number(m.month) === nowMonth})) staffMonthSel.value = String(nowMonth);
     else if (months.length) staffMonthSel.value = String(months[0].month);
-    if (stores.includes("Магазин Абайка")) staffStoreSel.value = "Магазин Абайка";
-    else if (stores.includes("Магазин Есентай")) staffStoreSel.value = "Магазин Есентай";
+    if (stores.includes("Абайка")) staffStoreSel.value = "Абайка";
+    else if (stores.includes("Есентай")) staffStoreSel.value = "Есентай";
     else if (stores.length) staffStoreSel.value = stores[0];
   }
+}
+
+// Deduplicate stores: "Магазин Абайка" and "Абайка" → keep short name "Абайка"
+function deduplicateStores(rawStores) {
+  var seen = {};
+  var result = [];
+  rawStores.forEach(function(s) {
+    var name = String(s || "").trim();
+    if (!name) return;
+    var short = name.replace(/^магазин\s+/i, "").trim();
+    var key = normalizeText(short);
+    if (!seen[key]) {
+      seen[key] = true;
+      result.push(short);
+    }
+  });
+  return result.sort(function(a,b){return a.localeCompare(b,"ru")});
 }
 
 function renderAll(){
