@@ -285,11 +285,11 @@
       <div class="emplSection" id="emplBrandsSection"><h3>Топ брендов</h3><div id="emplBrandsList"></div></div>
       <div class="emplSection" id="emplCatsSection"><h3>Топ категорий</h3><div id="emplCatsList"></div></div>
       <div class="emplSection" id="emplDailySection"><h3>Продажи по дням</h3><div class="tableWrap"><div class="scrollX"><table><thead><tr><th>День</th><th class="right">Сумма</th><th class="right">Чеков</th><th class="right">Ср. чек</th></tr></thead><tbody id="emplDailyBody"></tbody></table></div></div></div>
-      <div class="emplSection" id="emplTrendSection"><h3>Тренд по месяцам</h3><div class="tableWrap"><div class="scrollX"><table><thead><tr><th>Месяц</th><th class="right">Продажи</th><th class="right">Смен</th><th class="right">Прод./смена</th><th class="right">Ср. чек</th><th class="right">Скидка %</th><th class="right">Возвр. %</th></tr></thead><tbody id="emplTrendBody"></tbody></table></div></div></div>
+      <div class="emplSection" id="emplTrendSection"><h3>Тренд по месяцам</h3><div class="tableWrap"><div class="scrollX"><table><thead><tr><th>Месяц</th><th class="right">Чист. прод.</th><th class="right">Смен</th><th class="right">Прод./смена</th><th class="right">Ср. чек</th><th class="right">Скидка %</th><th class="right">Возвр. %</th></tr></thead><tbody id="emplTrendBody"></tbody></table></div></div></div>
     </div>
     <!-- Ranking view -->
     <div id="emplRankView" style="display:none">
-      <div class="emplSection"><h3>Рейтинг продавцов по всей сети</h3><div class="tableWrap"><div class="scrollX"><table class="wideTable"><thead><tr><th>№</th><th>Продавец</th><th>Магазин</th><th class="right">Продажи</th><th class="right">Доля маг.</th><th class="right">Смен</th><th class="right">Прод./смена</th><th class="right">Ср. чек</th><th class="right">Скидка %</th><th class="right">Возвр. %</th><th class="right">Колл. %</th></tr></thead><tbody id="emplRankBody"></tbody></table></div></div></div>
+      <div class="emplSection"><h3>Рейтинг продавцов по всей сети</h3><div class="tableWrap"><div class="scrollX"><table class="wideTable"><thead><tr><th>№</th><th>Продавец</th><th>Магазин</th><th class="right">Чист. прод.</th><th class="right">Доля маг.</th><th class="right">Смен</th><th class="right">Прод./смена</th><th class="right">Ср. чек</th><th class="right">Скидка %</th><th class="right">Возвр. %</th><th class="right">Колл. %</th></tr></thead><tbody id="emplRankBody"></tbody></table></div></div></div>
     </div>
     <div id="emplEmpty" class="emptyState" style="display:none">Нет данных.</div>
   </div>
@@ -696,19 +696,22 @@ function renderEmplCard(){
 
   if(!rows.length){$("subtitle").innerHTML='<span class="muted">Нет данных для этого продавца</span>';$("emplKpi").innerHTML="";$("emplSalesTypeBody").innerHTML="";$("emplBrandsList").innerHTML="";$("emplCatsList").innerHTML="";$("emplDailyBody").innerHTML="";$("emplTrendBody").innerHTML="";return}
 
-  // --- Store total for share calc ---
+  // --- Store NET total for share calc (sales - returns, without certificates) ---
   var storeRows=EMPL_RAW.filter(function(r){
     if(Number(r.year)!==y||Number(r.monthNum)!==m)return false;
     if(st!=="__all__"&&norm(r.store)!==norm(st))return false;
     return norm(r.parent)!=="сертификат";
   });
-  var storeTotal=storeRows.filter(function(r){return r.operation==="Продажа"}).reduce(function(s,r){return s+Number(r.salesAmount||0)},0);
+  var storeSalesGross=storeRows.filter(function(r){return r.operation==="Продажа"}).reduce(function(s,r){return s+Number(r.salesAmount||0)},0);
+  var storeReturnsAbs=Math.abs(storeRows.filter(function(r){return r.operation==="Возврат"}).reduce(function(s,r){return s+Number(r.salesAmount||0)},0));
+  var storeTotal=storeSalesGross-storeReturnsAbs;
 
   // --- Basic metrics ---
   var sales=rows.filter(function(r){return r.operation==="Продажа"});
   var returns=rows.filter(function(r){return r.operation==="Возврат"});
-  var totalSales=sales.reduce(function(s,r){return s+Number(r.salesAmount||0)},0);
+  var grossSales=sales.reduce(function(s,r){return s+Number(r.salesAmount||0)},0);
   var totalReturns=Math.abs(returns.reduce(function(s,r){return s+Number(r.salesAmount||0)},0));
+  var netSalesVal=grossSales-totalReturns;
   var indSales=sales.filter(function(r){return Number(r.sellersInCheck)<=1});
   var colSales=sales.filter(function(r){return Number(r.sellersInCheck)>1});
   var indSum=indSales.reduce(function(s,r){return s+Number(r.salesAmount||0)},0);
@@ -718,11 +721,11 @@ function renderEmplCard(){
   var retChecks=new Set();returns.forEach(function(r){if(r.checkNumber)retChecks.add(r.checkNumber)});
   var allChecks=new Set();sales.forEach(function(r){if(r.checkNumber)allChecks.add(r.checkNumber)});
   var shiftDays=new Set();rows.forEach(function(r){if(r.day)shiftDays.add(r.day)});
-  var avgCheck=allChecks.size>0?totalSales/allChecks.size:0;
-  var salesPerShift=shiftDays.size>0?totalSales/shiftDays.size:0;
-  var shareInStore=storeTotal>0?totalSales/storeTotal:0;
-  var returnPct=totalSales>0?totalReturns/totalSales:0;
-  var colPct=totalSales>0?colSum/totalSales:0;
+  var avgCheck=allChecks.size>0?grossSales/allChecks.size:0;
+  var salesPerShift=shiftDays.size>0?netSalesVal/shiftDays.size:0;
+  var shareInStore=storeTotal>0?netSalesVal/storeTotal:0;
+  var returnPct=grossSales>0?totalReturns/grossSales:0;
+  var colPct=grossSales>0?colSum/grossSales:0;
 
   // --- Discount analysis ---
   var discountRows=sales.filter(function(r){return Number(r.priceOriginal)>0});
@@ -740,8 +743,8 @@ function renderEmplCard(){
 
   // --- KPI cards ---
   $("emplKpi").innerHTML=[
-    kpi("Личные продажи",money(totalSales),planMonth>0?"План маг.: "+money(planMonth):""),
-    kpi("Доля в магазине",'<span class="badge '+(shareInStore>=0.2?"good":shareInStore>=0.1?"warn":"bad")+'">'+pctT(shareInStore)+'</span>',"от "+money(storeTotal),true),
+    kpi("Чистые продажи",money(netSalesVal),planMonth>0?"План маг.: "+money(planMonth):"Валовые: "+money(grossSales)),
+    kpi("Доля в магазине",'<span class="badge '+(shareInStore>=0.2?"good":shareInStore>=0.1?"warn":"bad")+'">'+pctT(shareInStore)+'</span>',"от "+money(storeTotal)+" (нетто)",true),
     kpi("Прод./смена",money(salesPerShift),"Смен: "+shiftDays.size),
     kpi("Ср. чек",money(avgCheck),"Чеков: "+allChecks.size),
     kpi("Ср. скидка",'<span class="badge '+(avgDiscountPct<=0.15?"good":avgDiscountPct<=0.25?"warn":"bad")+'">'+pctT(avgDiscountPct)+'</span>',"Ср. цена: "+money(avgPricePoint),true),
@@ -753,28 +756,28 @@ function renderEmplCard(){
   // --- Sales type breakdown ---
   var ic=indChecks.size,cc=colChecks.size,rc=retChecks.size;
   $("emplSalesTypeBody").innerHTML=[
-    '<tr><td>Индивидуальные</td><td class="right">'+money(indSum)+'</td><td class="right">'+ic+'</td><td class="right">'+(ic?money(indSum/ic):"—")+'</td><td class="right">'+(totalSales>0?pctT(indSum/totalSales):"—")+'</td></tr>',
-    '<tr><td>Коллективные</td><td class="right">'+money(colSum)+'</td><td class="right">'+cc+'</td><td class="right">'+(cc?money(colSum/cc):"—")+'</td><td class="right">'+(totalSales>0?pctT(colSum/totalSales):"—")+'</td></tr>',
-    '<tr style="color:var(--bad)"><td>Возвраты</td><td class="right">'+money(totalReturns)+'</td><td class="right">'+rc+'</td><td class="right">'+(rc?money(totalReturns/rc):"—")+'</td><td class="right">'+pctT(returnPct)+'</td></tr>'
+    '<tr><td>Индивидуальные</td><td class="right">'+money(indSum)+'</td><td class="right">'+ic+'</td><td class="right">'+(ic?money(indSum/ic):"—")+'</td><td class="right">'+(grossSales>0?pctT(indSum/grossSales):"—")+'</td></tr>',
+    '<tr><td>Коллективные</td><td class="right">'+money(colSum)+'</td><td class="right">'+cc+'</td><td class="right">'+(cc?money(colSum/cc):"—")+'</td><td class="right">'+(grossSales>0?pctT(colSum/grossSales):"—")+'</td></tr>',
+    '<tr style="color:var(--bad)"><td>Возвраты</td><td class="right">−'+money(totalReturns)+'</td><td class="right">'+rc+'</td><td class="right">'+(rc?money(totalReturns/rc):"—")+'</td><td class="right">'+pctT(returnPct)+'</td></tr>',
+    '<tr class="total-row"><td><strong>Итого (нетто)</strong></td><td class="right"><strong>'+money(netSalesVal)+'</strong></td><td class="right"><strong>'+(ic+cc)+'</strong></td><td class="right"><strong>'+((ic+cc)?money(netSalesVal/(ic+cc)):"—")+'</strong></td><td class="right"><strong>100%</strong></td></tr>'
   ].join("");
 
   // --- Top brands ---
   var brands={};sales.forEach(function(r){var b=r.brand||"—";if(!brands[b])brands[b]={sum:0,cnt:0};brands[b].sum+=Number(r.salesAmount||0);brands[b].cnt++});
   var brandList=Object.keys(brands).map(function(b){return{name:b,sum:brands[b].sum,cnt:brands[b].cnt}}).sort(function(a,b){return b.sum-a.sum}).slice(0,7);
-  var maxBrand=brandList.length?brandList[0].sum:1;
-  $("emplBrandsList").innerHTML=brandList.map(function(b){var pct=maxBrand>0?Math.round(b.sum/maxBrand*100):0;return'<div class="miniCard"><span class="mc-name">'+esc(b.name)+' <span style="color:var(--muted2);font-size:11px">('+b.cnt+' шт.)</span></span><span class="mc-val">'+money(b.sum)+'</span></div>'}).join("");
+  $("emplBrandsList").innerHTML=brandList.map(function(b){return'<div class="miniCard"><span class="mc-name">'+esc(b.name)+' <span style="color:var(--muted2);font-size:11px">('+b.cnt+' шт.)</span></span><span class="mc-val">'+money(b.sum)+'</span></div>'}).join("");
 
   // --- Top categories ---
   var cats={};sales.forEach(function(r){var c=r.parent||"—";if(!cats[c])cats[c]={sum:0,cnt:0};cats[c].sum+=Number(r.salesAmount||0);cats[c].cnt++});
   var catList=Object.keys(cats).map(function(c){return{name:c,sum:cats[c].sum,cnt:cats[c].cnt}}).sort(function(a,b){return b.sum-a.sum}).slice(0,7);
   $("emplCatsList").innerHTML=catList.map(function(c){return'<div class="miniCard"><span class="mc-name">'+esc(c.name)+' <span style="color:var(--muted2);font-size:11px">('+c.cnt+' шт.)</span></span><span class="mc-val">'+money(c.sum)+'</span></div>'}).join("");
 
-  // --- Daily breakdown ---
-  var daily={};sales.forEach(function(r){var d=Number(r.day||0);if(!d)return;if(!daily[d])daily[d]={sum:0,checks:new Set()};daily[d].sum+=Number(r.salesAmount||0);if(r.checkNumber)daily[d].checks.add(r.checkNumber)});
+  // --- Daily breakdown (with returns subtracted, date formatted) ---
+  var daily={};rows.forEach(function(r){var d=Number(r.day||0);if(!d)return;if(!daily[d])daily[d]={sales:0,returns:0,checks:new Set()};if(r.operation==="Продажа"){daily[d].sales+=Number(r.salesAmount||0);if(r.checkNumber)daily[d].checks.add(r.checkNumber)}if(r.operation==="Возврат"){daily[d].returns+=Math.abs(Number(r.salesAmount||0))}});
   var dayKeys=Object.keys(daily).map(Number).sort(function(a,b){return a-b});
-  $("emplDailyBody").innerHTML=dayKeys.map(function(d){var dd=daily[d];var nc=dd.checks.size;return'<tr><td>'+d+'</td><td class="right">'+money(dd.sum)+'</td><td class="right">'+nc+'</td><td class="right">'+(nc?money(dd.sum/nc):"—")+'</td></tr>'}).join("");
+  $("emplDailyBody").innerHTML=dayKeys.map(function(d){var dd=daily[d];var net=dd.sales-dd.returns;var nc=dd.checks.size;return'<tr><td>'+serialToDateStr(d)+'</td><td class="right">'+money(net)+'</td><td class="right">'+nc+'</td><td class="right">'+(nc?money(net/nc):"—")+'</td></tr>'}).join("");
 
-  // --- Monthly trend (all available months) ---
+  // --- Monthly trend (all available months, net sales) ---
   var allMonths={};EMPL_RAW.forEach(function(r){
     if(Number(r.year)!==y)return;
     if(st!=="__all__"&&norm(r.store)!==norm(st))return;
@@ -788,7 +791,7 @@ function renderEmplCard(){
     if(r.day)am.days.add(r.day);
   });
   var mKeys=Object.keys(allMonths).map(Number).sort(function(a,b){return a-b});
-  $("emplTrendBody").innerHTML=mKeys.map(function(mk){var d=allMonths[mk];var sh=d.days.size;var ac=d.checks.size;var disc=d.origPrice>0?(1-d.discPrice/d.origPrice):0;var retP=d.sales>0?d.returns/d.sales:0;var cls=mk===m?' style="background:var(--surface2)"':"";return'<tr'+cls+'><td><strong>'+esc(monthNameRu(mk))+'</strong></td><td class="right">'+money(d.sales)+'</td><td class="right">'+sh+'</td><td class="right">'+(sh?money(d.sales/sh):"—")+'</td><td class="right">'+(ac?money(d.sales/ac):"—")+'</td><td class="right">'+pctT(disc)+'</td><td class="right '+(retP>0.08?"bad":retP>0.03?"warn":"")+'">'+pctT(retP)+'</td></tr>'}).join("");
+  $("emplTrendBody").innerHTML=mKeys.map(function(mk){var d=allMonths[mk];var sh=d.days.size;var ac=d.checks.size;var net=d.sales-d.returns;var disc=d.origPrice>0?(1-d.discPrice/d.origPrice):0;var retP=d.sales>0?d.returns/d.sales:0;var cls=mk===m?' style="background:var(--surface2)"':"";return'<tr'+cls+'><td><strong>'+esc(monthNameRu(mk))+'</strong></td><td class="right">'+money(net)+'</td><td class="right">'+sh+'</td><td class="right">'+(sh?money(net/sh):"—")+'</td><td class="right">'+(ac?money(net/ac):"—")+'</td><td class="right">'+pctT(disc)+'</td><td class="right '+(retP>0.08?"bad":retP>0.03?"warn":"")+'">'+pctT(retP)+'</td></tr>'}).join("");
 }
 
 function renderEmplRank(){
@@ -798,14 +801,16 @@ function renderEmplRank(){
   var rows=EMPL_RAW.filter(function(r){return Number(r.year)===y&&Number(r.monthNum)===m&&norm(r.parent)!=="сертификат"});
   if(!rows.length){$("subtitle").innerHTML='<span class="muted">Нет данных</span>';$("emplKpi").innerHTML="";$("emplRankBody").innerHTML="";return}
 
+  // Store NET totals for share (sales - returns)
+  var storeGross={},storeRet={};
+  rows.forEach(function(r){
+    if(r.operation==="Продажа"){storeGross[r.store]=(storeGross[r.store]||0)+Number(r.salesAmount||0)}
+    if(r.operation==="Возврат"){storeRet[r.store]=(storeRet[r.store]||0)+Math.abs(Number(r.salesAmount||0))}
+  });
+  var storeTotals={};Object.keys(storeGross).forEach(function(k){storeTotals[k]=(storeGross[k]||0)-(storeRet[k]||0)});
+
   // Group by seller+store
   var map={};
-  // Store totals for share
-  var storeTotals={};
-  rows.forEach(function(r){
-    if(r.operation==="Продажа"){storeTotals[r.store]=(storeTotals[r.store]||0)+Number(r.salesAmount||0)}
-  });
-
   rows.forEach(function(r){
     var key=norm(r.seller)+"__"+norm(r.store);
     if(!map[key])map[key]={seller:r.seller,store:r.store,sales:0,returns:0,origPrice:0,discPrice:0,priceCnt:0,days:new Set(),checks:new Set(),indSum:0,colSum:0};
@@ -822,11 +827,11 @@ function renderEmplRank(){
   });
 
   var list=Object.values(map).map(function(e){
-    var shifts=e.days.size,nc=e.checks.size;
+    var shifts=e.days.size,nc=e.checks.size,net=e.sales-e.returns;
     return{
-      seller:e.seller,store:e.store,sales:e.sales,
-      shareInStore:storeTotals[e.store]>0?e.sales/storeTotals[e.store]:0,
-      shifts:shifts,salesPerShift:shifts>0?e.sales/shifts:0,
+      seller:e.seller,store:e.store,grossSales:e.sales,netSales:net,returns:e.returns,
+      shareInStore:storeTotals[e.store]>0?net/storeTotals[e.store]:0,
+      shifts:shifts,salesPerShift:shifts>0?net/shifts:0,
       avgCheck:nc>0?e.sales/nc:0,
       discPct:e.origPrice>0?(1-e.discPrice/e.origPrice):0,
       retPct:e.sales>0?e.returns/e.sales:0,
@@ -835,9 +840,9 @@ function renderEmplRank(){
   }).sort(function(a,b){return b.salesPerShift-a.salesPerShift});
 
   // Network averages
-  var totSales=list.reduce(function(s,e){return s+e.sales},0);
+  var totNet=list.reduce(function(s,e){return s+e.netSales},0);
   var totShifts=list.reduce(function(s,e){return s+e.shifts},0);
-  var avgSalesPerShift=totShifts>0?totSales/totShifts:0;
+  var avgSalesPerShift=totShifts>0?totNet/totShifts:0;
   var avgAvgCheck=list.length>0?list.reduce(function(s,e){return s+e.avgCheck},0)/list.length:0;
   var avgDisc=list.length>0?list.reduce(function(s,e){return s+e.discPct},0)/list.length:0;
 
@@ -853,7 +858,7 @@ function renderEmplRank(){
     kpi("Лучший ср. чек",money(bestCheck.avgCheck||0),esc(bestCheck.seller||"—")+" ("+esc(bestCheck.store||"")+")"),
     kpi("Мин. возвратов",pctT(bestReturn.retPct||0),esc(bestReturn.seller||"—")+" ("+esc(bestReturn.store||"")+")"),
     kpi("Макс. команд. работа",pctT(bestTeam.colPct||0),esc(bestTeam.seller||"—")+" ("+esc(bestTeam.store||"")+")"),
-    kpi("Ср. по сети: прод./смена",money(avgSalesPerShift),"Бенчмарк"),
+    kpi("Ср. по сети: прод./смена",money(avgSalesPerShift),"Бенчмарк (нетто)"),
     kpi("Ср. по сети: ср. чек",money(avgAvgCheck),"Бенчмарк"),
     kpi("Ср. по сети: скидка",pctT(avgDisc),"Бенчмарк"),
     kpi("Всего продавцов",String(list.length),"В "+Object.keys(storeTotals).length+" магазинах")
@@ -864,11 +869,10 @@ function renderEmplRank(){
   $("emplRankBody").innerHTML=list.map(function(e,i){
     var medalCls=i<3?"rank-"+(i+1):"";
     var medal=medalCls?'<span class="rank-medal '+medalCls+'">'+(i+1)+'</span>':String(i+1);
-    var spsBar=maxSPS>0?Math.round(e.salesPerShift/maxSPS*100):0;
     var spsCls=e.salesPerShift>=avgSalesPerShift?"good":"";
     var discCls=e.discPct>0.25?"bad":e.discPct>0.15?"warn":"";
     var retCls=e.retPct>0.08?"bad":e.retPct>0.03?"warn":"";
-    return'<tr><td class="center">'+medal+'</td><td><strong>'+esc(e.seller)+'</strong></td><td>'+esc(e.store)+'</td><td class="right">'+money(e.sales)+'</td><td class="right">'+pctT(e.shareInStore)+'</td><td class="right">'+e.shifts+'</td><td class="right '+spsCls+'"><strong>'+money(e.salesPerShift)+'</strong></td><td class="right">'+money(e.avgCheck)+'</td><td class="right '+discCls+'">'+pctT(e.discPct)+'</td><td class="right '+retCls+'">'+pctT(e.retPct)+'</td><td class="right">'+pctT(e.colPct)+'</td></tr>';
+    return'<tr><td class="center">'+medal+'</td><td><strong>'+esc(e.seller)+'</strong></td><td>'+esc(e.store)+'</td><td class="right">'+money(e.netSales)+'</td><td class="right">'+pctT(e.shareInStore)+'</td><td class="right">'+e.shifts+'</td><td class="right '+spsCls+'"><strong>'+money(e.salesPerShift)+'</strong></td><td class="right">'+money(e.avgCheck)+'</td><td class="right '+discCls+'">'+pctT(e.discPct)+'</td><td class="right '+retCls+'">'+pctT(e.retPct)+'</td><td class="right">'+pctT(e.colPct)+'</td></tr>';
   }).join("");
 }
 
@@ -915,6 +919,7 @@ function bv(p,f,d){if(p===true||p===false)return p;if(f===true||f===false)return
 function fmsc(s){return s==="closed"?"good":s==="in_progress"?"warn":"bad"}
 function fcbc(s){return s==="ok"?"good":"bad"}
 function nz(v){return Math.abs(Number(v||0))<=1e-6}
+function serialToDateStr(s){var n=Number(s);if(!n||n<1)return"—";var d=new Date((n-25569)*86400000);var dd=d.getUTCDate(),mm=d.getUTCMonth()+1,yy=d.getUTCFullYear();return pad2(dd)+"."+pad2(mm)+"."+yy}
 </script>
 </body>
 </html>
