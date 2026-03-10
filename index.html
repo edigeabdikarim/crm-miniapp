@@ -84,10 +84,15 @@
     .homeCard .icon{font-size:36px;margin-bottom:16px;display:block}
     .homeCard .cardTitle{font-size:18px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
     .homeCard .cardDesc{font-size:13px;color:var(--muted);line-height:1.5}
-    .homeCard .cardStatus{margin-top:16px;font-size:11px;font-weight:600;color:var(--muted2);display:flex;align-items:center;gap:6px}
-    .homeCard .statusDot{width:6px;height:6px;border-radius:50%;background:var(--muted2)}
-    .homeCard .statusDot.loaded{background:var(--good)}
-    .homeCard .statusDot.loading{background:var(--warn);animation:pulse 1.5s infinite}
+    .homeCard .cardStatus{margin-top:14px;font-size:11px;font-weight:600;color:var(--muted2);display:flex;flex-direction:column;gap:5px}
+    .homeCard .statusLine{display:flex;align-items:center;gap:6px}
+    .homeCard .statusDot{width:7px;height:7px;border-radius:50%;background:var(--muted2);flex-shrink:0}
+    .homeCard .statusDot.loaded{background:var(--good);box-shadow:0 0 0 3px rgba(52,211,153,.12)}
+    .homeCard .statusDot.loading{background:var(--warn);box-shadow:0 0 0 3px rgba(251,191,36,.12);animation:pulse 1.2s infinite}
+    .homeCard .statusDot.error{background:var(--bad);box-shadow:0 0 0 3px rgba(251,113,133,.12)}
+    .homeCard .statusDot.stale{background:var(--warn);box-shadow:0 0 0 3px rgba(251,191,36,.12)}
+    .homeCard .statusDetail{font-size:10px;font-weight:500;color:var(--muted2);padding-left:13px;line-height:1.3;max-height:28px;overflow:hidden}
+    .homeCard .statusDetail .st-ok{color:var(--good)}.homeCard .statusDetail .st-warn{color:var(--warn)}.homeCard .statusDetail .st-bad{color:var(--bad)}
     .homeCard.blue:hover{border-color:rgba(99,102,241,.4)}.homeCard.blue::before{background:linear-gradient(90deg,transparent,rgba(99,102,241,.25),transparent)}
     .homeCard.orange:hover{border-color:rgba(249,115,22,.4)}.homeCard.orange::before{background:linear-gradient(90deg,transparent,rgba(249,115,22,.25),transparent)}
     .homeCard.green:hover{border-color:rgba(16,185,129,.4)}.homeCard.green::before{background:linear-gradient(90deg,transparent,rgba(16,185,129,.25),transparent)}
@@ -220,11 +225,11 @@
 
   <div class="page active" id="pageHome">
     <div class="homeGrid5">
-      <div class="homeCard blue" id="goSales"><span class="icon">📊</span><div class="cardTitle">Планы продаж</div><div class="cardDesc">Ежедневные и ежемесячные данные по магазинам</div><div class="cardStatus"><span class="statusDot" id="salesStatusDot"></span><span id="salesStatusText">Не загружено</span></div></div>
-      <div class="homeCard orange" id="goStaff"><span class="icon">👥</span><div class="cardTitle">Показатели магазина</div><div class="cardDesc">Сотрудники, чеки, возвраты, средний чек</div><div class="cardStatus"><span class="statusDot" id="staffStatusDot"></span><span id="staffStatusText">Не загружено</span></div></div>
-      <div class="homeCard green" id="goFinance"><span class="icon">💰</span><div class="cardTitle">Финансы (ДДС)</div><div class="cardDesc">Сводка ДДС, статьи, кошельки, динамика</div><div class="cardStatus"><span class="statusDot" id="financeStatusDot"></span><span id="financeStatusText">Не загружено</span></div></div>
-      <div class="homeCard purple" id="goMarketing"><span class="icon">📣</span><div class="cardTitle">Маркетинг</div><div class="cardDesc">Бюджет, категории расходов, направления, матрица</div><div class="cardStatus"><span class="statusDot" id="mktStatusDot"></span><span id="mktStatusText">Не загружено</span></div></div>
-      <div class="homeCard teal" id="goEmpl"><span class="icon">🏆</span><div class="cardTitle">Аналитика сотрудников</div><div class="cardDesc">Глубокая аналитика по каждому продавцу: эффективность, бренды, скидки, тренды и рейтинг по сети</div><div class="cardStatus"><span class="statusDot" id="emplStatusDot"></span><span id="emplStatusText">Не загружено</span></div></div>
+      <div class="homeCard blue" id="goSales"><span class="icon">📊</span><div class="cardTitle">Планы продаж</div><div class="cardDesc">Ежедневные и ежемесячные данные по магазинам</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="salesStatusDot"></span><span id="salesStatusText">Не загружено</span></div><div class="statusDetail" id="salesStatusDetail"></div></div></div>
+      <div class="homeCard orange" id="goStaff"><span class="icon">👥</span><div class="cardTitle">Показатели магазина</div><div class="cardDesc">Сотрудники, чеки, возвраты, средний чек</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="staffStatusDot"></span><span id="staffStatusText">Не загружено</span></div><div class="statusDetail" id="staffStatusDetail"></div></div></div>
+      <div class="homeCard green" id="goFinance"><span class="icon">💰</span><div class="cardTitle">Финансы (ДДС)</div><div class="cardDesc">Сводка ДДС, статьи, кошельки, динамика</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="financeStatusDot"></span><span id="financeStatusText">Не загружено</span></div><div class="statusDetail" id="financeStatusDetail"></div></div></div>
+      <div class="homeCard purple" id="goMarketing"><span class="icon">📣</span><div class="cardTitle">Маркетинг</div><div class="cardDesc">Бюджет, категории расходов, направления, матрица</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="mktStatusDot"></span><span id="mktStatusText">Не загружено</span></div><div class="statusDetail" id="mktStatusDetail"></div></div></div>
+      <div class="homeCard teal" id="goEmpl"><span class="icon">🏆</span><div class="cardTitle">Аналитика сотрудников</div><div class="cardDesc">Глубокая аналитика по каждому продавцу: эффективность, бренды, скидки, тренды и рейтинг по сети</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="emplStatusDot"></span><span id="emplStatusText">Не загружено</span></div><div class="statusDetail" id="emplStatusDetail"></div></div></div>
     </div>
   </div>
 
@@ -363,6 +368,7 @@ var MKT_META=null,MKT_RAW=[];
 var EMPL_META=null,EMPL_RAW=[],EMPL_PLANS=[];
 var emplViewMode="card";
 var _loading={sales:false,staff:false,finance:false,mkt:false,empl:false};
+var _errors={sales:null,staff:null,finance:null,mkt:null,empl:null};
 
 init();
 
@@ -410,11 +416,11 @@ function wireUI(){
   $("btnSaveCode").onclick=async function(){
     var c=String($("codeInput").value||"").trim();if(c.length<3){$("codeDebug").textContent="Слишком короткий.";return}
     ACCESS_CODE=c;lsSet(ACCESS_CODE_STORAGE_KEY,c);$("overlayCode").classList.remove("show");
-    SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];
+    SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};
     clearAllCache();$("subtitle").innerHTML='<span class="muted">Код сохранён. Выбери раздел.</span>';setGas("OK","");navigateTo("home");updateHomeStatuses();
   };
   $("btnCancelCode").onclick=function(){$("overlayCode").classList.remove("show")};
-  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];$("codeDebug").textContent="Кэш очищен.";updateHomeStatuses()};
+  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};$("codeDebug").textContent="Кэш очищен.";updateHomeStatuses()};
   $("btnRetry").onclick=async function(){$("overlayError").classList.remove("show");try{
     if(activePage==="sales"){await loadSales(true);buildSalesSel(true);renderSales()}
     else if(activePage==="staff"){await loadStaff(true);buildStaffSel(true);renderStaff()}
@@ -441,16 +447,42 @@ async function navigateTo(p){
 }
 
 function updateHomeStatuses(){
-  setStatus("sales",$("salesStatusDot"),$("salesStatusText"),hasSalesMeta(),SALES_GAS_URL);
-  setStatus("staff",$("staffStatusDot"),$("staffStatusText"),hasStaffMeta(),STAFF_GAS_URL);
-  setStatus("finance",$("financeStatusDot"),$("financeStatusText"),hasFinanceMeta(),FINANCE_GAS_URL);
-  setStatus("mkt",$("mktStatusDot"),$("mktStatusText"),hasMktMeta(),MKT_GAS_URL);
-  setStatus("empl",$("emplStatusDot"),$("emplStatusText"),hasEmplMeta(),EMPL_GAS_URL);
+  // Sales
+  var sd="";
+  if(hasSalesMeta()){var sc=SALES_RAW.length,sp=SALES_PLANS.length,ss=(SALES_META.stores||[]).length;sd='<span class="st-ok">'+sc+' записей</span> · '+sp+' планов · '+ss+' маг.';if(!sc)sd='<span class="st-warn">Мета ОК, но 0 записей</span>'}
+  setStatus2("sales",$("salesStatusDot"),$("salesStatusText"),$("salesStatusDetail"),hasSalesMeta(),SALES_GAS_URL,sd);
+
+  // Staff
+  var std="";
+  if(hasStaffMeta()){var src=STAFF_RAW.length,stp=STAFF_PLANS.length,sts=(STAFF_META.stores||[]).length;std='<span class="st-ok">'+src+' записей</span> · '+stp+' планов · '+sts+' маг.';if(!src)std='<span class="st-warn">Мета ОК, но 0 записей</span>'}
+  setStatus2("staff",$("staffStatusDot"),$("staffStatusText"),$("staffStatusDetail"),hasStaffMeta(),STAFF_GAS_URL,std);
+
+  // Finance
+  var fd="";
+  if(hasFinanceMeta()){var fc=FINANCE_SUMMARY.length,fy=(FINANCE_META.years||[]).length;fd='<span class="st-ok">'+fc+' месяцев</span> · '+fy+' год(а)';if(!fc)fd='<span class="st-warn">Мета ОК, но 0 записей</span>'}
+  setStatus2("finance",$("financeStatusDot"),$("financeStatusText"),$("financeStatusDetail"),hasFinanceMeta(),FINANCE_GAS_URL,fd);
+
+  // Marketing
+  var md="";
+  if(hasMktMeta()){var mc=MKT_RAW.length,my=(MKT_META.years||[]).length;md='<span class="st-ok">'+mc+' записей</span> · '+my+' год(а)';if(!mc)md='<span class="st-warn">Мета ОК, но 0 записей</span>'}
+  setStatus2("mkt",$("mktStatusDot"),$("mktStatusText"),$("mktStatusDetail"),hasMktMeta(),MKT_GAS_URL,md);
+
+  // Employees
+  var ed="";
+  if(hasEmplMeta()){var ec=EMPL_RAW.length,ep=EMPL_PLANS.length,es=(EMPL_META.sellers||[]).length,est=(EMPL_META.stores||[]).length;ed='<span class="st-ok">'+ec+' записей</span> · '+es+' продавцов · '+est+' маг.';if(!ec)ed='<span class="st-warn">Мета ОК, но 0 записей</span>'}
+  setStatus2("empl",$("emplStatusDot"),$("emplStatusText"),$("emplStatusDetail"),hasEmplMeta(),EMPL_GAS_URL,ed);
 }
-function setStatus(k,dot,txt,loaded,url){
-  if(loaded){dot.className="statusDot loaded";txt.textContent="Загружено"}
-  else if(hasCached(url,"meta")){dot.className="statusDot loaded";txt.textContent="Кэш"}
-  else{dot.className="statusDot";txt.textContent="Не загружено"}
+function setStatus2(k,dot,txt,detail,loaded,url,dataInfo){
+  // Loading state
+  if(_loading[k]){dot.className="statusDot loading";txt.textContent="Загрузка…";detail.innerHTML="";return}
+  // Error state
+  if(_errors[k]){dot.className="statusDot error";txt.textContent="Ошибка";detail.innerHTML='<span class="st-bad">'+esc(_errors[k]).substring(0,60)+'</span>';return}
+  // Loaded with data
+  if(loaded){dot.className="statusDot loaded";txt.textContent="Загружено";detail.innerHTML=dataInfo||"";return}
+  // Cached
+  if(hasCached(url,"meta")){dot.className="statusDot stale";txt.textContent="Кэш";detail.innerHTML='<span class="st-warn">Данные из кэша</span>';return}
+  // Not loaded
+  dot.className="statusDot";txt.textContent="Не загружено";detail.innerHTML="";
 }
 function hasCached(u,e){var k=cacheKey(u,e),r=lsGet(k);if(!r)return false;var c=safeJsonParse(r);return c&&c.ts&&c.data&&c.data.ok===true&&(Date.now()-c.ts)<CACHE_TTL_MS}
 function hasSalesMeta(){return SALES_META&&Array.isArray(SALES_META.stores)&&SALES_META.stores.length>0}
@@ -464,11 +496,11 @@ function initTheme(){if(lsGet(THEME_STORAGE_KEY)==="light"){document.documentEle
 function toggleTheme(){var l=document.documentElement.classList.toggle("light");$("themeIcon").textContent=l?"☀️":"🌙";$("themeLabel").textContent=l?"Светлая":"Тёмная";lsSet(THEME_STORAGE_KEY,l?"light":"dark")}
 
 // LOAD
-async function loadSales(f){if(_loading.sales)return;_loading.sales=true;setGas("…","warn");try{var r=await Promise.all([fetchCached(SALES_GAS_URL,"meta",f),fetchCached(SALES_GAS_URL,"raw",f),fetchCached(SALES_GAS_URL,"plans",f)]);SALES_META=r[0];SALES_RAW=arr(r[1]&&r[1].rows);SALES_PLANS=arr(r[2]&&r[2].rows);setGas("OK","good");updateHomeStatuses()}catch(e){handleLoadError(e,SALES_GAS_URL);SALES_META=null;SALES_RAW=[];SALES_PLANS=[];updateHomeStatuses();throw e}finally{_loading.sales=false}}
-async function loadStaff(f){if(_loading.staff)return;_loading.staff=true;setGas("…","warn");try{var r=await Promise.all([fetchCached(STAFF_GAS_URL,"meta",f),fetchCached(STAFF_GAS_URL,"raw",f),fetchCached(STAFF_GAS_URL,"plans",f)]);STAFF_META=r[0];STAFF_RAW=arr(r[1]&&r[1].rows);STAFF_PLANS=arr(r[2]&&r[2].rows);setGas("OK","good");updateHomeStatuses()}catch(e){handleLoadError(e,STAFF_GAS_URL);STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];updateHomeStatuses();throw e}finally{_loading.staff=false}}
-async function loadFinance(f){if(_loading.finance)return;_loading.finance=true;setGas("…","warn");try{var r=await Promise.all([fetchCached(FINANCE_GAS_URL,"meta",f),fetchCached(FINANCE_GAS_URL,"summary",f)]);FINANCE_META=r[0];FINANCE_SUMMARY=arr(r[1]&&r[1].rows);setGas("OK","good");updateHomeStatuses()}catch(e){handleLoadError(e,FINANCE_GAS_URL);FINANCE_META=null;FINANCE_SUMMARY=[];updateHomeStatuses();throw e}finally{_loading.finance=false}}
-async function loadMkt(f){if(_loading.mkt)return;_loading.mkt=true;setGas("…","warn");try{var r=await Promise.all([fetchCached(MKT_GAS_URL,"meta",f),fetchCached(MKT_GAS_URL,"raw",f)]);MKT_META=r[0];MKT_RAW=arr(r[1]&&r[1].rows);setGas("OK","good");updateHomeStatuses()}catch(e){handleLoadError(e,MKT_GAS_URL);MKT_META=null;MKT_RAW=[];updateHomeStatuses();throw e}finally{_loading.mkt=false}}
-async function loadEmpl(f){if(_loading.empl)return;_loading.empl=true;setGas("…","warn");try{var r=await Promise.all([fetchCached(EMPL_GAS_URL,"meta",f),fetchCached(EMPL_GAS_URL,"raw",f),fetchCached(EMPL_GAS_URL,"plans",f)]);EMPL_META=r[0];EMPL_RAW=arr(r[1]&&r[1].rows);EMPL_PLANS=arr(r[2]&&r[2].rows);setGas("OK","good");updateHomeStatuses()}catch(e){handleLoadError(e,EMPL_GAS_URL);EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];updateHomeStatuses();throw e}finally{_loading.empl=false}}
+async function loadSales(f){if(_loading.sales)return;_loading.sales=true;_errors.sales=null;setGas("…","warn");updateHomeStatuses();try{var r=await Promise.all([fetchCached(SALES_GAS_URL,"meta",f),fetchCached(SALES_GAS_URL,"raw",f),fetchCached(SALES_GAS_URL,"plans",f)]);SALES_META=r[0];SALES_RAW=arr(r[1]&&r[1].rows);SALES_PLANS=arr(r[2]&&r[2].rows);_errors.sales=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors.sales=e&&e.message||String(e);handleLoadError(e,SALES_GAS_URL);SALES_META=null;SALES_RAW=[];SALES_PLANS=[];updateHomeStatuses();throw e}finally{_loading.sales=false;updateHomeStatuses()}}
+async function loadStaff(f){if(_loading.staff)return;_loading.staff=true;_errors.staff=null;setGas("…","warn");updateHomeStatuses();try{var r=await Promise.all([fetchCached(STAFF_GAS_URL,"meta",f),fetchCached(STAFF_GAS_URL,"raw",f),fetchCached(STAFF_GAS_URL,"plans",f)]);STAFF_META=r[0];STAFF_RAW=arr(r[1]&&r[1].rows);STAFF_PLANS=arr(r[2]&&r[2].rows);_errors.staff=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors.staff=e&&e.message||String(e);handleLoadError(e,STAFF_GAS_URL);STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];updateHomeStatuses();throw e}finally{_loading.staff=false;updateHomeStatuses()}}
+async function loadFinance(f){if(_loading.finance)return;_loading.finance=true;_errors.finance=null;setGas("…","warn");updateHomeStatuses();try{var r=await Promise.all([fetchCached(FINANCE_GAS_URL,"meta",f),fetchCached(FINANCE_GAS_URL,"summary",f)]);FINANCE_META=r[0];FINANCE_SUMMARY=arr(r[1]&&r[1].rows);_errors.finance=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors.finance=e&&e.message||String(e);handleLoadError(e,FINANCE_GAS_URL);FINANCE_META=null;FINANCE_SUMMARY=[];updateHomeStatuses();throw e}finally{_loading.finance=false;updateHomeStatuses()}}
+async function loadMkt(f){if(_loading.mkt)return;_loading.mkt=true;_errors.mkt=null;setGas("…","warn");updateHomeStatuses();try{var r=await Promise.all([fetchCached(MKT_GAS_URL,"meta",f),fetchCached(MKT_GAS_URL,"raw",f)]);MKT_META=r[0];MKT_RAW=arr(r[1]&&r[1].rows);_errors.mkt=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors.mkt=e&&e.message||String(e);handleLoadError(e,MKT_GAS_URL);MKT_META=null;MKT_RAW=[];updateHomeStatuses();throw e}finally{_loading.mkt=false;updateHomeStatuses()}}
+async function loadEmpl(f){if(_loading.empl)return;_loading.empl=true;_errors.empl=null;setGas("…","warn");updateHomeStatuses();try{var r=await Promise.all([fetchCached(EMPL_GAS_URL,"meta",f),fetchCached(EMPL_GAS_URL,"raw",f),fetchCached(EMPL_GAS_URL,"plans",f)]);EMPL_META=r[0];EMPL_RAW=arr(r[1]&&r[1].rows);EMPL_PLANS=arr(r[2]&&r[2].rows);_errors.empl=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors.empl=e&&e.message||String(e);handleLoadError(e,EMPL_GAS_URL);EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];updateHomeStatuses();throw e}finally{_loading.empl=false;updateHomeStatuses()}}
 function arr(v){return Array.isArray(v)?v:[]}
 
 // SELECTORS
