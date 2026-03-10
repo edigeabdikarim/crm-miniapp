@@ -160,7 +160,24 @@
     .matrix-cell.top3{background:rgba(251,113,133,.06)!important;color:var(--bad);font-weight:600}
     .matrix-total{font-weight:800!important;background:var(--surface2)!important}
     td.wrap-cell{white-space:normal;max-width:250px}
-    @media(max-width:900px){.wrap{padding:16px}.homeGrid{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.top{flex-direction:column;align-items:flex-start}h1{font-size:22px}.tabs{padding:8px 16px 12px}}
+    .homeCard.teal:hover{border-color:rgba(20,184,166,.4)}.homeCard.teal::before{background:linear-gradient(90deg,transparent,rgba(20,184,166,.25),transparent)}
+    .btn.accent-teal{border-color:rgba(20,184,166,.4);background:linear-gradient(135deg,rgba(20,184,166,.28),rgba(20,184,166,.10))}
+    .toggleBtn.active.teal{border-color:rgba(20,184,166,.35);background:linear-gradient(135deg,rgba(20,184,166,.28),rgba(20,184,166,.14))}
+    .toggleBtn.teal{border-color:rgba(20,184,166,.2)}
+    .bar-cell{position:relative;min-width:100px}
+    .bar-bg{position:absolute;left:0;top:0;bottom:0;border-radius:4px;opacity:.18;transition:width .3s}
+    .bar-val{position:relative;z-index:1}
+    .rank-medal{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:800}
+    .rank-1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000}.rank-2{background:linear-gradient(135deg,#d1d5db,#9ca3af);color:#000}.rank-3{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}
+    .emplSection{margin-bottom:20px}
+    .emplSection h3{font-size:14px;font-weight:700;color:var(--muted);margin:0 0 10px 2px;text-transform:uppercase;letter-spacing:.04em}
+    .miniCard{border:1px solid var(--stroke);background:var(--surface);border-radius:var(--radius);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:500;color:var(--text2)}
+    .miniCard+.miniCard{margin-top:6px}
+    .miniCard .mc-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .miniCard .mc-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--text);margin-left:12px;white-space:nowrap}
+    .homeGrid5{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:32px}
+    .homeGrid5 .homeCard:nth-child(5){grid-column:1/-1}
+    @media(max-width:900px){.wrap{padding:16px}.homeGrid,.homeGrid5{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.top{flex-direction:column;align-items:flex-start}h1{font-size:22px}.tabs{padding:8px 16px 12px}.homeGrid5 .homeCard:nth-child(5){grid-column:auto}}
     @media(max-width:600px){.grid{grid-template-columns:1fr}.controls{flex-direction:column}}
   </style>
 </head>
@@ -176,11 +193,12 @@
 
   <!-- HOME -->
   <div class="page active" id="pageHome">
-    <div class="homeGrid">
+    <div class="homeGrid5">
       <div class="homeCard blue" id="goSales"><span class="icon">📊</span><div class="cardTitle">Планы продаж</div><div class="cardDesc">Ежедневные и ежемесячные данные по магазинам</div><div class="cardStatus"><span class="statusDot" id="salesStatusDot"></span><span id="salesStatusText">Не загружено</span></div></div>
       <div class="homeCard orange" id="goStaff"><span class="icon">👥</span><div class="cardTitle">Показатели магазина</div><div class="cardDesc">Сотрудники, чеки, возвраты, средний чек</div><div class="cardStatus"><span class="statusDot" id="staffStatusDot"></span><span id="staffStatusText">Не загружено</span></div></div>
       <div class="homeCard green" id="goFinance"><span class="icon">💰</span><div class="cardTitle">Финансы (ДДС)</div><div class="cardDesc">Сводка ДДС, статьи, кошельки, динамика</div><div class="cardStatus"><span class="statusDot" id="financeStatusDot"></span><span id="financeStatusText">Не загружено</span></div></div>
       <div class="homeCard purple" id="goMarketing"><span class="icon">📣</span><div class="cardTitle">Маркетинг</div><div class="cardDesc">Бюджет, категории расходов, направления, матрица</div><div class="cardStatus"><span class="statusDot" id="mktStatusDot"></span><span id="mktStatusText">Не загружено</span></div></div>
+      <div class="homeCard teal" id="goEmpl"><span class="icon">🏆</span><div class="cardTitle">Аналитика сотрудников</div><div class="cardDesc">Глубокая аналитика по каждому продавцу: эффективность, бренды, скидки, тренды и рейтинг по сети</div><div class="cardStatus"><span class="statusDot" id="emplStatusDot"></span><span id="emplStatusText">Не загружено</span></div></div>
     </div>
   </div>
 
@@ -245,6 +263,36 @@
     <div id="mktMultiView" style="display:none"><div class="section"><h2>Динамика расходов по месяцам</h2><div class="tableWrap"><div class="scrollX"><table class="financeMultiTable" id="mktMultiTable"></table></div></div></div></div>
     <div id="mktEmpty" class="emptyState" style="display:none">Нет данных за выбранный период.</div>
   </div>
+
+  <!-- EMPLOYEE ANALYTICS -->
+  <div class="page" id="pageEmpl">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="emplBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
+    <div class="controls">
+      <select id="emplYearSel" class="sel"></select>
+      <select id="emplMonthSel" class="sel"></select>
+      <select id="emplStoreSel" class="sel"></select>
+      <select id="emplSellerSel" class="sel"></select>
+      <button class="btn accent-teal" id="emplRefreshBtn">Обновить</button>
+      <div class="toggleRow">
+        <button class="toggleBtn teal active" id="emplCardToggle">Карточка продавца</button>
+        <button class="toggleBtn teal" id="emplRankToggle">Рейтинг по сети</button>
+      </div>
+    </div>
+    <div class="grid" id="emplKpi"></div>
+    <!-- Card view -->
+    <div id="emplCardView">
+      <div class="emplSection" id="emplSalesTypeSection"><h3>Структура продаж</h3><div class="tableWrap"><div class="scrollX"><table><thead><tr><th>Тип</th><th class="right">Сумма</th><th class="right">Чеков</th><th class="right">Ср. чек</th><th class="right">Доля</th></tr></thead><tbody id="emplSalesTypeBody"></tbody></table></div></div></div>
+      <div class="emplSection" id="emplBrandsSection"><h3>Топ брендов</h3><div id="emplBrandsList"></div></div>
+      <div class="emplSection" id="emplCatsSection"><h3>Топ категорий</h3><div id="emplCatsList"></div></div>
+      <div class="emplSection" id="emplDailySection"><h3>Продажи по дням</h3><div class="tableWrap"><div class="scrollX"><table><thead><tr><th>День</th><th class="right">Сумма</th><th class="right">Чеков</th><th class="right">Ср. чек</th></tr></thead><tbody id="emplDailyBody"></tbody></table></div></div></div>
+      <div class="emplSection" id="emplTrendSection"><h3>Тренд по месяцам</h3><div class="tableWrap"><div class="scrollX"><table><thead><tr><th>Месяц</th><th class="right">Продажи</th><th class="right">Смен</th><th class="right">Прод./смена</th><th class="right">Ср. чек</th><th class="right">Скидка %</th><th class="right">Возвр. %</th></tr></thead><tbody id="emplTrendBody"></tbody></table></div></div></div>
+    </div>
+    <!-- Ranking view -->
+    <div id="emplRankView" style="display:none">
+      <div class="emplSection"><h3>Рейтинг продавцов по всей сети</h3><div class="tableWrap"><div class="scrollX"><table class="wideTable"><thead><tr><th>№</th><th>Продавец</th><th>Магазин</th><th class="right">Продажи</th><th class="right">Доля маг.</th><th class="right">Смен</th><th class="right">Прод./смена</th><th class="right">Ср. чек</th><th class="right">Скидка %</th><th class="right">Возвр. %</th><th class="right">Колл. %</th></tr></thead><tbody id="emplRankBody"></tbody></table></div></div></div>
+    </div>
+    <div id="emplEmpty" class="emptyState" style="display:none">Нет данных.</div>
+  </div>
 </div>
 
 <!-- MODALS -->
@@ -259,6 +307,7 @@ var SALES_GAS_URL="https://script.google.com/macros/s/AKfycbyOKpobb3yHVC8FXzWlqJ
 var STAFF_GAS_URL="https://script.google.com/macros/s/AKfycbx8gTv-eyFMqJNsoM2Es2uj9NCFv_8cwo26Evcrlib8j1ESEhwIp2ZDPN6KJ-YCAIQY/exec";
 var FINANCE_GAS_URL="https://script.google.com/macros/s/AKfycbwJK_yWBtniw7DRbcDMOZzo713l2B_Cg73VldPByFsJztMbj1unt-hXbUBotktJ696Kgw/exec";
 var MKT_GAS_URL="https://script.google.com/macros/s/AKfycbxUleTyVYbU_sBG4yBsglaJeDE_JlbGPzPQXq3ST7QY1_SkPerwSyTslMDLvWP4n6Xr/exec";
+var EMPL_GAS_URL="https://script.google.com/macros/s/AKfycbwRNPJZAtEz-Wixf9oYgNHMlmCQZ-lh5cDPjUoMRGrM_NROsYy8Q15Ch5nr-3b8IbqlEA/exec";
 
 var CACHE_TTL_MS=24*60*60*1000, ACCESS_CODE_STORAGE_KEY="bugatti_access_code_v7", THEME_STORAGE_KEY="bugatti_theme_v1";
 var MONTHS_RU=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
@@ -270,7 +319,9 @@ var SALES_META=null,SALES_RAW=[],SALES_PLANS=[];
 var STAFF_META=null,STAFF_RAW=[],STAFF_PLANS=[];
 var FINANCE_META=null,FINANCE_SUMMARY=[];
 var MKT_META=null,MKT_RAW=[];
-var _loading={sales:false,staff:false,finance:false,mkt:false};
+var EMPL_META=null,EMPL_RAW=[],EMPL_PLANS=[];
+var emplViewMode="card";
+var _loading={sales:false,staff:false,finance:false,mkt:false,empl:false};
 
 init();
 
@@ -284,7 +335,8 @@ function init(){
 function wireUI(){
   $("goSales").onclick=function(){navigateTo("sales")};$("goStaff").onclick=function(){navigateTo("staff")};
   $("goFinance").onclick=function(){navigateTo("finance")};$("goMarketing").onclick=function(){navigateTo("marketing")};
-  $("salesBack").onclick=$("staffBack").onclick=$("financeBack").onclick=$("mktBack").onclick=function(){navigateTo("home")};
+  $("goEmpl").onclick=function(){navigateTo("empl")};
+  $("salesBack").onclick=$("staffBack").onclick=$("financeBack").onclick=$("mktBack").onclick=$("emplBack").onclick=function(){navigateTo("home")};
 
   $("tabDaily").onclick=function(){activeView="daily";renderSales()};$("tabMonthly").onclick=function(){activeView="monthly";renderSales()};
   [$("yearSel"),$("monthSel"),$("storeSel")].forEach(function(e){e.onchange=renderSales});
@@ -304,20 +356,29 @@ function wireUI(){
   $("financeRefreshBtn").onclick=async function(){try{await loadFinance(true);buildFinanceSel(true);renderFinance()}catch(e){}};
   $("mktRefreshBtn").onclick=async function(){try{await loadMkt(true);buildMktSel(true);renderMkt()}catch(e){}};
 
+  // Employee Analytics
+  [$("emplYearSel"),$("emplMonthSel")].forEach(function(e){e.onchange=function(){syncEmplSellerOpts(null);renderEmpl()}});
+  $("emplStoreSel").onchange=function(){syncEmplSellerOpts(null);renderEmpl()};
+  $("emplSellerSel").onchange=renderEmpl;
+  $("emplRefreshBtn").onclick=async function(){try{await loadEmpl(true);buildEmplSel(true);renderEmpl()}catch(e){}};
+  $("emplCardToggle").onclick=function(){emplViewMode="card";$("emplCardToggle").classList.add("active");$("emplRankToggle").classList.remove("active");renderEmpl()};
+  $("emplRankToggle").onclick=function(){emplViewMode="rank";$("emplRankToggle").classList.add("active");$("emplCardToggle").classList.remove("active");renderEmpl()};
+
   $("btnChangeCode").onclick=function(){openCodeModal("🔒 Сменить код","Введи новый код.","")};
   $("btnSaveCode").onclick=async function(){
     var c=String($("codeInput").value||"").trim();if(c.length<3){$("codeDebug").textContent="Слишком короткий.";return}
     ACCESS_CODE=c;lsSet(ACCESS_CODE_STORAGE_KEY,c);$("overlayCode").classList.remove("show");
-    SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];
+    SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];
     clearAllCache();$("subtitle").innerHTML='<span class="muted">Код сохранён. Выбери раздел.</span>';setGas("OK","");navigateTo("home");updateHomeStatuses();
   };
   $("btnCancelCode").onclick=function(){$("overlayCode").classList.remove("show")};
-  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];$("codeDebug").textContent="Кэш очищен.";updateHomeStatuses()};
+  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];$("codeDebug").textContent="Кэш очищен.";updateHomeStatuses()};
   $("btnRetry").onclick=async function(){$("overlayError").classList.remove("show");try{
     if(activePage==="sales"){await loadSales(true);buildSalesSel(true);renderSales()}
     else if(activePage==="staff"){await loadStaff(true);buildStaffSel(true);renderStaff()}
     else if(activePage==="finance"){await loadFinance(true);buildFinanceSel(true);renderFinance()}
     else if(activePage==="marketing"){await loadMkt(true);buildMktSel(true);renderMkt()}
+    else if(activePage==="empl"){await loadEmpl(true);buildEmplSel(true);renderEmpl()}
   }catch(e){}};
   $("btnCloseErr").onclick=function(){$("overlayError").classList.remove("show")};
   $("codeInput").onkeydown=function(e){if(e.key==="Enter")$("btnSaveCode").click()};
@@ -327,13 +388,14 @@ function wireUI(){
 // NAV
 async function navigateTo(p){
   activePage=p;
-  ["pageHome","pageSales","pageStaff","pageFinance","pageMarketing"].forEach(function(id){$(id).classList.remove("active")});
+  ["pageHome","pageSales","pageStaff","pageFinance","pageMarketing","pageEmpl"].forEach(function(id){$(id).classList.remove("active")});
   $("salesTabs").style.display="none";
   if(p==="home"){$("pageHome").classList.add("active");$("pageTitle").textContent="Bugatti Analytics";$("subtitle").innerHTML='<span class="muted">Выбери раздел</span>';updateHomeStatuses();return}
   if(p==="sales"){$("pageSales").classList.add("active");$("salesTabs").style.display="";$("pageTitle").textContent="Планы продаж";if(!hasSalesMeta()){try{await loadSales(false);buildSalesSel(false)}catch(e){}}renderSales();return}
   if(p==="staff"){$("pageStaff").classList.add("active");$("pageTitle").textContent="Показатели магазина";if(!hasStaffMeta()){try{await loadStaff(false);buildStaffSel(false)}catch(e){}}renderStaff();return}
   if(p==="finance"){$("pageFinance").classList.add("active");$("pageTitle").textContent="Финансы";if(!hasFinanceMeta()){try{await loadFinance(false);buildFinanceSel(false)}catch(e){}}renderFinance();return}
   if(p==="marketing"){$("pageMarketing").classList.add("active");$("pageTitle").textContent="Маркетинг";if(!hasMktMeta()){try{await loadMkt(false);buildMktSel(false)}catch(e){}}renderMkt();return}
+  if(p==="empl"){$("pageEmpl").classList.add("active");$("pageTitle").textContent="Аналитика сотрудников";if(!hasEmplMeta()){try{await loadEmpl(false);buildEmplSel(false)}catch(e){}}renderEmpl();return}
 }
 
 function updateHomeStatuses(){
@@ -341,6 +403,7 @@ function updateHomeStatuses(){
   setStatus("staff",$("staffStatusDot"),$("staffStatusText"),hasStaffMeta(),STAFF_GAS_URL);
   setStatus("finance",$("financeStatusDot"),$("financeStatusText"),hasFinanceMeta(),FINANCE_GAS_URL);
   setStatus("mkt",$("mktStatusDot"),$("mktStatusText"),hasMktMeta(),MKT_GAS_URL);
+  setStatus("empl",$("emplStatusDot"),$("emplStatusText"),hasEmplMeta(),EMPL_GAS_URL);
 }
 function setStatus(k,dot,txt,loaded,url){
   if(loaded){dot.className="statusDot loaded";txt.textContent="Загружено"}
@@ -352,6 +415,7 @@ function hasSalesMeta(){return SALES_META&&Array.isArray(SALES_META.stores)&&SAL
 function hasStaffMeta(){return STAFF_META&&Array.isArray(STAFF_META.stores)&&STAFF_META.stores.length>0}
 function hasFinanceMeta(){return FINANCE_META&&Array.isArray(FINANCE_META.years)}
 function hasMktMeta(){return MKT_META&&Array.isArray(MKT_META.years)&&MKT_META.years.length>0}
+function hasEmplMeta(){return EMPL_META&&Array.isArray(EMPL_META.years)&&EMPL_META.years.length>0}
 
 // THEME
 function initTheme(){if(lsGet(THEME_STORAGE_KEY)==="light"){document.documentElement.classList.add("light");$("themeIcon").textContent="☀️";$("themeLabel").textContent="Светлая"}}
@@ -362,6 +426,7 @@ async function loadSales(f){if(_loading.sales)return;_loading.sales=true;setGas(
 async function loadStaff(f){if(_loading.staff)return;_loading.staff=true;setGas("…","warn");try{var r=await Promise.all([fetchCached(STAFF_GAS_URL,"meta",f),fetchCached(STAFF_GAS_URL,"raw",f),fetchCached(STAFF_GAS_URL,"plans",f)]);STAFF_META=r[0];STAFF_RAW=arr(r[1]&&r[1].rows);STAFF_PLANS=arr(r[2]&&r[2].rows);setGas("OK","good");updateHomeStatuses()}catch(e){handleLoadError(e,STAFF_GAS_URL);STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];updateHomeStatuses();throw e}finally{_loading.staff=false}}
 async function loadFinance(f){if(_loading.finance)return;_loading.finance=true;setGas("…","warn");try{var r=await Promise.all([fetchCached(FINANCE_GAS_URL,"meta",f),fetchCached(FINANCE_GAS_URL,"summary",f)]);FINANCE_META=r[0];FINANCE_SUMMARY=arr(r[1]&&r[1].rows);setGas("OK","good");updateHomeStatuses()}catch(e){handleLoadError(e,FINANCE_GAS_URL);FINANCE_META=null;FINANCE_SUMMARY=[];updateHomeStatuses();throw e}finally{_loading.finance=false}}
 async function loadMkt(f){if(_loading.mkt)return;_loading.mkt=true;setGas("…","warn");try{var r=await Promise.all([fetchCached(MKT_GAS_URL,"meta",f),fetchCached(MKT_GAS_URL,"raw",f)]);MKT_META=r[0];MKT_RAW=arr(r[1]&&r[1].rows);setGas("OK","good");updateHomeStatuses()}catch(e){handleLoadError(e,MKT_GAS_URL);MKT_META=null;MKT_RAW=[];updateHomeStatuses();throw e}finally{_loading.mkt=false}}
+async function loadEmpl(f){if(_loading.empl)return;_loading.empl=true;setGas("…","warn");try{var r=await Promise.all([fetchCached(EMPL_GAS_URL,"meta",f),fetchCached(EMPL_GAS_URL,"raw",f),fetchCached(EMPL_GAS_URL,"plans",f)]);EMPL_META=r[0];EMPL_RAW=arr(r[1]&&r[1].rows);EMPL_PLANS=arr(r[2]&&r[2].rows);setGas("OK","good");updateHomeStatuses()}catch(e){handleLoadError(e,EMPL_GAS_URL);EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];updateHomeStatuses();throw e}finally{_loading.empl=false}}
 function arr(v){return Array.isArray(v)?v:[]}
 
 // SELECTORS
@@ -432,6 +497,34 @@ function syncMktMonthOpts(pref){
   $("mktMonthSel").innerHTML=ms.map(function(m){return'<option value="'+Number(m.num)+'">'+esc(m.name||monthNameRu(m.num))+'</option>'}).join("");
   if(p&&ms.some(function(m){return String(m.num)===p}))$("mktMonthSel").value=p;
   else if(ms.length)$("mktMonthSel").value=String(ms[ms.length-1].num);
+}
+
+// EMPL SELECTORS
+function buildEmplSel(keep){
+  if(!hasEmplMeta())return;
+  var ys=(EMPL_META.years||[]).slice().map(Number).filter(Boolean).sort(function(a,b){return b-a});
+  var ms=(EMPL_META.months||[]).slice().sort(function(a,b){return Number(a.month)-Number(b.month)});
+  var ss=(EMPL_META.stores||[]).slice().sort(function(a,b){return a.localeCompare(b,"ru")});
+  var py=$("emplYearSel").value,pm=$("emplMonthSel").value,ps=$("emplStoreSel").value,psl=$("emplSellerSel").value;
+  $("emplYearSel").innerHTML=ys.map(function(y){return'<option value="'+y+'">'+y+'</option>'}).join("");
+  $("emplMonthSel").innerHTML=ms.map(function(m){return'<option value="'+Number(m.month)+'">'+esc(m.monthName||monthNameRu(m.month))+'</option>'}).join("");
+  $("emplStoreSel").innerHTML='<option value="__all__">Все магазины</option>'+ss.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");
+  // populate sellers based on selected store
+  syncEmplSellerOpts(keep?psl:null);
+  if(keep){if(py)$("emplYearSel").value=py;if(pm)$("emplMonthSel").value=pm;if(ps)$("emplStoreSel").value=ps;syncEmplSellerOpts(psl)}
+  else{if(ys.length)$("emplYearSel").value=String(ys[0]);var nm=new Date().getMonth()+1;if(ms.some(function(m){return Number(m.month)===nm}))$("emplMonthSel").value=String(nm);else if(ms.length)$("emplMonthSel").value=String(ms[ms.length-1].month);syncEmplSellerOpts(null)}
+}
+function syncEmplSellerOpts(pref){
+  var y=Number($("emplYearSel").value||0),m=Number($("emplMonthSel").value||0),st=$("emplStoreSel").value;
+  var sls={};EMPL_RAW.forEach(function(r){
+    if(Number(r.year)!==y||Number(r.monthNum)!==m)return;
+    if(st!=="__all__"&&norm(r.store)!==norm(st))return;
+    var s=String(r.seller||"").trim();if(s)sls[s]=true;
+  });
+  var list=Object.keys(sls).sort(function(a,b){return a.localeCompare(b,"ru")});
+  $("emplSellerSel").innerHTML=list.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");
+  if(pref&&list.indexOf(pref)>=0)$("emplSellerSel").value=pref;
+  else if(list.length)$("emplSellerSel").value=list[0];
 }
 
 // ====== RENDER SALES ======
@@ -581,6 +674,202 @@ function buildStaffReport(y,m,st){
   rw.forEach(function(r){var s=String(r.seller||"").trim();if(!s)return;if(!em.has(s))em.set(s,{name:s,ts:0,sd:new Set(),is:0,cs:0,ic:new Set(),cc:new Set(),ra:0,rc:new Set()});var e=em.get(s);var a=Number(r.salesAmount||0),op=String(r.operation||""),cn=String(r.checkNumber||""),sc=Number(r.sellersInCheck||0),dn=Number(r.day||0);e.ts+=a;tS+=a;if(dn)e.sd.add(dn);if(op==="Продажа"){if(sc<=1){e.is+=a;tI+=a;if(cn){e.ic.add(cn);aI.add(cn)}}else{e.cs+=a;tC+=a;if(cn){e.cc.add(cn);aC.add(cn)}}}if(op==="Возврат"){e.ra+=a;tR+=a;if(cn)e.rc.add(cn)}});
   var emps=Array.from(em.values()).map(function(e){var ic=e.ic.size,cc=e.cc.size,tc=ic+cc;return{name:e.name,totalSales:r2(e.ts),share:tS?r6(e.ts/tS):0,shiftDays:e.sd.size,individualSales:r2(e.is),collectiveSales:r2(e.cs),individualChecks:ic,collectiveChecks:cc,returnsAmount:r2(e.ra),returnChecks:e.rc.size,avgCheck:tc>0?r2((e.is+e.cs)/tc):0,avgCheckIndividual:ic>0?r2(e.is/ic):0,avgCheckCollective:cc>0?r2(e.cs/cc):0}}).sort(function(a,b){return b.totalSales-a.totalSales});
   var tca=aI.size+aC.size;return{summary:{planMonth:r2(pM),factStoreSales:r2(tS),planPct:pM>0?r6(tS/pM):0},totals:{individualSales:r2(tI),collectiveSales:r2(tC),returnsAmount:r2(tR),avgCheck:tca>0?r2((tI+tC)/tca):0},employees:emps};
+}
+
+// ====== EMPLOYEE ANALYTICS ======
+function renderEmpl(){
+  if(!hasEmplMeta()||!EMPL_RAW.length){$("subtitle").innerHTML='<span class="muted">Нет данных</span>';$("emplKpi").innerHTML="";$("emplEmpty").style.display="";$("emplCardView").style.display="none";$("emplRankView").style.display="none";return}
+  $("emplEmpty").style.display="none";
+  if(emplViewMode==="rank"){$("emplCardView").style.display="none";$("emplRankView").style.display="";renderEmplRank();return}
+  $("emplCardView").style.display="";$("emplRankView").style.display="none";renderEmplCard();
+}
+
+function renderEmplCard(){
+  var y=Number($("emplYearSel").value||0),m=Number($("emplMonthSel").value||0),st=$("emplStoreSel").value,sl=String($("emplSellerSel").value||"").trim();
+  if(!y||!m||!sl){$("subtitle").innerHTML='<span class="muted">Выбери параметры</span>';$("emplKpi").innerHTML="";return}
+
+  var rows=EMPL_RAW.filter(function(r){
+    if(Number(r.year)!==y||Number(r.monthNum)!==m)return false;
+    if(st!=="__all__"&&norm(r.store)!==norm(st))return false;
+    return norm(r.seller)===norm(sl)&&norm(r.parent)!=="сертификат";
+  });
+
+  if(!rows.length){$("subtitle").innerHTML='<span class="muted">Нет данных для этого продавца</span>';$("emplKpi").innerHTML="";$("emplSalesTypeBody").innerHTML="";$("emplBrandsList").innerHTML="";$("emplCatsList").innerHTML="";$("emplDailyBody").innerHTML="";$("emplTrendBody").innerHTML="";return}
+
+  // --- Store total for share calc ---
+  var storeRows=EMPL_RAW.filter(function(r){
+    if(Number(r.year)!==y||Number(r.monthNum)!==m)return false;
+    if(st!=="__all__"&&norm(r.store)!==norm(st))return false;
+    return norm(r.parent)!=="сертификат";
+  });
+  var storeTotal=storeRows.filter(function(r){return r.operation==="Продажа"}).reduce(function(s,r){return s+Number(r.salesAmount||0)},0);
+
+  // --- Basic metrics ---
+  var sales=rows.filter(function(r){return r.operation==="Продажа"});
+  var returns=rows.filter(function(r){return r.operation==="Возврат"});
+  var totalSales=sales.reduce(function(s,r){return s+Number(r.salesAmount||0)},0);
+  var totalReturns=Math.abs(returns.reduce(function(s,r){return s+Number(r.salesAmount||0)},0));
+  var indSales=sales.filter(function(r){return Number(r.sellersInCheck)<=1});
+  var colSales=sales.filter(function(r){return Number(r.sellersInCheck)>1});
+  var indSum=indSales.reduce(function(s,r){return s+Number(r.salesAmount||0)},0);
+  var colSum=colSales.reduce(function(s,r){return s+Number(r.salesAmount||0)},0);
+  var indChecks=new Set();indSales.forEach(function(r){if(r.checkNumber)indChecks.add(r.checkNumber)});
+  var colChecks=new Set();colSales.forEach(function(r){if(r.checkNumber)colChecks.add(r.checkNumber)});
+  var retChecks=new Set();returns.forEach(function(r){if(r.checkNumber)retChecks.add(r.checkNumber)});
+  var allChecks=new Set();sales.forEach(function(r){if(r.checkNumber)allChecks.add(r.checkNumber)});
+  var shiftDays=new Set();rows.forEach(function(r){if(r.day)shiftDays.add(r.day)});
+  var avgCheck=allChecks.size>0?totalSales/allChecks.size:0;
+  var salesPerShift=shiftDays.size>0?totalSales/shiftDays.size:0;
+  var shareInStore=storeTotal>0?totalSales/storeTotal:0;
+  var returnPct=totalSales>0?totalReturns/totalSales:0;
+  var colPct=totalSales>0?colSum/totalSales:0;
+
+  // --- Discount analysis ---
+  var discountRows=sales.filter(function(r){return Number(r.priceOriginal)>0});
+  var totalOriginal=discountRows.reduce(function(s,r){return s+Number(r.priceOriginal||0)},0);
+  var totalDiscount=discountRows.reduce(function(s,r){return s+Number(r.priceDiscount||0)},0);
+  var avgDiscountPct=totalOriginal>0?(1-totalDiscount/totalOriginal):0;
+  var avgPricePoint=discountRows.length>0?totalDiscount/discountRows.length:0;
+
+  // --- Plan ---
+  var storeName=st==="__all__"?"":st;
+  var plan=EMPL_PLANS.find(function(p){return Number(p.year)===y&&Number(p.monthNum)===m&&(st==="__all__"||norm(p.store)===norm(storeName)||norm(p.shortStore)===norm(storeName))});
+  var planMonth=plan?Number(plan.planMonth||0):0;
+
+  $("subtitle").innerHTML='<span class="muted">Продавец:</span> <strong>'+esc(sl)+'</strong> <span class="muted">•</span> <strong>'+esc(monthNameRu(m))+' '+y+'</strong>'+(st!=="__all__"?' <span class="muted">• Магазин:</span> <strong>'+esc(st)+'</strong>':'');
+
+  // --- KPI cards ---
+  $("emplKpi").innerHTML=[
+    kpi("Личные продажи",money(totalSales),planMonth>0?"План маг.: "+money(planMonth):""),
+    kpi("Доля в магазине",'<span class="badge '+(shareInStore>=0.2?"good":shareInStore>=0.1?"warn":"bad")+'">'+pctT(shareInStore)+'</span>',"от "+money(storeTotal),true),
+    kpi("Прод./смена",money(salesPerShift),"Смен: "+shiftDays.size),
+    kpi("Ср. чек",money(avgCheck),"Чеков: "+allChecks.size),
+    kpi("Ср. скидка",'<span class="badge '+(avgDiscountPct<=0.15?"good":avgDiscountPct<=0.25?"warn":"bad")+'">'+pctT(avgDiscountPct)+'</span>',"Ср. цена: "+money(avgPricePoint),true),
+    kpi("Возвраты",'<span class="badge '+(returnPct<=0.03?"good":returnPct<=0.08?"warn":"bad")+'">'+pctT(returnPct)+'</span>',money(totalReturns),true),
+    kpi("Колл. доля",pctT(colPct),"Командные продажи"),
+    kpi("Позиций",String(sales.length),"Товаров продано")
+  ].join("");
+
+  // --- Sales type breakdown ---
+  var ic=indChecks.size,cc=colChecks.size,rc=retChecks.size;
+  $("emplSalesTypeBody").innerHTML=[
+    '<tr><td>Индивидуальные</td><td class="right">'+money(indSum)+'</td><td class="right">'+ic+'</td><td class="right">'+(ic?money(indSum/ic):"—")+'</td><td class="right">'+(totalSales>0?pctT(indSum/totalSales):"—")+'</td></tr>',
+    '<tr><td>Коллективные</td><td class="right">'+money(colSum)+'</td><td class="right">'+cc+'</td><td class="right">'+(cc?money(colSum/cc):"—")+'</td><td class="right">'+(totalSales>0?pctT(colSum/totalSales):"—")+'</td></tr>',
+    '<tr style="color:var(--bad)"><td>Возвраты</td><td class="right">'+money(totalReturns)+'</td><td class="right">'+rc+'</td><td class="right">'+(rc?money(totalReturns/rc):"—")+'</td><td class="right">'+pctT(returnPct)+'</td></tr>'
+  ].join("");
+
+  // --- Top brands ---
+  var brands={};sales.forEach(function(r){var b=r.brand||"—";if(!brands[b])brands[b]={sum:0,cnt:0};brands[b].sum+=Number(r.salesAmount||0);brands[b].cnt++});
+  var brandList=Object.keys(brands).map(function(b){return{name:b,sum:brands[b].sum,cnt:brands[b].cnt}}).sort(function(a,b){return b.sum-a.sum}).slice(0,7);
+  var maxBrand=brandList.length?brandList[0].sum:1;
+  $("emplBrandsList").innerHTML=brandList.map(function(b){var pct=maxBrand>0?Math.round(b.sum/maxBrand*100):0;return'<div class="miniCard"><span class="mc-name">'+esc(b.name)+' <span style="color:var(--muted2);font-size:11px">('+b.cnt+' шт.)</span></span><span class="mc-val">'+money(b.sum)+'</span></div>'}).join("");
+
+  // --- Top categories ---
+  var cats={};sales.forEach(function(r){var c=r.parent||"—";if(!cats[c])cats[c]={sum:0,cnt:0};cats[c].sum+=Number(r.salesAmount||0);cats[c].cnt++});
+  var catList=Object.keys(cats).map(function(c){return{name:c,sum:cats[c].sum,cnt:cats[c].cnt}}).sort(function(a,b){return b.sum-a.sum}).slice(0,7);
+  $("emplCatsList").innerHTML=catList.map(function(c){return'<div class="miniCard"><span class="mc-name">'+esc(c.name)+' <span style="color:var(--muted2);font-size:11px">('+c.cnt+' шт.)</span></span><span class="mc-val">'+money(c.sum)+'</span></div>'}).join("");
+
+  // --- Daily breakdown ---
+  var daily={};sales.forEach(function(r){var d=Number(r.day||0);if(!d)return;if(!daily[d])daily[d]={sum:0,checks:new Set()};daily[d].sum+=Number(r.salesAmount||0);if(r.checkNumber)daily[d].checks.add(r.checkNumber)});
+  var dayKeys=Object.keys(daily).map(Number).sort(function(a,b){return a-b});
+  $("emplDailyBody").innerHTML=dayKeys.map(function(d){var dd=daily[d];var nc=dd.checks.size;return'<tr><td>'+d+'</td><td class="right">'+money(dd.sum)+'</td><td class="right">'+nc+'</td><td class="right">'+(nc?money(dd.sum/nc):"—")+'</td></tr>'}).join("");
+
+  // --- Monthly trend (all available months) ---
+  var allMonths={};EMPL_RAW.forEach(function(r){
+    if(Number(r.year)!==y)return;
+    if(st!=="__all__"&&norm(r.store)!==norm(st))return;
+    if(norm(r.seller)!==norm(sl))return;
+    if(norm(r.parent)==="сертификат")return;
+    var mk=Number(r.monthNum);if(!mk)return;
+    if(!allMonths[mk])allMonths[mk]={sales:0,returns:0,origPrice:0,discPrice:0,priceCnt:0,days:new Set(),checks:new Set()};
+    var am=allMonths[mk];
+    if(r.operation==="Продажа"){am.sales+=Number(r.salesAmount||0);if(r.checkNumber)am.checks.add(r.checkNumber);if(Number(r.priceOriginal)>0){am.origPrice+=Number(r.priceOriginal);am.discPrice+=Number(r.priceDiscount);am.priceCnt++}}
+    if(r.operation==="Возврат")am.returns+=Math.abs(Number(r.salesAmount||0));
+    if(r.day)am.days.add(r.day);
+  });
+  var mKeys=Object.keys(allMonths).map(Number).sort(function(a,b){return a-b});
+  $("emplTrendBody").innerHTML=mKeys.map(function(mk){var d=allMonths[mk];var sh=d.days.size;var ac=d.checks.size;var disc=d.origPrice>0?(1-d.discPrice/d.origPrice):0;var retP=d.sales>0?d.returns/d.sales:0;var cls=mk===m?' style="background:var(--surface2)"':"";return'<tr'+cls+'><td><strong>'+esc(monthNameRu(mk))+'</strong></td><td class="right">'+money(d.sales)+'</td><td class="right">'+sh+'</td><td class="right">'+(sh?money(d.sales/sh):"—")+'</td><td class="right">'+(ac?money(d.sales/ac):"—")+'</td><td class="right">'+pctT(disc)+'</td><td class="right '+(retP>0.08?"bad":retP>0.03?"warn":"")+'">'+pctT(retP)+'</td></tr>'}).join("");
+}
+
+function renderEmplRank(){
+  var y=Number($("emplYearSel").value||0),m=Number($("emplMonthSel").value||0);
+  if(!y||!m){$("subtitle").innerHTML='<span class="muted">Выбери год и месяц</span>';$("emplKpi").innerHTML="";$("emplRankBody").innerHTML="";return}
+
+  var rows=EMPL_RAW.filter(function(r){return Number(r.year)===y&&Number(r.monthNum)===m&&norm(r.parent)!=="сертификат"});
+  if(!rows.length){$("subtitle").innerHTML='<span class="muted">Нет данных</span>';$("emplKpi").innerHTML="";$("emplRankBody").innerHTML="";return}
+
+  // Group by seller+store
+  var map={};
+  // Store totals for share
+  var storeTotals={};
+  rows.forEach(function(r){
+    if(r.operation==="Продажа"){storeTotals[r.store]=(storeTotals[r.store]||0)+Number(r.salesAmount||0)}
+  });
+
+  rows.forEach(function(r){
+    var key=norm(r.seller)+"__"+norm(r.store);
+    if(!map[key])map[key]={seller:r.seller,store:r.store,sales:0,returns:0,origPrice:0,discPrice:0,priceCnt:0,days:new Set(),checks:new Set(),indSum:0,colSum:0};
+    var e=map[key];
+    if(r.operation==="Продажа"){
+      e.sales+=Number(r.salesAmount||0);
+      if(r.checkNumber)e.checks.add(r.checkNumber);
+      if(Number(r.sellersInCheck)<=1)e.indSum+=Number(r.salesAmount||0);
+      else e.colSum+=Number(r.salesAmount||0);
+      if(Number(r.priceOriginal)>0){e.origPrice+=Number(r.priceOriginal);e.discPrice+=Number(r.priceDiscount);e.priceCnt++}
+    }
+    if(r.operation==="Возврат")e.returns+=Math.abs(Number(r.salesAmount||0));
+    if(r.day)e.days.add(r.day);
+  });
+
+  var list=Object.values(map).map(function(e){
+    var shifts=e.days.size,nc=e.checks.size;
+    return{
+      seller:e.seller,store:e.store,sales:e.sales,
+      shareInStore:storeTotals[e.store]>0?e.sales/storeTotals[e.store]:0,
+      shifts:shifts,salesPerShift:shifts>0?e.sales/shifts:0,
+      avgCheck:nc>0?e.sales/nc:0,
+      discPct:e.origPrice>0?(1-e.discPrice/e.origPrice):0,
+      retPct:e.sales>0?e.returns/e.sales:0,
+      colPct:e.sales>0?e.colSum/e.sales:0
+    };
+  }).sort(function(a,b){return b.salesPerShift-a.salesPerShift});
+
+  // Network averages
+  var totSales=list.reduce(function(s,e){return s+e.sales},0);
+  var totShifts=list.reduce(function(s,e){return s+e.shifts},0);
+  var avgSalesPerShift=totShifts>0?totSales/totShifts:0;
+  var avgAvgCheck=list.length>0?list.reduce(function(s,e){return s+e.avgCheck},0)/list.length:0;
+  var avgDisc=list.length>0?list.reduce(function(s,e){return s+e.discPct},0)/list.length:0;
+
+  $("subtitle").innerHTML='<span class="muted">Рейтинг по всей сети •</span> <strong>'+esc(monthNameRu(m))+' '+y+'</strong> <span class="muted">• Продавцов:</span> <strong>'+list.length+'</strong>';
+
+  // KPI benchmarks
+  var best=list[0]||{};
+  var bestCheck=list.slice().sort(function(a,b){return b.avgCheck-a.avgCheck})[0]||{};
+  var bestReturn=list.slice().sort(function(a,b){return a.retPct-b.retPct})[0]||{};
+  var bestTeam=list.slice().sort(function(a,b){return b.colPct-a.colPct})[0]||{};
+  $("emplKpi").innerHTML=[
+    kpi("Лучший прод./смена",money(best.salesPerShift||0),esc(best.seller||"—")+" ("+esc(best.store||"")+")"),
+    kpi("Лучший ср. чек",money(bestCheck.avgCheck||0),esc(bestCheck.seller||"—")+" ("+esc(bestCheck.store||"")+")"),
+    kpi("Мин. возвратов",pctT(bestReturn.retPct||0),esc(bestReturn.seller||"—")+" ("+esc(bestReturn.store||"")+")"),
+    kpi("Макс. команд. работа",pctT(bestTeam.colPct||0),esc(bestTeam.seller||"—")+" ("+esc(bestTeam.store||"")+")"),
+    kpi("Ср. по сети: прод./смена",money(avgSalesPerShift),"Бенчмарк"),
+    kpi("Ср. по сети: ср. чек",money(avgAvgCheck),"Бенчмарк"),
+    kpi("Ср. по сети: скидка",pctT(avgDisc),"Бенчмарк"),
+    kpi("Всего продавцов",String(list.length),"В "+Object.keys(storeTotals).length+" магазинах")
+  ].join("");
+
+  // Ranking table
+  var maxSPS=list.length?list[0].salesPerShift:1;
+  $("emplRankBody").innerHTML=list.map(function(e,i){
+    var medalCls=i<3?"rank-"+(i+1):"";
+    var medal=medalCls?'<span class="rank-medal '+medalCls+'">'+(i+1)+'</span>':String(i+1);
+    var spsBar=maxSPS>0?Math.round(e.salesPerShift/maxSPS*100):0;
+    var spsCls=e.salesPerShift>=avgSalesPerShift?"good":"";
+    var discCls=e.discPct>0.25?"bad":e.discPct>0.15?"warn":"";
+    var retCls=e.retPct>0.08?"bad":e.retPct>0.03?"warn":"";
+    return'<tr><td class="center">'+medal+'</td><td><strong>'+esc(e.seller)+'</strong></td><td>'+esc(e.store)+'</td><td class="right">'+money(e.sales)+'</td><td class="right">'+pctT(e.shareInStore)+'</td><td class="right">'+e.shifts+'</td><td class="right '+spsCls+'"><strong>'+money(e.salesPerShift)+'</strong></td><td class="right">'+money(e.avgCheck)+'</td><td class="right '+discCls+'">'+pctT(e.discPct)+'</td><td class="right '+retCls+'">'+pctT(e.retPct)+'</td><td class="right">'+pctT(e.colPct)+'</td></tr>';
+  }).join("");
 }
 
 // ====== ERRORS ======
