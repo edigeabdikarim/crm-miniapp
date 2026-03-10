@@ -329,7 +329,7 @@
       <div class="dashSummary" id="emplDashSummary"></div>
       <div class="emplSection"><h3 id="emplDashTitle">Показатели команды</h3></div>
       <div class="dashGrid" id="emplDashGrid"></div>
-      <div class="emplSection"><h3>Сводная таблица</h3><div class="tableWrap"><div class="scrollX"><table><thead><tr><th>№</th><th>Продавец</th><th class="right">Доля %</th><th class="right">Ср. чек</th><th class="right">Скидка %</th><th class="right">Возвр. %</th><th class="right">Колл. %</th><th class="right">Эфф. индекс</th></tr></thead><tbody id="emplDashTable"></tbody></table></div></div></div>
+      <div class="emplSection"><h3>Сводная таблица</h3><div class="tableWrap"><div class="scrollX"><table><thead><tr><th>№</th><th>Продавец</th><th class="right">Доля %</th><th class="right">Ср. чек</th><th class="right">Скидка ↓</th><th class="right">Возвр. ↓</th><th class="right">Колл. ↓</th><th class="right">Эфф. индекс</th></tr></thead><tbody id="emplDashTable"></tbody></table></div></div></div>
     </div>
     <div id="emplEmpty" class="emptyState" style="display:none">Нет данных.</div>
   </div>
@@ -792,7 +792,7 @@ function renderEmplCard(){
     kpi("Ср. чек",money(avgCheck),"Чеков: "+allChecks.size),
     kpi("Ср. скидка",'<span class="badge '+(avgDiscountPct<=0.15?"good":avgDiscountPct<=0.25?"warn":"bad")+'">'+pctT(avgDiscountPct)+'</span>',"Ср. цена: "+money(avgPricePoint),true),
     kpi("Возвраты",'<span class="badge '+(returnPct<=0.03?"good":returnPct<=0.08?"warn":"bad")+'">'+pctT(returnPct)+'</span>',money(totalReturns),true),
-    kpi("Колл. доля",pctT(colPct),"Командные продажи"),
+    kpi("Колл. доля",'<span class="badge '+(colPct<=0.15?"good":colPct<=0.30?"warn":"bad")+'">'+pctT(colPct)+'</span>',"Чем ниже, тем лучше",true),
     kpi("Позиций",String(sales.length),"Товаров продано")
   ].join("");
 
@@ -895,16 +895,17 @@ function renderEmplRank(){
   var best=list[0]||{};
   var bestCheck=list.slice().sort(function(a,b){return b.avgCheck-a.avgCheck})[0]||{};
   var bestReturn=list.slice().sort(function(a,b){return a.retPct-b.retPct})[0]||{};
-  var bestTeam=list.slice().sort(function(a,b){return b.colPct-a.colPct})[0]||{};
+  var bestIndiv=list.slice().sort(function(a,b){return a.colPct-b.colPct})[0]||{};
+  var avgCol=list.length>0?list.reduce(function(s,e){return s+e.colPct},0)/list.length:0;
   $("emplKpi").innerHTML=[
     kpi("Лучший прод./смена",money(best.salesPerShift||0),esc(best.seller||"—")+" ("+esc(best.store||"")+")"),
     kpi("Лучший ср. чек",money(bestCheck.avgCheck||0),esc(bestCheck.seller||"—")+" ("+esc(bestCheck.store||"")+")"),
     kpi("Мин. возвратов",pctT(bestReturn.retPct||0),esc(bestReturn.seller||"—")+" ("+esc(bestReturn.store||"")+")"),
-    kpi("Макс. команд. работа",pctT(bestTeam.colPct||0),esc(bestTeam.seller||"—")+" ("+esc(bestTeam.store||"")+")"),
+    kpi("Макс. инд. продажи",pctT(1-(bestIndiv.colPct||0)),esc(bestIndiv.seller||"—")+" ("+esc(bestIndiv.store||"")+")"),
     kpi("Ср. по сети: прод./смена",money(avgSalesPerShift),"Бенчмарк (нетто)"),
     kpi("Ср. по сети: ср. чек",money(avgAvgCheck),"Бенчмарк"),
     kpi("Ср. по сети: скидка",pctT(avgDisc),"Бенчмарк"),
-    kpi("Всего продавцов",String(list.length),"В "+Object.keys(storeTotals).length+" магазинах")
+    kpi("Ср. по сети: колл. доля",pctT(avgCol),"Чем ниже, тем лучше")
   ].join("");
 
   // Ranking table
@@ -915,7 +916,8 @@ function renderEmplRank(){
     var spsCls=e.salesPerShift>=avgSalesPerShift?"good":"";
     var discCls=e.discPct>0.25?"bad":e.discPct>0.15?"warn":"";
     var retCls=e.retPct>0.08?"bad":e.retPct>0.03?"warn":"";
-    return'<tr><td class="center">'+medal+'</td><td><strong>'+esc(e.seller)+'</strong></td><td>'+esc(e.store)+'</td><td class="right">'+money(e.netSales)+'</td><td class="right">'+pctT(e.shareInStore)+'</td><td class="right">'+e.shifts+'</td><td class="right '+spsCls+'"><strong>'+money(e.salesPerShift)+'</strong></td><td class="right">'+money(e.avgCheck)+'</td><td class="right '+discCls+'">'+pctT(e.discPct)+'</td><td class="right '+retCls+'">'+pctT(e.retPct)+'</td><td class="right">'+pctT(e.colPct)+'</td></tr>';
+    var colCls=e.colPct>0.30?"bad":e.colPct>0.15?"warn":"good";
+    return'<tr><td class="center">'+medal+'</td><td><strong>'+esc(e.seller)+'</strong></td><td>'+esc(e.store)+'</td><td class="right">'+money(e.netSales)+'</td><td class="right">'+pctT(e.shareInStore)+'</td><td class="right">'+e.shifts+'</td><td class="right '+spsCls+'"><strong>'+money(e.salesPerShift)+'</strong></td><td class="right">'+money(e.avgCheck)+'</td><td class="right '+discCls+'">'+pctT(e.discPct)+'</td><td class="right '+retCls+'">'+pctT(e.retPct)+'</td><td class="right '+colCls+'">'+pctT(e.colPct)+'</td></tr>';
   }).join("");
 }
 
@@ -924,7 +926,6 @@ function renderEmplDash(){
   var y=Number($("emplYearSel").value||0),m=Number($("emplMonthSel").value||0),st=$("emplStoreSel").value;
   if(!y||!m){$("subtitle").innerHTML='<span class="muted">Выбери год и месяц</span>';$("emplKpi").innerHTML="";return}
 
-  // If "all stores", pick the first one
   var filterStore=st!=="__all__"?st:"";
   var rows=EMPL_RAW.filter(function(r){
     if(Number(r.year)!==y||Number(r.monthNum)!==m)return false;
@@ -933,7 +934,6 @@ function renderEmplDash(){
   });
   if(!rows.length){$("subtitle").innerHTML='<span class="muted">Нет данных</span>';$("emplKpi").innerHTML="";$("emplDashGrid").innerHTML="";$("emplDashTable").innerHTML="";$("emplDashSummary").innerHTML="";$("emplDashNote").innerHTML="";return}
 
-  // Determine store name for display
   var storeLabel=filterStore||"Все магазины";
 
   // Build seller metrics
@@ -962,6 +962,7 @@ function renderEmplDash(){
       discPct:e.origPrice>0?(1-e.discPrice/e.origPrice):0,
       retPct:e.grossSales>0?e.returns/e.grossSales:0,
       colPct:e.grossSales>0?e.colSum/e.grossSales:0,
+      indPct:e.grossSales>0?e.indSum/e.grossSales:0,
       salesPerShift:shifts>0?net/shifts:0,
       checks:nc,items:e.items
     };
@@ -971,50 +972,55 @@ function renderEmplDash(){
   var totalNet=list.reduce(function(s,e){return s+e.net},0);
   list.forEach(function(e){e.share=totalNet>0?e.net/totalNet:0});
 
-  // Store-level averages
+  // Store-level averages (benchmarks)
   var avgCheck=list.length?list.reduce(function(s,e){return s+e.avgCheck},0)/list.length:0;
   var avgDisc=list.length?list.reduce(function(s,e){return s+e.discPct},0)/list.length:0;
   var avgRet=list.length?list.reduce(function(s,e){return s+e.retPct},0)/list.length:0;
   var avgCol=list.length?list.reduce(function(s,e){return s+e.colPct},0)/list.length:0;
+  var avgInd=list.length?list.reduce(function(s,e){return s+e.indPct},0)/list.length:0;
   var totShifts=list.reduce(function(s,e){return s+e.shifts},0);
-  var avgSPS=totShifts>0?totalNet/totShifts:0;
 
-  // Efficiency index: normalized composite (higher = better)
-  // avgCheck (norm to best) * share * (1 - discPct) * (1 - retPct)
+  // Efficiency index: avgCheck(norm) × (1 - disc) × (1 - ret) × (1 - colPct*0.5)
+  // colPct penalizes: higher collective share = lower index
   var maxAC=Math.max.apply(null,list.map(function(e){return e.avgCheck}))||1;
   list.forEach(function(e){
     var acNorm=e.avgCheck/maxAC;
     var discScore=1-Math.min(e.discPct,0.5);
     var retScore=1-Math.min(e.retPct,0.3);
-    e.effIndex=Math.round(acNorm*discScore*retScore*100);
+    var indScore=1-Math.min(e.colPct*0.5,0.4);
+    e.effIndex=Math.round(acNorm*discScore*retScore*indScore*100);
   });
   var maxEff=Math.max.apply(null,list.map(function(e){return e.effIndex}))||1;
 
   $("subtitle").innerHTML='<span class="muted">Дашборд магазина:</span> <strong>'+esc(storeLabel)+'</strong> <span class="muted">•</span> <strong>'+esc(monthNameRu(m))+' '+y+'</strong>';
   $("emplKpi").innerHTML="";
 
-  // Note
-  $("emplDashNote").innerHTML='📋 <strong>Дашборд для команды «'+esc(storeLabel)+'»</strong> — '+esc(monthNameRu(m))+' '+y+'. Показатели без сумм продаж. Индекс эффективности учитывает средний чек, размер скидок и % возвратов.';
+  // Note with benchmark explanation
+  $("emplDashNote").innerHTML='📋 <strong>'+esc(storeLabel)+' — '+esc(monthNameRu(m))+' '+y+'</strong><br>'+
+    'Показатели без сумм. Индекс эффективности = средний чек × (1 − скидка) × (1 − возвраты) × (1 − колл. доля). '+
+    'Зелёный бар — лучше среднего по магазину, красный — хуже.<br><br>'+
+    '<strong>Бенчмарки магазина:</strong> Ср. чек: <strong>'+money(avgCheck)+'</strong> · Ср. скидка: <strong>'+pctT(avgDisc)+'</strong> · Ср. возвраты: <strong>'+pctT(avgRet)+'</strong> · Ср. колл. доля: <strong>'+pctT(avgCol)+'</strong> (↓ лучше) · Инд. доля: <strong>'+pctT(avgInd)+'</strong> (↑ лучше)';
 
   // Summary stats
   $("emplDashSummary").innerHTML=[
     '<div class="dashStat"><div class="ds-label">Продавцов</div><div class="ds-val">'+list.length+'</div><div class="ds-hint">в команде</div></div>',
-    '<div class="dashStat"><div class="ds-label">Ср. чек магазина</div><div class="ds-val">'+money(avgCheck)+'</div><div class="ds-hint">среднее по команде</div></div>',
-    '<div class="dashStat"><div class="ds-label">Ср. скидка</div><div class="ds-val">'+pctT(avgDisc)+'</div><div class="ds-hint">среднее по команде</div></div>',
-    '<div class="dashStat"><div class="ds-label">Ср. возвраты</div><div class="ds-val">'+pctT(avgRet)+'</div><div class="ds-hint">среднее по команде</div></div>',
-    '<div class="dashStat"><div class="ds-label">Ср. команд. работа</div><div class="ds-val">'+pctT(avgCol)+'</div><div class="ds-hint">коллективные чеки</div></div>',
-    '<div class="dashStat"><div class="ds-label">Смен всего</div><div class="ds-val">'+totShifts+'</div><div class="ds-hint">человеко-дней</div></div>'
+    '<div class="dashStat"><div class="ds-label">Ср. чек</div><div class="ds-val">'+money(avgCheck)+'</div><div class="ds-hint">норма магазина</div></div>',
+    '<div class="dashStat"><div class="ds-label">Ср. скидка</div><div class="ds-val">'+pctT(avgDisc)+'</div><div class="ds-hint">норма магазина</div></div>',
+    '<div class="dashStat"><div class="ds-label">Ср. возвраты</div><div class="ds-val">'+pctT(avgRet)+'</div><div class="ds-hint">норма магазина</div></div>',
+    '<div class="dashStat"><div class="ds-label">Инд. доля</div><div class="ds-val" style="color:var(--good)">'+pctT(avgInd)+'</div><div class="ds-hint">↑ лучше · норма</div></div>',
+    '<div class="dashStat"><div class="ds-label">Колл. доля</div><div class="ds-val" style="color:var(--bad)">'+pctT(avgCol)+'</div><div class="ds-hint">↓ лучше · норма</div></div>'
   ].join("");
 
   $("emplDashTitle").textContent="Показатели команды — "+list.length+" продавцов";
 
-  // Bar helpers
+  // Bar color helpers — col is INVERTED (lower = green)
   function barColor(metric,val){
     if(metric==="share")return"teal";
     if(metric==="avgCheck"){return val>=avgCheck?"green":"yellow"}
     if(metric==="disc"){return val<=0.15?"green":val<=0.25?"yellow":"red"}
     if(metric==="ret"){return val<=0.03?"green":val<=0.08?"yellow":"red"}
-    if(metric==="col")return"blue";
+    if(metric==="col"){return val<=0.15?"green":val<=0.30?"yellow":"red"}
+    if(metric==="ind"){return val>=0.85?"green":val>=0.70?"yellow":"red"}
     if(metric==="eff"){return val>=70?"green":val>=40?"yellow":"red"}
     return"teal";
   }
@@ -1046,9 +1052,9 @@ function renderEmplDash(){
         '<div class="dc-row"><div class="dc-label">Доля</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("share",e.share)+'" style="width:'+shareBar+'%"></div></div><div class="dc-val">'+pctT(e.share)+'</div></div>'+
         '<div class="dc-row"><div class="dc-label">Ср. чек</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("avgCheck",e.avgCheck)+'" style="width:'+acBar+'%"></div></div><div class="dc-val">'+money(e.avgCheck)+'</div></div>'+
         '<div class="dc-divider"></div>'+
-        '<div class="dc-row"><div class="dc-label">Скидка</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("disc",e.discPct)+'" style="width:'+discBar+'%"></div></div><div class="dc-val">'+pctT(e.discPct)+'</div></div>'+
-        '<div class="dc-row"><div class="dc-label">Возвраты</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("ret",e.retPct)+'" style="width:'+retBar+'%"></div></div><div class="dc-val">'+pctT(e.retPct)+'</div></div>'+
-        '<div class="dc-row"><div class="dc-label">Команд.</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("col",e.colPct)+'" style="width:'+colBar+'%"></div></div><div class="dc-val">'+pctT(e.colPct)+'</div></div>'+
+        '<div class="dc-row"><div class="dc-label">Скидка ↓</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("disc",e.discPct)+'" style="width:'+discBar+'%"></div></div><div class="dc-val">'+pctT(e.discPct)+'</div></div>'+
+        '<div class="dc-row"><div class="dc-label">Возвраты ↓</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("ret",e.retPct)+'" style="width:'+retBar+'%"></div></div><div class="dc-val">'+pctT(e.retPct)+'</div></div>'+
+        '<div class="dc-row"><div class="dc-label">Колл. ↓</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("col",e.colPct)+'" style="width:'+colBar+'%"></div></div><div class="dc-val">'+pctT(e.colPct)+'</div></div>'+
         '<div class="dc-divider"></div>'+
         '<div class="dc-row"><div class="dc-label">Эффект.</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("eff",e.effIndex)+'" style="width:'+effBar+'%"></div></div><div class="dc-val">'+e.effIndex+'%</div></div>'+
       '</div>'+
@@ -1061,8 +1067,9 @@ function renderEmplDash(){
     var medal=rankCls?'<span class="rank-medal '+rankCls+'">'+(i+1)+'</span>':String(i+1);
     var discCls=e.discPct>0.25?"bad":e.discPct>0.15?"warn":"";
     var retCls=e.retPct>0.08?"bad":e.retPct>0.03?"warn":"";
+    var colCls=e.colPct>0.30?"bad":e.colPct>0.15?"warn":"good";
     var effCls=e.effIndex>=70?"good":e.effIndex>=40?"warn":"bad";
-    return'<tr><td class="center">'+medal+'</td><td><strong>'+esc(e.seller)+'</strong></td><td class="right">'+pctT(e.share)+'</td><td class="right">'+money(e.avgCheck)+'</td><td class="right '+discCls+'">'+pctT(e.discPct)+'</td><td class="right '+retCls+'">'+pctT(e.retPct)+'</td><td class="right">'+pctT(e.colPct)+'</td><td class="right '+effCls+'"><strong>'+e.effIndex+'%</strong></td></tr>';
+    return'<tr><td class="center">'+medal+'</td><td><strong>'+esc(e.seller)+'</strong></td><td class="right">'+pctT(e.share)+'</td><td class="right">'+money(e.avgCheck)+'</td><td class="right '+discCls+'">'+pctT(e.discPct)+'</td><td class="right '+retCls+'">'+pctT(e.retPct)+'</td><td class="right '+colCls+'">'+pctT(e.colPct)+'</td><td class="right '+effCls+'"><strong>'+e.effIndex+'%</strong></td></tr>';
   }).join("");
 }
 
