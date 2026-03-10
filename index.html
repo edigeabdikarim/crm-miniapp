@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
@@ -175,6 +176,30 @@
     .miniCard+.miniCard{margin-top:6px}
     .miniCard .mc-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .miniCard .mc-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--text);margin-left:12px;white-space:nowrap}
+    /* Store Dashboard */
+    .dashGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-bottom:20px}
+    .dashCard{border:1px solid var(--stroke);background:var(--surface);backdrop-filter:blur(8px);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--card-shadow);transition:var(--transition)}
+    .dashCard:hover{border-color:var(--stroke-hover);transform:translateY(-2px);box-shadow:var(--card-hover-shadow)}
+    .dashCard .dc-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+    .dashCard .dc-rank{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0;border:2px solid var(--stroke2);color:var(--muted);background:var(--surface2)}
+    .dashCard .dc-rank.gold{border-color:#fbbf24;color:#fbbf24;background:rgba(251,191,36,.1)}.dashCard .dc-rank.silver{border-color:#9ca3af;color:#9ca3af;background:rgba(156,163,175,.1)}.dashCard .dc-rank.bronze{border-color:#d97706;color:#d97706;background:rgba(217,119,6,.1)}
+    .dashCard .dc-name{font-size:16px;font-weight:800;letter-spacing:-.01em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .dashCard .dc-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:var(--radius-pill);white-space:nowrap}
+    .dc-metrics{display:flex;flex-direction:column;gap:10px}
+    .dc-row{display:flex;align-items:center;gap:8px}
+    .dc-label{font-size:11px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.04em;width:90px;flex-shrink:0}
+    .dc-bar-wrap{flex:1;height:22px;background:var(--surface2);border-radius:6px;overflow:hidden;position:relative}
+    .dc-bar{height:100%;border-radius:6px;transition:width .5s cubic-bezier(.4,0,.2,1);min-width:2px}
+    .dc-bar.green{background:linear-gradient(90deg,rgba(52,211,153,.6),rgba(16,185,129,.8))}.dc-bar.yellow{background:linear-gradient(90deg,rgba(251,191,36,.5),rgba(245,158,11,.7))}.dc-bar.red{background:linear-gradient(90deg,rgba(251,113,133,.5),rgba(244,63,94,.7))}.dc-bar.blue{background:linear-gradient(90deg,rgba(99,102,241,.4),rgba(59,130,246,.6))}.dc-bar.teal{background:linear-gradient(90deg,rgba(20,184,166,.4),rgba(13,148,136,.6))}
+    .dc-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text);width:64px;text-align:right;flex-shrink:0}
+    .dc-divider{height:1px;background:var(--stroke);margin:6px 0}
+    .dashSummary{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:20px}
+    .dashStat{border:1px solid var(--stroke);background:var(--surface);border-radius:var(--radius);padding:14px 16px;text-align:center}
+    .dashStat .ds-label{font-size:11px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+    .dashStat .ds-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--text)}
+    .dashStat .ds-hint{font-size:11px;color:var(--muted2);margin-top:4px}
+    .dashNote{border:1px solid var(--stroke);background:var(--surface);border-radius:var(--radius);padding:14px 18px;font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+    .dashNote strong{color:var(--text)}
     .homeGrid5{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:32px}
     .homeGrid5 .homeCard:nth-child(5){grid-column:1/-1}
     @media(max-width:900px){.wrap{padding:16px}.homeGrid,.homeGrid5{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.top{flex-direction:column;align-items:flex-start}h1{font-size:22px}.tabs{padding:8px 16px 12px}.homeGrid5 .homeCard:nth-child(5){grid-column:auto}}
@@ -192,6 +217,7 @@
   </div>
 
   <!-- HOME -->
+
   <div class="page active" id="pageHome">
     <div class="homeGrid5">
       <div class="homeCard blue" id="goSales"><span class="icon">📊</span><div class="cardTitle">Планы продаж</div><div class="cardDesc">Ежедневные и ежемесячные данные по магазинам</div><div class="cardStatus"><span class="statusDot" id="salesStatusDot"></span><span id="salesStatusText">Не загружено</span></div></div>
@@ -203,6 +229,7 @@
   </div>
 
   <!-- SALES -->
+
   <div class="page" id="pageSales">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="salesBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
     <div class="controls"><select id="yearSel" class="sel"></select><select id="monthSel" class="sel"></select><select id="storeSel" class="sel"></select><button class="btn accent-blue" id="refreshBtn">Обновить</button></div>
@@ -214,6 +241,7 @@
   </div>
 
   <!-- STAFF -->
+
   <div class="page" id="pageStaff">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="staffBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
     <div class="controls"><select id="staffYearSel" class="sel"></select><select id="staffMonthSel" class="sel"></select><select id="staffStoreSel" class="sel"></select><button class="btn accent-orange" id="staffRefreshBtn">Обновить</button></div>
@@ -223,6 +251,7 @@
   </div>
 
   <!-- FINANCE -->
+
   <div class="page" id="pageFinance">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="financeBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
     <div class="controls"><select id="financeYearSel" class="sel"></select><select id="financeMonthSel" class="sel"></select><button class="btn accent-green" id="financeRefreshBtn">Обновить</button>
@@ -247,6 +276,7 @@
   </div>
 
   <!-- MARKETING -->
+
   <div class="page" id="pageMarketing">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="mktBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
     <div class="controls"><select id="mktYearSel" class="sel"></select><select id="mktMonthSel" class="sel"></select><button class="btn accent-purple" id="mktRefreshBtn">Обновить</button>
@@ -265,6 +295,7 @@
   </div>
 
   <!-- EMPLOYEE ANALYTICS -->
+
   <div class="page" id="pageEmpl">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="emplBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
     <div class="controls">
@@ -276,6 +307,7 @@
       <div class="toggleRow">
         <button class="toggleBtn teal active" id="emplCardToggle">Карточка продавца</button>
         <button class="toggleBtn teal" id="emplRankToggle">Рейтинг по сети</button>
+        <button class="toggleBtn teal" id="emplDashToggle">📋 Дашборд магазина</button>
       </div>
     </div>
     <div class="grid" id="emplKpi"></div>
@@ -291,11 +323,20 @@
     <div id="emplRankView" style="display:none">
       <div class="emplSection"><h3>Рейтинг продавцов по всей сети</h3><div class="tableWrap"><div class="scrollX"><table class="wideTable"><thead><tr><th>№</th><th>Продавец</th><th>Магазин</th><th class="right">Чист. прод.</th><th class="right">Доля маг.</th><th class="right">Смен</th><th class="right">Прод./смена</th><th class="right">Ср. чек</th><th class="right">Скидка %</th><th class="right">Возвр. %</th><th class="right">Колл. %</th></tr></thead><tbody id="emplRankBody"></tbody></table></div></div></div>
     </div>
+    <!-- Store Dashboard view (no amounts, shareable) -->
+    <div id="emplDashView" style="display:none">
+      <div class="dashNote" id="emplDashNote"></div>
+      <div class="dashSummary" id="emplDashSummary"></div>
+      <div class="emplSection"><h3 id="emplDashTitle">Показатели команды</h3></div>
+      <div class="dashGrid" id="emplDashGrid"></div>
+      <div class="emplSection"><h3>Сводная таблица</h3><div class="tableWrap"><div class="scrollX"><table><thead><tr><th>№</th><th>Продавец</th><th class="right">Доля %</th><th class="right">Ср. чек</th><th class="right">Скидка %</th><th class="right">Возвр. %</th><th class="right">Колл. %</th><th class="right">Эфф. индекс</th></tr></thead><tbody id="emplDashTable"></tbody></table></div></div></div>
+    </div>
     <div id="emplEmpty" class="emptyState" style="display:none">Нет данных.</div>
   </div>
 </div>
 
 <!-- MODALS -->
+
 <div class="overlay" id="overlayCode"><div class="modal"><h3 id="codeTitle">🔒 Код доступа</h3><p id="codeText">Введи код доступа.</p><input class="inp" id="codeInput" placeholder="Код доступа..." autocomplete="one-time-code"/><div class="row"><button class="btn2 primary" id="btnSaveCode">Сохранить и загрузить</button><button class="btn2" id="btnCancelCode">Закрыть</button></div><div class="row" style="margin-top:8px"><button class="btn2 danger" id="btnClearCache">🗑 Сбросить кэш</button></div><div class="mini" id="codeDebug"></div></div></div>
 <div class="overlay" id="overlayError"><div class="modal"><h3 id="errTitle">⚠️ Ошибка</h3><p id="errText"></p><div class="row"><button class="btn2 primary" id="btnRetry">Проверить снова</button><button class="btn2" id="btnCloseErr">Закрыть</button></div><div class="mini" id="errDebug"></div></div></div>
 
@@ -361,8 +402,9 @@ function wireUI(){
   $("emplStoreSel").onchange=function(){syncEmplSellerOpts(null);renderEmpl()};
   $("emplSellerSel").onchange=renderEmpl;
   $("emplRefreshBtn").onclick=async function(){try{await loadEmpl(true);buildEmplSel(true);renderEmpl()}catch(e){}};
-  $("emplCardToggle").onclick=function(){emplViewMode="card";$("emplCardToggle").classList.add("active");$("emplRankToggle").classList.remove("active");renderEmpl()};
-  $("emplRankToggle").onclick=function(){emplViewMode="rank";$("emplRankToggle").classList.add("active");$("emplCardToggle").classList.remove("active");renderEmpl()};
+  $("emplCardToggle").onclick=function(){emplViewMode="card";$("emplCardToggle").classList.add("active");$("emplRankToggle").classList.remove("active");$("emplDashToggle").classList.remove("active");$("emplSellerSel").style.display="";renderEmpl()};
+  $("emplRankToggle").onclick=function(){emplViewMode="rank";$("emplRankToggle").classList.add("active");$("emplCardToggle").classList.remove("active");$("emplDashToggle").classList.remove("active");$("emplSellerSel").style.display="";renderEmpl()};
+  $("emplDashToggle").onclick=function(){emplViewMode="dash";$("emplDashToggle").classList.add("active");$("emplCardToggle").classList.remove("active");$("emplRankToggle").classList.remove("active");$("emplSellerSel").style.display="none";renderEmpl()};
 
   $("btnChangeCode").onclick=function(){openCodeModal("🔒 Сменить код","Введи новый код.","")};
   $("btnSaveCode").onclick=async function(){
@@ -678,10 +720,11 @@ function buildStaffReport(y,m,st){
 
 // ====== EMPLOYEE ANALYTICS ======
 function renderEmpl(){
-  if(!hasEmplMeta()||!EMPL_RAW.length){$("subtitle").innerHTML='<span class="muted">Нет данных</span>';$("emplKpi").innerHTML="";$("emplEmpty").style.display="";$("emplCardView").style.display="none";$("emplRankView").style.display="none";return}
+  if(!hasEmplMeta()||!EMPL_RAW.length){$("subtitle").innerHTML='<span class="muted">Нет данных</span>';$("emplKpi").innerHTML="";$("emplEmpty").style.display="";$("emplCardView").style.display="none";$("emplRankView").style.display="none";$("emplDashView").style.display="none";return}
   $("emplEmpty").style.display="none";
-  if(emplViewMode==="rank"){$("emplCardView").style.display="none";$("emplRankView").style.display="";renderEmplRank();return}
-  $("emplCardView").style.display="";$("emplRankView").style.display="none";renderEmplCard();
+  if(emplViewMode==="rank"){$("emplCardView").style.display="none";$("emplRankView").style.display="";$("emplDashView").style.display="none";renderEmplRank();return}
+  if(emplViewMode==="dash"){$("emplCardView").style.display="none";$("emplRankView").style.display="none";$("emplDashView").style.display="";renderEmplDash();return}
+  $("emplCardView").style.display="";$("emplRankView").style.display="none";$("emplDashView").style.display="none";renderEmplCard();
 }
 
 function renderEmplCard(){
@@ -876,6 +919,153 @@ function renderEmplRank(){
   }).join("");
 }
 
+// ====== STORE DASHBOARD (no amounts, for sharing) ======
+function renderEmplDash(){
+  var y=Number($("emplYearSel").value||0),m=Number($("emplMonthSel").value||0),st=$("emplStoreSel").value;
+  if(!y||!m){$("subtitle").innerHTML='<span class="muted">Выбери год и месяц</span>';$("emplKpi").innerHTML="";return}
+
+  // If "all stores", pick the first one
+  var filterStore=st!=="__all__"?st:"";
+  var rows=EMPL_RAW.filter(function(r){
+    if(Number(r.year)!==y||Number(r.monthNum)!==m)return false;
+    if(filterStore&&norm(r.store)!==norm(filterStore))return false;
+    return norm(r.parent)!=="сертификат";
+  });
+  if(!rows.length){$("subtitle").innerHTML='<span class="muted">Нет данных</span>';$("emplKpi").innerHTML="";$("emplDashGrid").innerHTML="";$("emplDashTable").innerHTML="";$("emplDashSummary").innerHTML="";$("emplDashNote").innerHTML="";return}
+
+  // Determine store name for display
+  var storeLabel=filterStore||"Все магазины";
+
+  // Build seller metrics
+  var map={};
+  rows.forEach(function(r){
+    var key=norm(r.seller);
+    if(!map[key])map[key]={seller:r.seller,grossSales:0,returns:0,origPrice:0,discPrice:0,priceCnt:0,days:new Set(),checks:new Set(),indSum:0,colSum:0,items:0};
+    var e=map[key];
+    if(r.operation==="Продажа"){
+      e.grossSales+=Number(r.salesAmount||0);e.items++;
+      if(r.checkNumber)e.checks.add(r.checkNumber);
+      if(Number(r.sellersInCheck)<=1)e.indSum+=Number(r.salesAmount||0);
+      else e.colSum+=Number(r.salesAmount||0);
+      if(Number(r.priceOriginal)>0){e.origPrice+=Number(r.priceOriginal);e.discPrice+=Number(r.priceDiscount);e.priceCnt++}
+    }
+    if(r.operation==="Возврат")e.returns+=Math.abs(Number(r.salesAmount||0));
+    if(r.day)e.days.add(r.day);
+  });
+
+  var list=Object.values(map).map(function(e){
+    var net=e.grossSales-e.returns,shifts=e.days.size,nc=e.checks.size;
+    return{
+      seller:e.seller,net:net,gross:e.grossSales,
+      shifts:shifts,
+      avgCheck:nc>0?e.grossSales/nc:0,
+      discPct:e.origPrice>0?(1-e.discPrice/e.origPrice):0,
+      retPct:e.grossSales>0?e.returns/e.grossSales:0,
+      colPct:e.grossSales>0?e.colSum/e.grossSales:0,
+      salesPerShift:shifts>0?net/shifts:0,
+      checks:nc,items:e.items
+    };
+  }).sort(function(a,b){return b.net-a.net});
+
+  // Total for share calculation
+  var totalNet=list.reduce(function(s,e){return s+e.net},0);
+  list.forEach(function(e){e.share=totalNet>0?e.net/totalNet:0});
+
+  // Store-level averages
+  var avgCheck=list.length?list.reduce(function(s,e){return s+e.avgCheck},0)/list.length:0;
+  var avgDisc=list.length?list.reduce(function(s,e){return s+e.discPct},0)/list.length:0;
+  var avgRet=list.length?list.reduce(function(s,e){return s+e.retPct},0)/list.length:0;
+  var avgCol=list.length?list.reduce(function(s,e){return s+e.colPct},0)/list.length:0;
+  var totShifts=list.reduce(function(s,e){return s+e.shifts},0);
+  var avgSPS=totShifts>0?totalNet/totShifts:0;
+
+  // Efficiency index: normalized composite (higher = better)
+  // avgCheck (norm to best) * share * (1 - discPct) * (1 - retPct)
+  var maxAC=Math.max.apply(null,list.map(function(e){return e.avgCheck}))||1;
+  list.forEach(function(e){
+    var acNorm=e.avgCheck/maxAC;
+    var discScore=1-Math.min(e.discPct,0.5);
+    var retScore=1-Math.min(e.retPct,0.3);
+    e.effIndex=Math.round(acNorm*discScore*retScore*100);
+  });
+  var maxEff=Math.max.apply(null,list.map(function(e){return e.effIndex}))||1;
+
+  $("subtitle").innerHTML='<span class="muted">Дашборд магазина:</span> <strong>'+esc(storeLabel)+'</strong> <span class="muted">•</span> <strong>'+esc(monthNameRu(m))+' '+y+'</strong>';
+  $("emplKpi").innerHTML="";
+
+  // Note
+  $("emplDashNote").innerHTML='📋 <strong>Дашборд для команды «'+esc(storeLabel)+'»</strong> — '+esc(monthNameRu(m))+' '+y+'. Показатели без сумм продаж. Индекс эффективности учитывает средний чек, размер скидок и % возвратов.';
+
+  // Summary stats
+  $("emplDashSummary").innerHTML=[
+    '<div class="dashStat"><div class="ds-label">Продавцов</div><div class="ds-val">'+list.length+'</div><div class="ds-hint">в команде</div></div>',
+    '<div class="dashStat"><div class="ds-label">Ср. чек магазина</div><div class="ds-val">'+money(avgCheck)+'</div><div class="ds-hint">среднее по команде</div></div>',
+    '<div class="dashStat"><div class="ds-label">Ср. скидка</div><div class="ds-val">'+pctT(avgDisc)+'</div><div class="ds-hint">среднее по команде</div></div>',
+    '<div class="dashStat"><div class="ds-label">Ср. возвраты</div><div class="ds-val">'+pctT(avgRet)+'</div><div class="ds-hint">среднее по команде</div></div>',
+    '<div class="dashStat"><div class="ds-label">Ср. команд. работа</div><div class="ds-val">'+pctT(avgCol)+'</div><div class="ds-hint">коллективные чеки</div></div>',
+    '<div class="dashStat"><div class="ds-label">Смен всего</div><div class="ds-val">'+totShifts+'</div><div class="ds-hint">человеко-дней</div></div>'
+  ].join("");
+
+  $("emplDashTitle").textContent="Показатели команды — "+list.length+" продавцов";
+
+  // Bar helpers
+  function barColor(metric,val){
+    if(metric==="share")return"teal";
+    if(metric==="avgCheck"){return val>=avgCheck?"green":"yellow"}
+    if(metric==="disc"){return val<=0.15?"green":val<=0.25?"yellow":"red"}
+    if(metric==="ret"){return val<=0.03?"green":val<=0.08?"yellow":"red"}
+    if(metric==="col")return"blue";
+    if(metric==="eff"){return val>=70?"green":val>=40?"yellow":"red"}
+    return"teal";
+  }
+
+  // Max values for bar scaling
+  var maxShare=Math.max.apply(null,list.map(function(e){return e.share}))||0.01;
+  var maxACv=Math.max.apply(null,list.map(function(e){return e.avgCheck}))||1;
+  var maxDisc=Math.max.apply(null,list.map(function(e){return e.discPct}))||0.01;
+  var maxRet=Math.max.apply(null,list.map(function(e){return e.retPct}))||0.01;
+  var maxCol=Math.max.apply(null,list.map(function(e){return e.colPct}))||0.01;
+
+  // Seller cards
+  $("emplDashGrid").innerHTML=list.map(function(e,i){
+    var rankCls=i===0?"gold":i===1?"silver":i===2?"bronze":"";
+    var shareBar=Math.round(e.share/maxShare*100);
+    var acBar=Math.round(e.avgCheck/maxACv*100);
+    var discBar=maxDisc>0?Math.round(e.discPct/maxDisc*100):0;
+    var retBar=maxRet>0?Math.round(e.retPct/maxRet*100):0;
+    var colBar=maxCol>0?Math.round(e.colPct/maxCol*100):0;
+    var effBar=Math.round(e.effIndex/maxEff*100);
+
+    return'<div class="dashCard">'+
+      '<div class="dc-head">'+
+        '<div class="dc-rank '+rankCls+'">'+(i+1)+'</div>'+
+        '<div class="dc-name">'+esc(e.seller)+'</div>'+
+        '<div class="dc-badge" style="background:var(--'+(e.effIndex>=70?"good":e.effIndex>=40?"warn":"bad")+'-bg);color:var(--'+(e.effIndex>=70?"good":e.effIndex>=40?"warn":"bad")+')">'+e.effIndex+'%</div>'+
+      '</div>'+
+      '<div class="dc-metrics">'+
+        '<div class="dc-row"><div class="dc-label">Доля</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("share",e.share)+'" style="width:'+shareBar+'%"></div></div><div class="dc-val">'+pctT(e.share)+'</div></div>'+
+        '<div class="dc-row"><div class="dc-label">Ср. чек</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("avgCheck",e.avgCheck)+'" style="width:'+acBar+'%"></div></div><div class="dc-val">'+money(e.avgCheck)+'</div></div>'+
+        '<div class="dc-divider"></div>'+
+        '<div class="dc-row"><div class="dc-label">Скидка</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("disc",e.discPct)+'" style="width:'+discBar+'%"></div></div><div class="dc-val">'+pctT(e.discPct)+'</div></div>'+
+        '<div class="dc-row"><div class="dc-label">Возвраты</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("ret",e.retPct)+'" style="width:'+retBar+'%"></div></div><div class="dc-val">'+pctT(e.retPct)+'</div></div>'+
+        '<div class="dc-row"><div class="dc-label">Команд.</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("col",e.colPct)+'" style="width:'+colBar+'%"></div></div><div class="dc-val">'+pctT(e.colPct)+'</div></div>'+
+        '<div class="dc-divider"></div>'+
+        '<div class="dc-row"><div class="dc-label">Эффект.</div><div class="dc-bar-wrap"><div class="dc-bar '+barColor("eff",e.effIndex)+'" style="width:'+effBar+'%"></div></div><div class="dc-val">'+e.effIndex+'%</div></div>'+
+      '</div>'+
+    '</div>';
+  }).join("");
+
+  // Summary table
+  $("emplDashTable").innerHTML=list.map(function(e,i){
+    var rankCls=i<3?"rank-"+(i+1):"";
+    var medal=rankCls?'<span class="rank-medal '+rankCls+'">'+(i+1)+'</span>':String(i+1);
+    var discCls=e.discPct>0.25?"bad":e.discPct>0.15?"warn":"";
+    var retCls=e.retPct>0.08?"bad":e.retPct>0.03?"warn":"";
+    var effCls=e.effIndex>=70?"good":e.effIndex>=40?"warn":"bad";
+    return'<tr><td class="center">'+medal+'</td><td><strong>'+esc(e.seller)+'</strong></td><td class="right">'+pctT(e.share)+'</td><td class="right">'+money(e.avgCheck)+'</td><td class="right '+discCls+'">'+pctT(e.discPct)+'</td><td class="right '+retCls+'">'+pctT(e.retPct)+'</td><td class="right">'+pctT(e.colPct)+'</td><td class="right '+effCls+'"><strong>'+e.effIndex+'%</strong></td></tr>';
+  }).join("");
+}
+
 // ====== ERRORS ======
 function handleLoadError(e,u){if(e&&e.code==="invalid_code"){setGas("LOCK","bad");lsRemove(ACCESS_CODE_STORAGE_KEY);ACCESS_CODE="";openCodeModal("❌ Неверный код","Код не подходит.",e.message||"");return}setGas("ERR","bad");showError("⚠️ Ошибка","Не удалось получить данные.","url="+u+"\n"+(e?e.message||String(e):""))}
 function openCodeModal(t,tx,d){$("codeTitle").textContent=t;$("codeText").textContent=tx;$("codeDebug").textContent=d||"";$("codeInput").value=ACCESS_CODE||"";$("overlayCode").classList.add("show");setTimeout(function(){$("codeInput").focus()},50)}
@@ -921,5 +1111,6 @@ function fcbc(s){return s==="ok"?"good":"bad"}
 function nz(v){return Math.abs(Number(v||0))<=1e-6}
 function serialToDateStr(s){var n=Number(s);if(!n||n<1)return"—";var d=new Date((n-25569)*86400000);var dd=d.getUTCDate(),mm=d.getUTCMonth()+1,yy=d.getUTCFullYear();return pad2(dd)+"."+pad2(mm)+"."+yy}
 </script>
+
 </body>
 </html>
