@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
@@ -222,7 +221,6 @@
   </div>
 
   <!-- HOME -->
-
   <div class="page active" id="pageHome">
     <div class="homeGrid5">
       <div class="homeCard blue" id="goSales"><span class="icon">📊</span><div class="cardTitle">Планы продаж</div><div class="cardDesc">Ежедневные и ежемесячные данные по магазинам</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="salesStatusDot"></span><span id="salesStatusText">Не загружено</span></div><div class="statusDetail" id="salesStatusDetail"></div></div></div>
@@ -234,7 +232,6 @@
   </div>
 
   <!-- SALES -->
-
   <div class="page" id="pageSales">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="salesBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
     <div class="controls"><select id="yearSel" class="sel"></select><select id="monthSel" class="sel"></select><select id="storeSel" class="sel"></select><button class="btn accent-blue" id="refreshBtn">Обновить</button></div>
@@ -246,7 +243,6 @@
   </div>
 
   <!-- STAFF -->
-
   <div class="page" id="pageStaff">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="staffBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
     <div class="controls"><select id="staffYearSel" class="sel"></select><select id="staffMonthSel" class="sel"></select><select id="staffStoreSel" class="sel"></select><button class="btn accent-orange" id="staffRefreshBtn">Обновить</button></div>
@@ -256,7 +252,6 @@
   </div>
 
   <!-- FINANCE -->
-
   <div class="page" id="pageFinance">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="financeBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
     <div class="controls"><select id="financeYearSel" class="sel"></select><select id="financeMonthSel" class="sel"></select><button class="btn accent-green" id="financeRefreshBtn">Обновить</button>
@@ -281,7 +276,6 @@
   </div>
 
   <!-- MARKETING -->
-
   <div class="page" id="pageMarketing">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="mktBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
     <div class="controls"><select id="mktYearSel" class="sel"></select><select id="mktMonthSel" class="sel"></select><button class="btn accent-purple" id="mktRefreshBtn">Обновить</button>
@@ -300,7 +294,6 @@
   </div>
 
   <!-- EMPLOYEE ANALYTICS -->
-
   <div class="page" id="pageEmpl">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="emplBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
     <div class="controls">
@@ -341,8 +334,7 @@
 </div>
 
 <!-- MODALS -->
-
-<div class="overlay" id="overlayCode"><div class="modal"><h3 id="codeTitle">🔒 Код доступа</h3><p id="codeText">Введи код доступа.</p><input class="inp" id="codeInput" placeholder="Код доступа..." autocomplete="one-time-code"/><div class="row"><button class="btn2 primary" id="btnSaveCode">Сохранить и загрузить</button><button class="btn2" id="btnCancelCode">Закрыть</button></div><div class="row" style="margin-top:8px"><button class="btn2 danger" id="btnClearCache">🗑 Сбросить кэш</button></div><div class="mini" id="codeDebug"></div></div></div>
+<div class="overlay" id="overlayCode"><div class="modal"><h3 id="codeTitle">🔒 Вход</h3><p id="codeText">Выберите профиль и введите код.</p><select class="sel" id="loginNameSel" style="margin:0 0 10px"><option value="">Загрузка…</option></select><input class="inp" id="codeInput" placeholder="Код доступа..." autocomplete="one-time-code" style="margin-top:0"/><div class="row"><button class="btn2 primary" id="btnSaveCode">Войти</button><button class="btn2" id="btnCancelCode">Закрыть</button></div><div class="row" style="margin-top:8px"><button class="btn2 danger" id="btnClearCache">🗑 Сбросить кэш и выйти</button></div><div class="mini" id="codeDebug"></div></div></div>
 <div class="overlay" id="overlayError"><div class="modal"><h3 id="errTitle">⚠️ Ошибка</h3><p id="errText"></p><div class="row"><button class="btn2 primary" id="btnRetry">Проверить снова</button><button class="btn2" id="btnCloseErr">Закрыть</button></div><div class="mini" id="errDebug"></div></div></div>
 
 <script>
@@ -353,11 +345,16 @@ var SALES_GAS_URL="https://script.google.com/macros/s/AKfycbyOKpobb3yHVC8FXzWlqJ
 var STAFF_GAS_URL="https://script.google.com/macros/s/AKfycbx8gTv-eyFMqJNsoM2Es2uj9NCFv_8cwo26Evcrlib8j1ESEhwIp2ZDPN6KJ-YCAIQY/exec";
 var FINANCE_GAS_URL="https://script.google.com/macros/s/AKfycbwJK_yWBtniw7DRbcDMOZzo713l2B_Cg73VldPByFsJztMbj1unt-hXbUBotktJ696Kgw/exec";
 var MKT_GAS_URL="https://script.google.com/macros/s/AKfycbxUleTyVYbU_sBG4yBsglaJeDE_JlbGPzPQXq3ST7QY1_SkPerwSyTslMDLvWP4n6Xr/exec";
-var EMPL_GAS_URL="https://script.google.com/macros/s/AKfycbwRNPJZAtEz-Wixf9oYgNHMlmCQZ-lh5cDPjUoMRGrM_NROsYy8Q15Ch5nr-3b8IbqlEA/exec";
+var EMPL_GAS_URL="https://script.google.com/macros/s/AKfycbyBFWHYkgFWineuAq4_4Ek6e6r948QuqxZb2_63Gdc-1iWmOGMJQJtCfBD5FuyP2xdo/exec";
 
 var CACHE_TTL_MS=24*60*60*1000, ACCESS_CODE_STORAGE_KEY="bugatti_access_code_v7", THEME_STORAGE_KEY="bugatti_theme_v1";
+var USER_NAME_KEY="bugatti_user_name_v1",USER_ROLE_KEY="bugatti_user_role_v1",USER_STORE_KEY="bugatti_user_store_v1";
 var MONTHS_RU=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
 var $=function(id){return document.getElementById(id)};
+
+// State
+var ACCESS_CODE="",USER_NAME="",USER_ROLE="",USER_STORE="";
+function isAdmin(){return USER_ROLE==="admin"}
 
 // State
 var ACCESS_CODE="",activePage="home",activeView="daily",financeViewMode="single",mktViewMode="single",mktShowMatrix=false;
@@ -375,8 +372,11 @@ init();
 function init(){
   initTheme(); wireUI();
   ACCESS_CODE=(lsGet(ACCESS_CODE_STORAGE_KEY)||"").trim();
-  if(!ACCESS_CODE){openCodeModal("🔒 Код доступа","Введи код доступа.","");setGas("LOCK","bad");$("subtitle").innerHTML='<span class="muted">Нужен код</span>';return}
-  $("subtitle").innerHTML='<span class="muted">Выбери раздел</span>';setGas("OK","");updateHomeStatuses();
+  USER_NAME=(lsGet(USER_NAME_KEY)||"").trim();
+  USER_ROLE=(lsGet(USER_ROLE_KEY)||"").trim();
+  USER_STORE=(lsGet(USER_STORE_KEY)||"").trim();
+  if(!ACCESS_CODE||!USER_NAME){openCodeModal("🔒 Вход","Выберите профиль и введите код.","");setGas("LOCK","bad");$("subtitle").innerHTML='<span class="muted">Нужен вход</span>';return}
+  $("subtitle").innerHTML='<span class="muted">Выбери раздел</span> · <strong>'+esc(USER_NAME)+'</strong>';setGas("OK","");applyRoleUI();updateHomeStatuses();
 }
 
 function wireUI(){
@@ -412,15 +412,26 @@ function wireUI(){
   $("emplRankToggle").onclick=function(){emplViewMode="rank";$("emplRankToggle").classList.add("active");$("emplCardToggle").classList.remove("active");$("emplDashToggle").classList.remove("active");$("emplSellerSel").style.display="";renderEmpl()};
   $("emplDashToggle").onclick=function(){emplViewMode="dash";$("emplDashToggle").classList.add("active");$("emplCardToggle").classList.remove("active");$("emplRankToggle").classList.remove("active");$("emplSellerSel").style.display="none";renderEmpl()};
 
-  $("btnChangeCode").onclick=function(){openCodeModal("🔒 Сменить код","Введи новый код.","")};
+  $("btnChangeCode").onclick=function(){openCodeModal("🔒 Сменить профиль","Выберите профиль и введите код.","")};
   $("btnSaveCode").onclick=async function(){
-    var c=String($("codeInput").value||"").trim();if(c.length<3){$("codeDebug").textContent="Слишком короткий.";return}
-    ACCESS_CODE=c;lsSet(ACCESS_CODE_STORAGE_KEY,c);$("overlayCode").classList.remove("show");
-    SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};
-    clearAllCache();$("subtitle").innerHTML='<span class="muted">Код сохранён. Выбери раздел.</span>';setGas("OK","");navigateTo("home");updateHomeStatuses();
+    var name=($("loginNameSel").value||"").trim();
+    var c=String($("codeInput").value||"").trim();
+    if(!name){$("codeDebug").textContent="Выберите профиль.";return}
+    if(c.length<3){$("codeDebug").textContent="Код слишком короткий.";return}
+    $("codeDebug").textContent="Проверка…";
+    try{
+      var r=await fetch(EMPL_GAS_URL,{method:"POST",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({entity:"auth",accessCode:c,loginName:name})});
+      var j=await r.json();
+      if(!j||j.ok!==true){$("codeDebug").textContent=j&&j.message||"Неверный код или профиль";return}
+      ACCESS_CODE=c;USER_NAME=j.name||name;USER_ROLE=j.role||"store";USER_STORE=j.store||"";
+      lsSet(ACCESS_CODE_STORAGE_KEY,c);lsSet(USER_NAME_KEY,USER_NAME);lsSet(USER_ROLE_KEY,USER_ROLE);lsSet(USER_STORE_KEY,USER_STORE);
+      $("overlayCode").classList.remove("show");
+      SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};
+      clearAllCache();$("subtitle").innerHTML='<span class="muted">Добро пожаловать,</span> <strong>'+esc(USER_NAME)+'</strong>';setGas("OK","");applyRoleUI();navigateTo("home");updateHomeStatuses();
+    }catch(ex){$("codeDebug").textContent="Ошибка сети: "+String(ex.message||ex).substring(0,50)}
   };
   $("btnCancelCode").onclick=function(){$("overlayCode").classList.remove("show")};
-  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};$("codeDebug").textContent="Кэш очищен.";updateHomeStatuses()};
+  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};ACCESS_CODE="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(ACCESS_CODE_STORAGE_KEY);lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);$("codeDebug").textContent="Кэш и сессия очищены.";updateHomeStatuses()};
   $("btnRetry").onclick=async function(){$("overlayError").classList.remove("show");try{
     if(activePage==="sales"){await loadSales(true);buildSalesSel(true);renderSales()}
     else if(activePage==="staff"){await loadStaff(true);buildStaffSel(true);renderStaff()}
@@ -438,12 +449,12 @@ async function navigateTo(p){
   activePage=p;
   ["pageHome","pageSales","pageStaff","pageFinance","pageMarketing","pageEmpl"].forEach(function(id){$(id).classList.remove("active")});
   $("salesTabs").style.display="none";
-  if(p==="home"){$("pageHome").classList.add("active");$("pageTitle").textContent="Bugatti Analytics";$("subtitle").innerHTML='<span class="muted">Выбери раздел</span>';updateHomeStatuses();return}
-  if(p==="sales"){$("pageSales").classList.add("active");$("salesTabs").style.display="";$("pageTitle").textContent="Планы продаж";if(!hasSalesMeta()){try{await loadSales(false);buildSalesSel(false)}catch(e){}}renderSales();return}
+  if(p==="home"){$("pageHome").classList.add("active");$("pageTitle").textContent="Bugatti Analytics";$("subtitle").innerHTML='<span class="muted">Профиль:</span> <strong>'+esc(USER_NAME||"—")+'</strong>'+(USER_ROLE==="store"?' <span class="muted">· Магазин:</span> <strong>'+esc(USER_STORE)+'</strong>':' <span class="muted">· Администратор</span>');applyRoleUI();updateHomeStatuses();return}
+  if(p==="sales"){$("pageSales").classList.add("active");$("salesTabs").style.display="";$("pageTitle").textContent="Планы продаж";if(!isAdmin()){activeView="daily";$("salesTabs").style.display="none"}if(!hasSalesMeta()){try{await loadSales(false);buildSalesSel(false)}catch(e){}}renderSales();return}
   if(p==="staff"){$("pageStaff").classList.add("active");$("pageTitle").textContent="Показатели магазина";if(!hasStaffMeta()){try{await loadStaff(false);buildStaffSel(false)}catch(e){}}renderStaff();return}
   if(p==="finance"){$("pageFinance").classList.add("active");$("pageTitle").textContent="Финансы";if(!hasFinanceMeta()){try{await loadFinance(false);buildFinanceSel(false)}catch(e){}}renderFinance();return}
   if(p==="marketing"){$("pageMarketing").classList.add("active");$("pageTitle").textContent="Маркетинг";if(!hasMktMeta()){try{await loadMkt(false);buildMktSel(false)}catch(e){}}renderMkt();return}
-  if(p==="empl"){$("pageEmpl").classList.add("active");$("pageTitle").textContent="Аналитика сотрудников";if(!hasEmplMeta()){try{await loadEmpl(false);buildEmplSel(false)}catch(e){}}renderEmpl();return}
+  if(p==="empl"){$("pageEmpl").classList.add("active");$("pageTitle").textContent="Аналитика сотрудников";applyRoleUI();if(!hasEmplMeta()){try{await loadEmpl(false);buildEmplSel(false)}catch(e){}}renderEmpl();return}
 }
 
 function updateHomeStatuses(){
@@ -513,6 +524,7 @@ function buildSalesSel(keep){
   $("storeSel").innerHTML=ss.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");
   if(keep){if(py&&ys.includes(Number(py)))$("yearSel").value=py;if(pm&&MONTHS_RU.includes(pm))$("monthSel").value=pm;if(ps&&ss.includes(ps))$("storeSel").value=ps}
   else{if(ys.length)$("yearSel").value=String(ys[0]);var cm=MONTHS_RU[new Date().getMonth()];if(cm)$("monthSel").value=cm;if(ss.includes("Астана"))$("storeSel").value="Астана";else if(ss.length)$("storeSel").value=ss[0]}
+  if(!isAdmin()&&USER_STORE){var us=ss.find(function(s){return norm(s)===norm(USER_STORE)});if(us)$("storeSel").value=us;$("storeSel").disabled=true}else{$("storeSel").disabled=false}
 }
 function buildStaffSel(keep){
   var ys=(STAFF_META&&STAFF_META.years||[]).slice().map(Number).filter(Boolean).sort(function(a,b){return b-a});
@@ -526,6 +538,7 @@ function buildStaffSel(keep){
   if(keep){if(py)$("staffYearSel").value=py;if(pm)$("staffMonthSel").value=pm;if(ps)$("staffStoreSel").value=ps}
   else{if(ys.length)$("staffYearSel").value=String(ys[0]);var nm=new Date().getMonth()+1;if(ms.some(function(m){return Number(m.month)===nm}))$("staffMonthSel").value=String(nm);else if(ms.length)$("staffMonthSel").value=String(ms[0].month);
   if(ss.includes("Абайка"))$("staffStoreSel").value="Абайка";else if(ss.length)$("staffStoreSel").value=ss[0]}
+  if(!isAdmin()&&USER_STORE){var us=ss.find(function(s){return norm(s)===norm(USER_STORE)});if(us)$("staffStoreSel").value=us;$("staffStoreSel").disabled=true}else{$("staffStoreSel").disabled=false}
 }
 function buildFinanceSel(keep){
   if(!hasFinanceMeta())return;
@@ -582,7 +595,8 @@ function buildEmplSel(keep){
   var py=$("emplYearSel").value,pm=$("emplMonthSel").value,ps=$("emplStoreSel").value,psl=$("emplSellerSel").value;
   $("emplYearSel").innerHTML=ys.map(function(y){return'<option value="'+y+'">'+y+'</option>'}).join("");
   $("emplMonthSel").innerHTML=ms.map(function(m){return'<option value="'+Number(m.month)+'">'+esc(m.monthName||monthNameRu(m.month))+'</option>'}).join("");
-  $("emplStoreSel").innerHTML='<option value="__all__">Все магазины</option>'+ss.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");
+  if(isAdmin()){$("emplStoreSel").innerHTML='<option value="__all__">Все магазины</option>'+ss.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");$("emplStoreSel").disabled=false}
+  else{$("emplStoreSel").innerHTML=ss.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");if(USER_STORE){var us=ss.find(function(s){return norm(s)===norm(USER_STORE)});if(us)$("emplStoreSel").value=us}$("emplStoreSel").disabled=true}
   // populate sellers based on selected store
   syncEmplSellerOpts(keep?psl:null);
   if(keep){if(py)$("emplYearSel").value=py;if(pm)$("emplMonthSel").value=pm;if(ps)$("emplStoreSel").value=ps;syncEmplSellerOpts(psl)}
@@ -1106,14 +1120,38 @@ function renderEmplDash(){
 }
 
 // ====== ERRORS ======
-function handleLoadError(e,u){if(e&&e.code==="invalid_code"){setGas("LOCK","bad");lsRemove(ACCESS_CODE_STORAGE_KEY);ACCESS_CODE="";openCodeModal("❌ Неверный код","Код не подходит.",e.message||"");return}setGas("ERR","bad");showError("⚠️ Ошибка","Не удалось получить данные.","url="+u+"\n"+(e?e.message||String(e):""))}
-function openCodeModal(t,tx,d){$("codeTitle").textContent=t;$("codeText").textContent=tx;$("codeDebug").textContent=d||"";$("codeInput").value=ACCESS_CODE||"";$("overlayCode").classList.add("show");setTimeout(function(){$("codeInput").focus()},50)}
+function handleLoadError(e,u){if(e&&e.code==="invalid_code"){setGas("LOCK","bad");lsRemove(ACCESS_CODE_STORAGE_KEY);ACCESS_CODE="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);openCodeModal("❌ Сессия недействительна","Войдите заново.",e.message||"");return}setGas("ERR","bad");showError("⚠️ Ошибка","Не удалось получить данные.","url="+u+"\n"+(e?e.message||String(e):""))}
+function openCodeModal(t,tx,d){$("codeTitle").textContent=t;$("codeText").textContent=tx;$("codeDebug").textContent=d||"";$("codeInput").value=ACCESS_CODE||"";$("overlayCode").classList.add("show");fetchLogins();setTimeout(function(){$("codeInput").focus()},100)}
+
+async function fetchLogins(){
+  var sel=$("loginNameSel");sel.innerHTML='<option value="">Загрузка…</option>';
+  try{
+    var r=await fetch(EMPL_GAS_URL,{method:"POST",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({entity:"logins"})});
+    var j=await r.json();
+    if(j&&j.ok&&Array.isArray(j.logins)&&j.logins.length){
+      sel.innerHTML=j.logins.map(function(n){return'<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join("");
+      if(USER_NAME&&j.logins.indexOf(USER_NAME)>=0)sel.value=USER_NAME;
+    }else{sel.innerHTML='<option value="">Нет профилей</option>'}
+  }catch(e){sel.innerHTML='<option value="">Ошибка загрузки</option>';$("codeDebug").textContent="Не удалось загрузить профили: "+String(e.message||e).substring(0,50)}
+}
+
+function applyRoleUI(){
+  // Show user name in header pill
+  var pillLabel=isAdmin()?"Админ · "+esc(USER_NAME):esc(USER_NAME);
+  $("btnChangeCode").textContent=isAdmin()?"Выйти":"Профиль";
+  // Sales monthly tab: hide for non-admins (shows all stores)
+  if($("tabMonthly"))$("tabMonthly").style.display=isAdmin()?"":"none";
+  // Employee rank toggle: hide for non-admins (shows all stores/sellers)
+  if($("emplRankToggle"))$("emplRankToggle").style.display=isAdmin()?"":"none";
+  // If non-admin was on rank view, switch to card
+  if(!isAdmin()&&emplViewMode==="rank"){emplViewMode="card";$("emplCardToggle").classList.add("active");$("emplRankToggle").classList.remove("active")}
+}
 function showError(t,tx,d){$("errTitle").textContent=t;$("errText").textContent=tx;$("errDebug").textContent=d||"";$("overlayError").classList.add("show")}
 function setGas(t,m){$("gasStatus").textContent=t;$("gasDot").classList.remove("good","warn","bad");if(m)$("gasDot").classList.add(m)}
 
 // ====== FETCH ======
 function cacheKey(u,e){return"bugatti_v7::"+u+"::"+e+"::"+(ACCESS_CODE||"").slice(0,10)}
-async function fetchCached(u,e,f){var k=cacheKey(u,e);if(!f){var cs=lsGet(k);if(cs){var c=safeJsonParse(cs);if(c&&c.ts&&c.data&&c.data.ok===true&&(Date.now()-c.ts)<CACHE_TTL_MS)return c.data;if(c&&(!c.data||c.data.ok!==true))lsRemove(k)}}var d=await fetchEntity(u,{entity:e,accessCode:ACCESS_CODE});try{localStorage.setItem(k,JSON.stringify({ts:Date.now(),data:d}))}catch(x){}return d}
+async function fetchCached(u,e,f){var k=cacheKey(u,e);if(!f){var cs=lsGet(k);if(cs){var c=safeJsonParse(cs);if(c&&c.ts&&c.data&&c.data.ok===true&&(Date.now()-c.ts)<CACHE_TTL_MS)return c.data;if(c&&(!c.data||c.data.ok!==true))lsRemove(k)}}var d=await fetchEntity(u,{entity:e,accessCode:ACCESS_CODE,loginName:USER_NAME});try{localStorage.setItem(k,JSON.stringify({ts:Date.now(),data:d}))}catch(x){}return d}
 async function fetchEntity(u,p){if(!ACCESS_CODE||ACCESS_CODE.length<3){var e=new Error("no_code");e.code="invalid_code";throw e}var r;try{r=await fetch(u,{method:"POST",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(p)})}catch(fe){var ne=new Error("Сетевая ошибка");ne.code="network_error";throw ne}if(!r.ok)throw new Error("HTTP "+r.status);var rt;try{rt=await r.text()}catch(x){throw new Error("Не удалось прочитать")}var j;try{j=JSON.parse(rt)}catch(x){var e2=new Error("Не JSON");e2.code="bad_response";throw e2}if(!j||j.ok!==true){var cd=(j&&j.error)||"bad_response";var er=new Error(cd);er.code=cd==="invalid_code"||cd==="unauthorized"?"invalid_code":cd;er.message=(j&&(j.message||j.details))||cd;throw er}return j}
 
 // ====== LS ======
@@ -1150,6 +1188,5 @@ function fcbc(s){return s==="ok"?"good":"bad"}
 function nz(v){return Math.abs(Number(v||0))<=1e-6}
 function serialToDateStr(s){var n=Number(s);if(!n||n<1)return"—";var d=new Date((n-25569)*86400000);var dd=d.getUTCDate(),mm=d.getUTCMonth()+1,yy=d.getUTCFullYear();return pad2(dd)+"."+pad2(mm)+"."+yy}
 </script>
-
 </body>
 </html>
