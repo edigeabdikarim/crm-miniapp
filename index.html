@@ -346,18 +346,33 @@ var STAFF_GAS_URL="https://script.google.com/macros/s/AKfycbx8gTv-eyFMqJNsoM2Es2
 var FINANCE_GAS_URL="https://script.google.com/macros/s/AKfycbwJK_yWBtniw7DRbcDMOZzo713l2B_Cg73VldPByFsJztMbj1unt-hXbUBotktJ696Kgw/exec";
 var MKT_GAS_URL="https://script.google.com/macros/s/AKfycbxUleTyVYbU_sBG4yBsglaJeDE_JlbGPzPQXq3ST7QY1_SkPerwSyTslMDLvWP4n6Xr/exec";
 var EMPL_GAS_URL="https://script.google.com/macros/s/AKfycbyBFWHYkgFWineuAq4_4Ek6e6r948QuqxZb2_63Gdc-1iWmOGMJQJtCfBD5FuyP2xdo/exec";
+var ACCESS_GAS_URL="https://script.google.com/macros/s/AKfycbxcVDO_bznrfao8gkQPDeUTHWQNp-suxxOXDCDt2SKHV6WlpDWDpErDg5FeRvIhGC93rQ/exec";
 
 var CACHE_TTL_MS=24*60*60*1000, ACCESS_CODE_STORAGE_KEY="bugatti_access_code_v7", THEME_STORAGE_KEY="bugatti_theme_v1";
-var USER_NAME_KEY="bugatti_user_name_v1",USER_ROLE_KEY="bugatti_user_role_v1",USER_STORE_KEY="bugatti_user_store_v1";
+var USER_LOGIN_KEY="bugatti_user_login_v1",USER_NAME_KEY="bugatti_user_name_v1",USER_ROLE_KEY="bugatti_user_role_v1",USER_STORE_KEY="bugatti_user_store_v1";
 var MONTHS_RU=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
 var $=function(id){return document.getElementById(id)};
 
-// State
-var ACCESS_CODE="",USER_NAME="",USER_ROLE="",USER_STORE="";
-function isAdmin(){return USER_ROLE==="admin"}
+var ROLE_CONFIG={
+  leader:{reports:["sales","staff","finance","marketing","empl"],allStores:true,salesMonthly:true,emplRank:true},
+  rop:{reports:["sales","staff","empl"],allStores:true,salesMonthly:true,emplRank:true},
+  store:{reports:["sales","staff","empl"],allStores:false,salesMonthly:false,emplRank:false}
+};
 
 // State
-var ACCESS_CODE="",activePage="home",activeView="daily",financeViewMode="single",mktViewMode="single",mktShowMatrix=false;
+var ACCESS_CODE="",USER_LOGIN="",USER_NAME="",USER_ROLE="",USER_STORE="";
+function normalizeRole(role){var r=String(role||"").trim().toLowerCase();if(r==="admin"||r==="leader"||r==="руководитель")return"leader";if(r==="rop"||r==="роп")return"rop";return"store"}
+function currentRoleConfig(){return ROLE_CONFIG[normalizeRole(USER_ROLE)]||ROLE_CONFIG.store}
+function canAccessReport(reportKey){return currentRoleConfig().reports.indexOf(reportKey)>=0}
+function canSeeAllStores(){return !!currentRoleConfig().allStores}
+function mustLockStoreFilter(){return !canSeeAllStores()&&!!USER_STORE}
+function canUseSalesMonthly(){return !!currentRoleConfig().salesMonthly}
+function canUseEmplRank(){return !!currentRoleConfig().emplRank}
+function isStoreUser(){return normalizeRole(USER_ROLE)==="store"}
+function roleLabel(){var r=normalizeRole(USER_ROLE);if(r==="leader")return"Руководитель";if(r==="rop")return"РОП";return"Пользователь магазина"}
+
+// State
+var activePage="home",activeView="daily",financeViewMode="single",mktViewMode="single",mktShowMatrix=false;
 var SALES_META=null,SALES_RAW=[],SALES_PLANS=[];
 var STAFF_META=null,STAFF_RAW=[],STAFF_PLANS=[];
 var FINANCE_META=null,FINANCE_SUMMARY=[];
@@ -372,11 +387,12 @@ init();
 function init(){
   initTheme(); wireUI();
   ACCESS_CODE=(lsGet(ACCESS_CODE_STORAGE_KEY)||"").trim();
+  USER_LOGIN=(lsGet(USER_LOGIN_KEY)||lsGet(USER_NAME_KEY)||"").trim();
   USER_NAME=(lsGet(USER_NAME_KEY)||"").trim();
-  USER_ROLE=(lsGet(USER_ROLE_KEY)||"").trim();
+  USER_ROLE=normalizeRole(lsGet(USER_ROLE_KEY)||"");
   USER_STORE=(lsGet(USER_STORE_KEY)||"").trim();
   if(!ACCESS_CODE||!USER_NAME){openCodeModal("🔒 Вход","Выберите профиль и введите код.","");setGas("LOCK","bad");$("subtitle").innerHTML='<span class="muted">Нужен вход</span>';return}
-  $("subtitle").innerHTML='<span class="muted">Выбери раздел</span> · <strong>'+esc(USER_NAME)+'</strong>';setGas("OK","");applyRoleUI();updateHomeStatuses();
+  $("subtitle").innerHTML='<span class="muted">Выбери раздел</span> · <strong>'+esc(USER_NAME)+'</strong> <span class="muted">· Роль:</span> <strong>'+esc(roleLabel())+'</strong>'+(USER_STORE?' <span class="muted">· Магазин:</span> <strong>'+esc(USER_STORE)+'</strong>':'');setGas("OK","");applyRoleUI();updateHomeStatuses();
 }
 
 function wireUI(){
@@ -420,18 +436,23 @@ function wireUI(){
     if(c.length<3){$("codeDebug").textContent="Код слишком короткий.";return}
     $("codeDebug").textContent="Проверка…";
     try{
-      var r=await fetch(EMPL_GAS_URL,{method:"POST",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({entity:"auth",accessCode:c,loginName:name})});
+      var r=await fetch(ACCESS_GAS_URL,{method:"POST",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({entity:"auth",accessCode:c,loginName:name})});
       var j=await r.json();
       if(!j||j.ok!==true){$("codeDebug").textContent=j&&j.message||"Неверный код или профиль";return}
-      ACCESS_CODE=c;USER_NAME=j.name||name;USER_ROLE=j.role||"store";USER_STORE=j.store||"";
-      lsSet(ACCESS_CODE_STORAGE_KEY,c);lsSet(USER_NAME_KEY,USER_NAME);lsSet(USER_ROLE_KEY,USER_ROLE);lsSet(USER_STORE_KEY,USER_STORE);
+      var user=j.user||{};
+      ACCESS_CODE=c;
+      USER_LOGIN=(user.loginName||name||"").trim();
+      USER_NAME=(user.displayName||name||"").trim();
+      USER_ROLE=normalizeRole(user.role||"store");
+      USER_STORE=(user.store||"").trim();
+      lsSet(ACCESS_CODE_STORAGE_KEY,c);lsSet(USER_LOGIN_KEY,USER_LOGIN);lsSet(USER_NAME_KEY,USER_NAME);lsSet(USER_ROLE_KEY,USER_ROLE);lsSet(USER_STORE_KEY,USER_STORE);
       $("overlayCode").classList.remove("show");
       SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};
-      clearAllCache();$("subtitle").innerHTML='<span class="muted">Добро пожаловать,</span> <strong>'+esc(USER_NAME)+'</strong>';setGas("OK","");applyRoleUI();navigateTo("home");updateHomeStatuses();
+      clearAllCache();$("subtitle").innerHTML='<span class="muted">Добро пожаловать,</span> <strong>'+esc(USER_NAME)+'</strong> <span class="muted">· Роль:</span> <strong>'+esc(roleLabel())+'</strong>'+(USER_STORE?' <span class="muted">· Магазин:</span> <strong>'+esc(USER_STORE)+'</strong>':'');setGas("OK","");applyRoleUI();navigateTo("home");updateHomeStatuses();
     }catch(ex){$("codeDebug").textContent="Ошибка сети: "+String(ex.message||ex).substring(0,50)}
   };
   $("btnCancelCode").onclick=function(){$("overlayCode").classList.remove("show")};
-  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};ACCESS_CODE="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(ACCESS_CODE_STORAGE_KEY);lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);$("codeDebug").textContent="Кэш и сессия очищены.";updateHomeStatuses()};
+  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};ACCESS_CODE="";USER_LOGIN="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(ACCESS_CODE_STORAGE_KEY);lsRemove(USER_LOGIN_KEY);lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);$("codeDebug").textContent="Кэш и сессия очищены.";updateHomeStatuses()};
   $("btnRetry").onclick=async function(){$("overlayError").classList.remove("show");try{
     if(activePage==="sales"){await loadSales(true);buildSalesSel(true);renderSales()}
     else if(activePage==="staff"){await loadStaff(true);buildStaffSel(true);renderStaff()}
@@ -445,12 +466,21 @@ function wireUI(){
 }
 
 // NAV
+function pageToReportKey(p){return({sales:"sales",staff:"staff",finance:"finance",marketing:"marketing",empl:"empl"})[p]||""}
+function guardPageAccess(p){
+  var reportKey=pageToReportKey(p);
+  if(!reportKey)return true;
+  if(canAccessReport(reportKey))return true;
+  showError("⛔ Доступ запрещён","У вас нет прав на этот отчёт.","Роль: "+roleLabel()+"\nРаздел: "+reportKey);
+  return false;
+}
 async function navigateTo(p){
+  if(p!=="home"&&!guardPageAccess(p)){p="home"}
   activePage=p;
   ["pageHome","pageSales","pageStaff","pageFinance","pageMarketing","pageEmpl"].forEach(function(id){$(id).classList.remove("active")});
   $("salesTabs").style.display="none";
-  if(p==="home"){$("pageHome").classList.add("active");$("pageTitle").textContent="Bugatti Analytics";$("subtitle").innerHTML='<span class="muted">Профиль:</span> <strong>'+esc(USER_NAME||"—")+'</strong>'+(USER_ROLE==="store"?' <span class="muted">· Магазин:</span> <strong>'+esc(USER_STORE)+'</strong>':' <span class="muted">· Администратор</span>');applyRoleUI();updateHomeStatuses();return}
-  if(p==="sales"){$("pageSales").classList.add("active");$("salesTabs").style.display="";$("pageTitle").textContent="Планы продаж";if(!isAdmin()){activeView="daily";$("salesTabs").style.display="none"}if(!hasSalesMeta()){try{await loadSales(false);buildSalesSel(false)}catch(e){}}renderSales();return}
+  if(p==="home"){$("pageHome").classList.add("active");$("pageTitle").textContent="Bugatti Analytics";$("subtitle").innerHTML='<span class="muted">Профиль:</span> <strong>'+esc(USER_NAME||"—")+'</strong> <span class="muted">· Роль:</span> <strong>'+esc(roleLabel())+'</strong>'+(USER_STORE?' <span class="muted">· Магазин:</span> <strong>'+esc(USER_STORE)+'</strong>':'');applyRoleUI();updateHomeStatuses();return}
+  if(p==="sales"){$("pageSales").classList.add("active");$("salesTabs").style.display=canUseSalesMonthly()?"":"none";$("pageTitle").textContent="Планы продаж";if(!canUseSalesMonthly())activeView="daily";if(!hasSalesMeta()){try{await loadSales(false);buildSalesSel(false)}catch(e){}}renderSales();return}
   if(p==="staff"){$("pageStaff").classList.add("active");$("pageTitle").textContent="Показатели магазина";if(!hasStaffMeta()){try{await loadStaff(false);buildStaffSel(false)}catch(e){}}renderStaff();return}
   if(p==="finance"){$("pageFinance").classList.add("active");$("pageTitle").textContent="Финансы";if(!hasFinanceMeta()){try{await loadFinance(false);buildFinanceSel(false)}catch(e){}}renderFinance();return}
   if(p==="marketing"){$("pageMarketing").classList.add("active");$("pageTitle").textContent="Маркетинг";if(!hasMktMeta()){try{await loadMkt(false);buildMktSel(false)}catch(e){}}renderMkt();return}
@@ -524,7 +554,7 @@ function buildSalesSel(keep){
   $("storeSel").innerHTML=ss.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");
   if(keep){if(py&&ys.includes(Number(py)))$("yearSel").value=py;if(pm&&MONTHS_RU.includes(pm))$("monthSel").value=pm;if(ps&&ss.includes(ps))$("storeSel").value=ps}
   else{if(ys.length)$("yearSel").value=String(ys[0]);var cm=MONTHS_RU[new Date().getMonth()];if(cm)$("monthSel").value=cm;if(ss.includes("Астана"))$("storeSel").value="Астана";else if(ss.length)$("storeSel").value=ss[0]}
-  if(!isAdmin()&&USER_STORE){var us=ss.find(function(s){return norm(s)===norm(USER_STORE)});if(us)$("storeSel").value=us;$("storeSel").disabled=true}else{$("storeSel").disabled=false}
+  if(mustLockStoreFilter()){var us=ss.find(function(s){return norm(s)===norm(USER_STORE)});if(us)$("storeSel").value=us;$("storeSel").disabled=true}else{$("storeSel").disabled=false}
 }
 function buildStaffSel(keep){
   var ys=(STAFF_META&&STAFF_META.years||[]).slice().map(Number).filter(Boolean).sort(function(a,b){return b-a});
@@ -538,7 +568,7 @@ function buildStaffSel(keep){
   if(keep){if(py)$("staffYearSel").value=py;if(pm)$("staffMonthSel").value=pm;if(ps)$("staffStoreSel").value=ps}
   else{if(ys.length)$("staffYearSel").value=String(ys[0]);var nm=new Date().getMonth()+1;if(ms.some(function(m){return Number(m.month)===nm}))$("staffMonthSel").value=String(nm);else if(ms.length)$("staffMonthSel").value=String(ms[0].month);
   if(ss.includes("Абайка"))$("staffStoreSel").value="Абайка";else if(ss.length)$("staffStoreSel").value=ss[0]}
-  if(!isAdmin()&&USER_STORE){var us=ss.find(function(s){return norm(s)===norm(USER_STORE)});if(us)$("staffStoreSel").value=us;$("staffStoreSel").disabled=true}else{$("staffStoreSel").disabled=false}
+  if(mustLockStoreFilter()){var us=ss.find(function(s){return norm(s)===norm(USER_STORE)});if(us)$("staffStoreSel").value=us;$("staffStoreSel").disabled=true}else{$("staffStoreSel").disabled=false}
 }
 function buildFinanceSel(keep){
   if(!hasFinanceMeta())return;
@@ -595,7 +625,7 @@ function buildEmplSel(keep){
   var py=$("emplYearSel").value,pm=$("emplMonthSel").value,ps=$("emplStoreSel").value,psl=$("emplSellerSel").value;
   $("emplYearSel").innerHTML=ys.map(function(y){return'<option value="'+y+'">'+y+'</option>'}).join("");
   $("emplMonthSel").innerHTML=ms.map(function(m){return'<option value="'+Number(m.month)+'">'+esc(m.monthName||monthNameRu(m.month))+'</option>'}).join("");
-  if(isAdmin()){$("emplStoreSel").innerHTML='<option value="__all__">Все магазины</option>'+ss.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");$("emplStoreSel").disabled=false}
+  if(canSeeAllStores()){$("emplStoreSel").innerHTML='<option value="__all__">Все магазины</option>'+ss.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");$("emplStoreSel").disabled=false}
   else{$("emplStoreSel").innerHTML=ss.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");if(USER_STORE){var us=ss.find(function(s){return norm(s)===norm(USER_STORE)});if(us)$("emplStoreSel").value=us}$("emplStoreSel").disabled=true}
   // populate sellers based on selected store
   syncEmplSellerOpts(keep?psl:null);
@@ -1120,31 +1150,42 @@ function renderEmplDash(){
 }
 
 // ====== ERRORS ======
-function handleLoadError(e,u){if(e&&e.code==="invalid_code"){setGas("LOCK","bad");lsRemove(ACCESS_CODE_STORAGE_KEY);ACCESS_CODE="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);openCodeModal("❌ Сессия недействительна","Войдите заново.",e.message||"");return}setGas("ERR","bad");showError("⚠️ Ошибка","Не удалось получить данные.","url="+u+"\n"+(e?e.message||String(e):""))}
+function handleLoadError(e,u){if(e&&e.code==="invalid_code"){setGas("LOCK","bad");lsRemove(ACCESS_CODE_STORAGE_KEY);ACCESS_CODE="";USER_LOGIN="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(USER_LOGIN_KEY);lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);openCodeModal("❌ Сессия недействительна","Войдите заново.",e.message||"");return}setGas("ERR","bad");showError("⚠️ Ошибка","Не удалось получить данные.","url="+u+"\n"+(e?e.message||String(e):""))}
 function openCodeModal(t,tx,d){$("codeTitle").textContent=t;$("codeText").textContent=tx;$("codeDebug").textContent=d||"";$("codeInput").value=ACCESS_CODE||"";$("overlayCode").classList.add("show");fetchLogins();setTimeout(function(){$("codeInput").focus()},100)}
 
 async function fetchLogins(){
   var sel=$("loginNameSel");sel.innerHTML='<option value="">Загрузка…</option>';
   try{
-    var r=await fetch(EMPL_GAS_URL,{method:"POST",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({entity:"logins"})});
+    var r=await fetch(ACCESS_GAS_URL,{method:"POST",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({entity:"logins"})});
     var j=await r.json();
     if(j&&j.ok&&Array.isArray(j.logins)&&j.logins.length){
-      sel.innerHTML=j.logins.map(function(n){return'<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join("");
-      if(USER_NAME&&j.logins.indexOf(USER_NAME)>=0)sel.value=USER_NAME;
+      sel.innerHTML=j.logins.map(function(n){
+        var value=esc(n.loginName||"");
+        var label=esc(n.displayName||n.loginName||"");
+        return'<option value="'+value+'">'+label+'</option>';
+      }).join("");
+      if(USER_LOGIN){
+        var hasLogin=j.logins.some(function(n){return String(n.loginName||"").trim()===USER_LOGIN});
+        if(hasLogin)sel.value=USER_LOGIN;
+      }
     }else{sel.innerHTML='<option value="">Нет профилей</option>'}
   }catch(e){sel.innerHTML='<option value="">Ошибка загрузки</option>';$("codeDebug").textContent="Не удалось загрузить профили: "+String(e.message||e).substring(0,50)}
 }
 
 function applyRoleUI(){
-  // Show user name in header pill
-  var pillLabel=isAdmin()?"Админ · "+esc(USER_NAME):esc(USER_NAME);
-  $("btnChangeCode").textContent=isAdmin()?"Выйти":"Профиль";
-  // Sales monthly tab: hide for non-admins (shows all stores)
-  if($("tabMonthly"))$("tabMonthly").style.display=isAdmin()?"":"none";
-  // Employee rank toggle: hide for non-admins (shows all stores/sellers)
-  if($("emplRankToggle"))$("emplRankToggle").style.display=isAdmin()?"":"none";
-  // If non-admin was on rank view, switch to card
-  if(!isAdmin()&&emplViewMode==="rank"){emplViewMode="card";$("emplCardToggle").classList.add("active");$("emplRankToggle").classList.remove("active")}
+  if($("goSales"))$("goSales").style.display=canAccessReport("sales")?"":"none";
+  if($("goStaff"))$("goStaff").style.display=canAccessReport("staff")?"":"none";
+  if($("goFinance"))$("goFinance").style.display=canAccessReport("finance")?"":"none";
+  if($("goMarketing"))$("goMarketing").style.display=canAccessReport("marketing")?"":"none";
+  if($("goEmpl"))$("goEmpl").style.display=canAccessReport("empl")?"":"none";
+
+  $("btnChangeCode").textContent="Профиль";
+
+  if($("tabMonthly"))$("tabMonthly").style.display=canUseSalesMonthly()?"":"none";
+  if(!canUseSalesMonthly()&&activeView==="monthly"){activeView="daily";$("tabDaily").classList.add("active");$("tabMonthly").classList.remove("active")}
+
+  if($("emplRankToggle"))$("emplRankToggle").style.display=canUseEmplRank()?"":"none";
+  if(!canUseEmplRank()&&emplViewMode==="rank"){emplViewMode="card";$("emplCardToggle").classList.add("active");$("emplRankToggle").classList.remove("active")}
 }
 function showError(t,tx,d){$("errTitle").textContent=t;$("errText").textContent=tx;$("errDebug").textContent=d||"";$("overlayError").classList.add("show")}
 function setGas(t,m){$("gasStatus").textContent=t;$("gasDot").classList.remove("good","warn","bad");if(m)$("gasDot").classList.add(m)}
@@ -1158,7 +1199,7 @@ async function fetchEntity(u,p){if(!ACCESS_CODE||ACCESS_CODE.length<3){var e=new
 function lsGet(k){try{return localStorage.getItem(k)||""}catch(e){return""}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function lsRemove(k){try{localStorage.removeItem(k)}catch(e){}}
-function clearAllCache(){try{var ks=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf("bugatti_")===0&&k!==ACCESS_CODE_STORAGE_KEY&&k!==THEME_STORAGE_KEY)ks.push(k)}ks.forEach(function(k){localStorage.removeItem(k)})}catch(e){}}
+function clearAllCache(){try{var keep={};[ACCESS_CODE_STORAGE_KEY,THEME_STORAGE_KEY,USER_LOGIN_KEY,USER_NAME_KEY,USER_ROLE_KEY,USER_STORE_KEY].forEach(function(k){keep[k]=true});var ks=[];for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf("bugatti_")===0&&!keep[k])ks.push(k)}ks.forEach(function(k){localStorage.removeItem(k)})}catch(e){}}
 
 // ====== HELPERS ======
 function dedupSalesRaw(rows){var m=new Map();rows.forEach(function(r){var s=String(r.store||"").trim(),dk=String(r.reportDateKey||"").trim();if(!s||!dk)return;var k=norm(s)+"__"+dk;var p=m.get(k);var tn=r.ts?Date.parse(r.ts):0,tp=p&&p.ts?Date.parse(p.ts):0;if(!p||tn>=tp)m.set(k,r)});return Array.from(m.values())}
