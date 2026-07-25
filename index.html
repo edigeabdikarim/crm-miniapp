@@ -158,7 +158,7 @@
     .toggleRow{display:flex;flex-wrap:wrap;gap:8px;width:100%}
     .financeMultiTable{min-width:auto}.financeMultiTable th,.financeMultiTable td{padding:10px 12px;font-size:12px}
     .financeMultiTable .section-header td{background:var(--surface2);font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-bottom:2px solid var(--stroke)}
-    .financeMultiTable .total-row td{font-weight:800;border-top:2px solid var(--stroke)}
+    .financeMultiTable .total-row td,.matrixTable .total-row td{font-weight:800;border-top:2px solid var(--stroke)}
     .matrix-cell{font-variant-numeric:tabular-nums;font-size:12px;text-align:right;padding:10px 12px!important}
     .matrix-cell.top1{background:rgba(251,113,133,.15)!important;color:var(--bad);font-weight:800}
     .matrix-cell.top2{background:rgba(251,113,133,.10)!important;color:var(--bad);font-weight:700}
@@ -167,6 +167,37 @@
     td.wrap-cell{white-space:normal;max-width:250px}
     .homeCard.teal:hover{border-color:rgba(20,184,166,.4)}.homeCard.teal::before{background:linear-gradient(90deg,transparent,rgba(20,184,166,.25),transparent)}
     .homeCard.amber:hover{border-color:rgba(245,158,11,.4)}.homeCard.amber::before{background:linear-gradient(90deg,transparent,rgba(245,158,11,.25),transparent)}
+    .homeCard.rose:hover{border-color:rgba(244,63,94,.4)}.homeCard.rose::before{background:linear-gradient(90deg,transparent,rgba(244,63,94,.25),transparent)}
+    .homeCard.cyan:hover{border-color:rgba(6,182,212,.4)}.homeCard.cyan::before{background:linear-gradient(90deg,transparent,rgba(6,182,212,.25),transparent)}
+    .btn.accent-rose{border-color:rgba(244,63,94,.4);background:linear-gradient(135deg,rgba(244,63,94,.28),rgba(244,63,94,.10))}
+    .btn.accent-cyan{border-color:rgba(6,182,212,.4);background:linear-gradient(135deg,rgba(6,182,212,.28),rgba(6,182,212,.10))}
+    .raceRow{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:var(--radius);cursor:pointer;transition:var(--transition)}
+    .raceRow:hover{background:var(--surface2)}
+    .racePlace{flex:0 0 52px;font-size:13px;font-weight:800;color:var(--muted)}
+    /* Имя своё, не «top»: класс .top уже занят шапкой страницы, и на планшете
+       её медиазапрос (flex-direction:column) разложил бы призовые строки в столбик. */
+    .raceRow.raceTop .racePlace{color:var(--text)}
+    .raceName{flex:0 0 190px;font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .raceStore{flex:0 0 110px;font-size:11px;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .raceBarWrap{flex:1 1 auto;height:12px;border-radius:99px;background:var(--surface2);overflow:hidden;min-width:60px}
+    .raceBar{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,rgba(244,63,94,.75),rgba(244,63,94,.35))}
+    .raceVal{flex:0 0 64px;text-align:right;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+    .raceDetail{padding:2px 12px 14px 64px;display:flex;flex-wrap:wrap;gap:8px}
+    .raceChip{border:1px solid var(--stroke2);border-radius:var(--radius-pill);padding:5px 11px;font-size:11px;font-weight:700;color:var(--text2);background:var(--surface)}
+    .raceChip b{color:var(--muted);font-weight:700;margin-left:5px}
+    /* Ширину задаёт содержимое: у магазина с шестью продавцами горизонтального скролла быть не должно. */
+    .matrixTable{min-width:auto}
+    .matrixTable td:first-child,.matrixTable th:first-child{position:sticky;left:0;text-align:left;border-right:1px solid var(--stroke)}
+    /* Фон липкой колонки обязан быть непрозрачным, иначе сквозь названия брендов
+       читаются цифры уезжающих столбцов. --surface прозрачен в обеих темах, --bg2 — нет
+       и при этом ближе всего к фону строки (в светлой теме --bg1 — чистый белый, заметная полоса).
+       z-index ниже шапки (у thead th он 2), иначе тело наедет на неё при вертикальном скролле. */
+    .matrixTable tbody td:first-child{z-index:1;background:var(--bg2)}
+    /* Угловая ячейка: .matrixTable th:first-child перебивает thead th по специфичности,
+       поэтому фон шапки ей нужно вернуть отдельно. z-index выше обоих — угол перекрывает всё. */
+    .matrixTable thead th:first-child{z-index:3;background:var(--thead-bg)}
+    .matrixTable td.zero{color:var(--muted2)}
+    @media(max-width:900px){.raceName{flex-basis:120px}.raceStore{display:none}}
     .ecom-store{cursor:pointer}
     .ecom-store:hover{background:rgba(255,255,255,.03)}
     .ecom-detail td{background:rgba(245,158,11,.04);border-left:2px solid #f59e0b}
@@ -235,6 +266,8 @@
       <div class="homeCard purple" id="goMarketing"><span class="icon">📣</span><div class="cardTitle">Маркетинг</div><div class="cardDesc">Бюджет, категории расходов, направления, матрица</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="mktStatusDot"></span><span id="mktStatusText">Не загружено</span></div><div class="statusDetail" id="mktStatusDetail"></div></div></div>
       <div class="homeCard teal" id="goEmpl"><span class="icon">🏆</span><div class="cardTitle">Аналитика сотрудников</div><div class="cardDesc">Глубокая аналитика по каждому продавцу: эффективность, бренды, скидки, тренды и рейтинг по сети</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="emplStatusDot"></span><span id="emplStatusText">Не загружено</span></div><div class="statusDetail" id="emplStatusDetail"></div></div></div>
       <div class="homeCard amber" id="goEcom"><span class="icon">🛒</span><div class="cardTitle">E-commerce</div><div class="cardDesc">Онлайн-продажи по магазинам: сумма, доля, чеки</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="ecomStatusDot"></span><span id="ecomStatusText">Не загружено</span></div><div class="statusDetail" id="ecomStatusDetail"></div></div></div>
+      <div class="homeCard rose" id="goContest"><span class="icon">🏆</span><div class="cardTitle">Конкурс продавцов</div><div class="cardDesc">Гонка за брендами: кто продал товары наибольшего числа разных брендов</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="contestStatusDot"></span><span id="contestStatusText">Не загружено</span></div><div class="statusDetail" id="contestStatusDetail"></div></div></div>
+      <div class="homeCard cyan" id="goMatrix"><span class="icon">📋</span><div class="cardTitle">Бренды × продавцы</div><div class="cardDesc">Матрица: кто какие бренды продавал, по магазинам</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="matrixStatusDot"></span><span id="matrixStatusText">Не загружено</span></div><div class="statusDetail" id="matrixStatusDetail"></div></div></div>
     </div>
   </div>
 
@@ -311,6 +344,27 @@
     <div id="ecomEmpty" class="emptyState" style="display:none">За выбранный месяц онлайн-продаж нет.</div>
   </div>
 
+  <!-- CONTEST -->
+  <div class="page" id="pageContest">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="contestBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
+    <div class="controls"><select id="contestYearSel" class="sel"></select><select id="contestMonthSel" class="sel"></select><select id="contestStoreSel" class="sel"></select><button class="btn accent-rose" id="contestRefreshBtn">Обновить</button></div>
+    <div class="grid" id="contestKpi"></div>
+    <div class="section"><h2>Рейтинг по числу разных брендов</h2><div id="contestRace"></div>
+      <p class="muted" style="font-size:12px;margin-top:8px">В зачёт идут только личные продажи, где в чеке один продавец. Возвраты вычитаются, онлайн-продажи и сертификаты не учитываются. Нажмите на строку, чтобы увидеть бренды продавца.</p>
+    </div>
+    <div id="contestEmpty" class="emptyState" style="display:none">За выбранный месяц нет продаж, попадающих в зачёт.</div>
+  </div>
+
+  <!-- BRAND MATRIX -->
+  <div class="page" id="pageMatrix">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="matrixBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
+    <div class="controls"><select id="matrixYearSel" class="sel"></select><select id="matrixMonthSel" class="sel"></select><select id="matrixStoreSel" class="sel"></select><button class="btn accent-cyan" id="matrixRefreshBtn">Обновить</button></div>
+    <div class="section"><h2>Кто какие бренды продавал</h2><div class="tableWrap"><div class="scrollX"><table class="wideTable matrixTable"><thead><tr id="matrixHead"></tr></thead><tbody id="matrixBody"></tbody></table></div></div>
+      <p class="muted" style="font-size:12px;margin-top:8px">В ячейке — количество проданных единиц. Правила зачёта те же, что в конкурсе, поэтому нижняя строка совпадает с рейтингом.</p>
+    </div>
+    <div id="matrixEmpty" class="emptyState" style="display:none">За выбранный месяц нет продаж, попадающих в зачёт.</div>
+  </div>
+
   <!-- EMPLOYEE ANALYTICS -->
   <div class="page" id="pageEmpl">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="emplBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
@@ -372,9 +426,9 @@ var MONTHS_RU=["Январь","Февраль","Март","Апрель","Май
 var $=function(id){return document.getElementById(id)};
 
 var ROLE_CONFIG={
-  leader:{reports:["sales","staff","finance","marketing","empl","ecom"],allStores:true,salesMonthly:true,emplRank:true},
-  rop:{reports:["sales","staff","empl"],allStores:true,salesMonthly:true,emplRank:true},
-  store:{reports:["sales","staff","empl"],allStores:false,salesMonthly:false,emplRank:false}
+  leader:{reports:["sales","staff","finance","marketing","empl","ecom","contest","matrix"],allStores:true,salesMonthly:true,emplRank:true},
+  rop:{reports:["sales","staff","empl","contest","matrix"],allStores:true,salesMonthly:true,emplRank:true},
+  store:{reports:["sales","staff","empl","contest","matrix"],allStores:false,salesMonthly:false,emplRank:false}
 };
 
 // State
@@ -397,8 +451,10 @@ var FINANCE_META=null,FINANCE_SUMMARY=[];
 var MKT_META=null,MKT_RAW=[];
 var EMPL_META=null,EMPL_RAW=[],EMPL_PLANS=[];
 var emplViewMode="card";
-var _loading={sales:false,staff:false,finance:false,mkt:false,empl:false};
-var _errors={sales:null,staff:null,finance:null,mkt:null,empl:null};
+// contest и matrix своей выгрузки не имеют: их состояние выводится из empl и staff
+// в updateHomeStatuses(). Ключи держим здесь, чтобы setStatus2 читал их, а не undefined.
+var _loading={sales:false,staff:false,finance:false,mkt:false,empl:false,contest:false,matrix:false};
+var _errors={sales:null,staff:null,finance:null,mkt:null,empl:null,contest:null,matrix:null};
 
 init();
 
@@ -418,13 +474,23 @@ function wireUI(){
   $("goFinance").onclick=function(){navigateTo("finance")};$("goMarketing").onclick=function(){navigateTo("marketing")};
   $("goEmpl").onclick=function(){navigateTo("empl")};
   $("goEcom").onclick=function(){navigateTo("ecom")};
-  $("salesBack").onclick=$("staffBack").onclick=$("financeBack").onclick=$("mktBack").onclick=$("emplBack").onclick=$("ecomBack").onclick=function(){navigateTo("home")};
+  $("goContest").onclick=function(){navigateTo("contest")};
+  $("goMatrix").onclick=function(){navigateTo("matrix")};
+  $("salesBack").onclick=$("staffBack").onclick=$("financeBack").onclick=$("mktBack").onclick=$("emplBack").onclick=$("ecomBack").onclick=$("contestBack").onclick=$("matrixBack").onclick=function(){navigateTo("home")};
 
   $("tabDaily").onclick=function(){activeView="daily";renderSales()};$("tabMonthly").onclick=function(){activeView="monthly";renderSales()};
   [$("yearSel"),$("monthSel"),$("storeSel")].forEach(function(e){e.onchange=renderSales});
   [$("staffYearSel"),$("staffMonthSel"),$("staffStoreSel")].forEach(function(e){e.onchange=renderStaff});
   $("ecomBody").addEventListener("click",function(e){var tr=e.target.closest&&e.target.closest("tr.ecom-store");if(!tr)return;toggleEcomStore(Number(tr.getAttribute("data-i")),tr);});
   [$("ecomYearSel"),$("ecomMonthSel")].forEach(function(e){e.onchange=renderEcom});
+  // Список магазинов зависит от месяца, поэтому смена периода сначала пересобирает его.
+  [$("contestYearSel"),$("contestMonthSel")].forEach(function(e){e.onchange=function(){buildContestSel(true);renderContest()}});
+  $("contestStoreSel").onchange=renderContest;
+  [$("matrixYearSel"),$("matrixMonthSel")].forEach(function(e){e.onchange=function(){buildMatrixSel(true);renderMatrix()}});
+  $("matrixStoreSel").onchange=renderMatrix;
+  $("contestRefreshBtn").onclick=async function(){try{await loadEmpl(true);await loadStaff(true);buildContestSel(!!$("contestYearSel").value);renderContest()}catch(e){}};
+  $("matrixRefreshBtn").onclick=async function(){try{await loadEmpl(true);await loadStaff(true);buildMatrixSel(!!$("matrixYearSel").value);renderMatrix()}catch(e){}};
+  $("contestRace").addEventListener("click",function(e){var row=e.target.closest&&e.target.closest(".raceRow");if(!row)return;toggleContestSeller(Number(row.getAttribute("data-i")),row);});
 
   $("financeYearSel").onchange=function(){syncFinanceMonthOpts();saveFinanceFilters();renderFinance()};
   $("financeMonthSel").onchange=function(){saveFinanceFilters();renderFinance()};
@@ -469,12 +535,12 @@ function wireUI(){
       USER_STORE=(user.store||"").trim();
       lsSet(ACCESS_CODE_STORAGE_KEY,c);lsSet(USER_LOGIN_KEY,USER_LOGIN);lsSet(USER_NAME_KEY,USER_NAME);lsSet(USER_ROLE_KEY,USER_ROLE);lsSet(USER_STORE_KEY,USER_STORE);
       $("overlayCode").classList.remove("show");
-      SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};
+      SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null,contest:null,matrix:null};
       clearAllCache();$("subtitle").innerHTML='<span class="muted">Добро пожаловать,</span> <strong>'+esc(USER_NAME)+'</strong> <span class="muted">· Роль:</span> <strong>'+esc(roleLabel())+'</strong>'+(USER_STORE?' <span class="muted">· Магазин:</span> <strong>'+esc(USER_STORE)+'</strong>':'');setGas("OK","");applyRoleUI();navigateTo("home");updateHomeStatuses();
     }catch(ex){$("codeDebug").textContent="Ошибка сети: "+String(ex.message||ex).substring(0,50)}
   };
   $("btnCancelCode").onclick=function(){$("overlayCode").classList.remove("show")};
-  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null};ACCESS_CODE="";USER_LOGIN="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(ACCESS_CODE_STORAGE_KEY);lsRemove(USER_LOGIN_KEY);lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);$("codeDebug").textContent="Кэш и сессия очищены.";updateHomeStatuses()};
+  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null,contest:null,matrix:null};ACCESS_CODE="";USER_LOGIN="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(ACCESS_CODE_STORAGE_KEY);lsRemove(USER_LOGIN_KEY);lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);$("codeDebug").textContent="Кэш и сессия очищены.";updateHomeStatuses()};
   $("btnRetry").onclick=async function(){$("overlayError").classList.remove("show");try{
     if(activePage==="sales"){await loadSales(true);buildSalesSel(true);renderSales()}
     else if(activePage==="staff"){await loadStaff(true);buildStaffSel(true);renderStaff()}
@@ -482,6 +548,8 @@ function wireUI(){
     else if(activePage==="marketing"){await loadMkt(true);buildMktSel(true);renderMkt()}
     else if(activePage==="empl"){await loadEmpl(true);buildEmplSel(true);renderEmpl()}
     else if(activePage==="ecom"){await loadStaff(true);buildEcomSel(!!$("ecomYearSel").value);renderEcom()}
+    else if(activePage==="contest"){await loadEmpl(true);await loadStaff(true);buildContestSel(!!$("contestYearSel").value);renderContest()}
+    else if(activePage==="matrix"){await loadEmpl(true);await loadStaff(true);buildMatrixSel(!!$("matrixYearSel").value);renderMatrix()}
   }catch(e){}};
   $("btnCloseErr").onclick=function(){$("overlayError").classList.remove("show")};
   $("codeInput").onkeydown=function(e){if(e.key==="Enter")$("btnSaveCode").click()};
@@ -489,7 +557,7 @@ function wireUI(){
 }
 
 // NAV
-function pageToReportKey(p){return({sales:"sales",staff:"staff",finance:"finance",marketing:"marketing",empl:"empl",ecom:"ecom"})[p]||""}
+function pageToReportKey(p){return({sales:"sales",staff:"staff",finance:"finance",marketing:"marketing",empl:"empl",ecom:"ecom",contest:"contest",matrix:"matrix"})[p]||""}
 function guardPageAccess(p){
   var reportKey=pageToReportKey(p);
   if(!reportKey)return true;
@@ -500,7 +568,7 @@ function guardPageAccess(p){
 async function navigateTo(p){
   if(p!=="home"&&!guardPageAccess(p)){p="home"}
   activePage=p;
-  ["pageHome","pageSales","pageStaff","pageFinance","pageMarketing","pageEmpl","pageEcom"].forEach(function(id){$(id).classList.remove("active")});
+  ["pageHome","pageSales","pageStaff","pageFinance","pageMarketing","pageEmpl","pageEcom","pageContest","pageMatrix"].forEach(function(id){$(id).classList.remove("active")});
   $("salesTabs").style.display="none";
   if(p==="home"){$("pageHome").classList.add("active");$("pageTitle").textContent="Bugatti Analytics";$("subtitle").innerHTML='<span class="muted">Профиль:</span> <strong>'+esc(USER_NAME||"—")+'</strong> <span class="muted">· Роль:</span> <strong>'+esc(roleLabel())+'</strong>'+(USER_STORE?' <span class="muted">· Магазин:</span> <strong>'+esc(USER_STORE)+'</strong>':'');applyRoleUI();updateHomeStatuses();return}
   if(p==="sales"){$("pageSales").classList.add("active");$("salesTabs").style.display=canUseSalesMonthly()?"":"none";$("pageTitle").textContent="Планы продаж";if(!canUseSalesMonthly())activeView="daily";if(!hasSalesMeta()){try{await loadSales(false);buildSalesSel(false)}catch(e){}}renderSales();return}
@@ -509,6 +577,8 @@ async function navigateTo(p){
   if(p==="marketing"){$("pageMarketing").classList.add("active");$("pageTitle").textContent="Маркетинг";if(!hasMktMeta()){try{await loadMkt(false);buildMktSel(false)}catch(e){}}renderMkt();return}
   if(p==="empl"){$("pageEmpl").classList.add("active");$("pageTitle").textContent="Аналитика сотрудников";applyRoleUI();if(!hasEmplMeta()){try{await loadEmpl(false);buildEmplSel(false)}catch(e){}}renderEmpl();return}
   if(p==="ecom"){$("pageEcom").classList.add("active");$("pageTitle").textContent="E-commerce";if(!hasStaffMeta()){try{await loadStaff(false)}catch(e){}}buildEcomSel(!!$("ecomYearSel").value);renderEcom();return}
+  if(p==="contest"){$("pageContest").classList.add("active");$("pageTitle").textContent="Конкурс продавцов";if(!hasEmplMeta()){try{await loadEmpl(false)}catch(e){}}if(!hasStaffMeta()){try{await loadStaff(false)}catch(e){}}buildContestSel(!!$("contestYearSel").value);renderContest();return}
+  if(p==="matrix"){$("pageMatrix").classList.add("active");$("pageTitle").textContent="Бренды × продавцы";if(!hasEmplMeta()){try{await loadEmpl(false)}catch(e){}}if(!hasStaffMeta()){try{await loadStaff(false)}catch(e){}}buildMatrixSel(!!$("matrixYearSel").value);renderMatrix();return}
 }
 
 function updateHomeStatuses(){
@@ -536,6 +606,19 @@ function updateHomeStatuses(){
   var ed="";
   if(hasEmplMeta()){var ec=EMPL_RAW.length,ep=EMPL_PLANS.length,es=(EMPL_META.sellers||[]).length,est=(EMPL_META.stores||[]).length;ed='<span class="st-ok">'+ec+' записей</span> · '+es+' продавцов · '+est+' маг.';if(!ec)ed='<span class="st-warn">Мета ОК, но 0 записей</span>'}
   setStatus2("empl",$("emplStatusDot"),$("emplStatusText"),$("emplStatusDetail"),hasEmplMeta(),EMPL_GAS_URL,ed);
+
+  // Конкурс и матрица считаются по двум выгрузкам сразу, поэтому и состояние
+  // складывается из обеих: грузится — если грузится любая, ошибка — если упала любая.
+  _loading.contest=_loading.matrix=(_loading.empl||_loading.staff);
+  _errors.contest=_errors.matrix=(_errors.empl||_errors.staff||null);
+  // Признак тот же, что у самих разделов (contestEcomDataMissing), а не hasStaffMeta():
+  // мета может прийти из кэша без строк, и тогда карточка рапортовала бы «Загружено»,
+  // а внутри раздела было бы написано, что данных нет.
+  var cd="",cok=hasEmplMeta()&&!contestEcomDataMissing();
+  if(cok)cd='<span class="st-ok">'+EMPL_RAW.length+' записей</span> · бренды + онлайн';
+  else if(hasEmplMeta())cd='<span class="st-warn">Нет данных об онлайн-продажах</span>';
+  setStatus2("contest",$("contestStatusDot"),$("contestStatusText"),$("contestStatusDetail"),cok,EMPL_GAS_URL,cd);
+  setStatus2("matrix",$("matrixStatusDot"),$("matrixStatusText"),$("matrixStatusDetail"),cok,EMPL_GAS_URL,cd);
 }
 function setStatus2(k,dot,txt,detail,loaded,url,dataInfo){
   // Loading state
@@ -544,10 +627,12 @@ function setStatus2(k,dot,txt,detail,loaded,url,dataInfo){
   if(_errors[k]){dot.className="statusDot error";txt.textContent="Ошибка";detail.innerHTML='<span class="st-bad">'+esc(_errors[k]).substring(0,60)+'</span>';return}
   // Loaded with data
   if(loaded){dot.className="statusDot loaded";txt.textContent="Загружено";detail.innerHTML=dataInfo||"";return}
-  // Cached
-  if(hasCached(url,"meta")){dot.className="statusDot stale";txt.textContent="Кэш";detail.innerHTML='<span class="st-warn">Данные из кэша</span>';return}
+  // Cached / Not loaded. dataInfo здесь показываем, если он есть: у конкурса и матрицы
+  // в этом состоянии заготовлено объяснение, чего именно не хватает. У остальных карточек
+  // подпись заполняется только вместе с loaded=true, так что для них ничего не меняется.
+  if(hasCached(url,"meta")){dot.className="statusDot stale";txt.textContent="Кэш";detail.innerHTML=dataInfo||'<span class="st-warn">Данные из кэша</span>';return}
   // Not loaded
-  dot.className="statusDot";txt.textContent="Не загружено";detail.innerHTML="";
+  dot.className="statusDot";txt.textContent="Не загружено";detail.innerHTML=dataInfo||"";
 }
 function hasCached(u,e){var k=cacheKey(u,e),r=lsGet(k);if(!r)return false;var c=safeJsonParse(r);return c&&c.ts&&c.data&&c.data.ok===true&&(Date.now()-c.ts)<CACHE_TTL_MS}
 function hasSalesMeta(){return SALES_META&&Array.isArray(SALES_META.stores)&&SALES_META.stores.length>0}
@@ -911,6 +996,276 @@ function buildEcomReport(y,m){
     netSales:r2(netSales)
   };
 }
+
+// CONTEST / MATRIX SELECTORS
+// Магазины после объединения Астаны, в порядке убывания числа продаж за месяц.
+function contestStoreList(y,m){
+  var cnt={};
+  contestRows(y,m).forEach(function(r){
+    if(String(r.operation||"").trim()!=="Продажа")return;
+    var st=contestStore(r.store);if(st)cnt[st]=(cnt[st]||0)+1;
+  });
+  return Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]||a.localeCompare(b,"ru")});
+}
+function fillPeriodSel(yearSel,monthSel,keep){
+  var ys=(EMPL_META&&EMPL_META.years||[]).slice().map(Number).filter(Boolean).sort(function(a,b){return b-a});
+  var ms=(EMPL_META&&EMPL_META.months||[]).slice().sort(function(a,b){return Number(a.month)-Number(b.month)});
+  var py=$(yearSel).value,pm=$(monthSel).value;
+  $(yearSel).innerHTML=ys.map(function(y){return'<option value="'+y+'">'+y+'</option>'}).join("");
+  $(monthSel).innerHTML=ms.map(function(m){return'<option value="'+Number(m.month)+'">'+esc(m.monthName||monthNameRu(m.month))+'</option>'}).join("");
+  if(keep){if(py)$(yearSel).value=py;if(pm)$(monthSel).value=pm}
+  else{
+    if(ys.length)$(yearSel).value=String(ys[0]);
+    var nm=new Date().getMonth()+1;
+    if(ms.some(function(m){return Number(m.month)===nm}))$(monthSel).value=String(nm);
+    else if(ms.length)$(monthSel).value=String(ms[ms.length-1].month);
+  }
+}
+// Конкурс общесетевой: фильтр магазина не запирается ролью, по умолчанию — вся сеть.
+function buildContestSel(keep){
+  if(!hasEmplMeta())return;
+  fillPeriodSel("contestYearSel","contestMonthSel",keep);
+  var ps=$("contestStoreSel").value;
+  var y=Number($("contestYearSel").value||0),m=Number($("contestMonthSel").value||0);
+  $("contestStoreSel").innerHTML='<option value="__all__">Вся сеть</option>'
+    +contestStoreList(y,m).map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("");
+  if(keep&&ps)$("contestStoreSel").value=ps;
+  // Прежний магазин мог не дожить до нового месяца. Присваивание отсутствующего option
+  // браузер гасит молча — value становится "", контрол выглядит пустым, а пустая строка
+  // в buildContestReport значит «вся сеть»: подпись разошлась бы с данными.
+  // Поэтому проверяем результат присваивания, а не наличие прежнего значения.
+  if(!$("contestStoreSel").value)$("contestStoreSel").value="__all__";
+}
+// Матрица по умолчанию открывается на самом крупном магазине.
+function buildMatrixSel(keep){
+  if(!hasEmplMeta())return;
+  fillPeriodSel("matrixYearSel","matrixMonthSel",keep);
+  var ps=$("matrixStoreSel").value;
+  var y=Number($("matrixYearSel").value||0),m=Number($("matrixMonthSel").value||0);
+  var list=contestStoreList(y,m);
+  $("matrixStoreSel").innerHTML=list.map(function(s){return'<option value="'+esc(s)+'">'+esc(s)+'</option>'}).join("")
+    +'<option value="__all__">Вся сеть</option>';
+  if(keep&&ps)$("matrixStoreSel").value=ps;
+  else if(list.length)$("matrixStoreSel").value=list[0];
+  // Тот же случай, что в конкурсе: магазина из прошлого месяца в новом списке может не быть.
+  if(!$("matrixStoreSel").value)$("matrixStoreSel").value=list.length?list[0]:"__all__";
+}
+function contestMedal(place){return place===1?"🥇":place===2?"🥈":place===3?"🥉":""}
+var CONTEST_EMPTY_TEXT="За выбранный месяц нет продаж, попадающих в зачёт.";
+// Флаг онлайн-продажи есть только в выгрузке показателей магазина (STAFF_RAW).
+// Без неё contestEcomKeys() вернёт пустой словарь, фильтр молча выключится,
+// и раздел покажет правдоподобный, но неверный рейтинг. Лучше не показывать ничего.
+// Текст общий для конкурса и матрицы, поэтому без слова «рейтинг»: на странице
+// «Бренды × продавцы» рейтинга нет, там таблица.
+var CONTEST_NO_ECOM_TEXT="Не загрузились данные об онлайн-продажах. Без них считать нельзя: онлайн-продажи в зачёт не идут, а отличить их нечем — цифры получились бы неверными. Нажмите «Обновить», чтобы загрузить данные заново.";
+// Проверяем именно строки, а не hasStaffMeta(): мета может прийти из кэша без строк,
+// и проверка по мете такую поломку пропустит.
+function contestEcomDataMissing(){return !STAFF_RAW.length}
+function renderContest(){
+  var y=Number($("contestYearSel").value||0),m=Number($("contestMonthSel").value||0);
+  var st=$("contestStoreSel").value||"__all__";
+  if(contestEcomDataMissing()){
+    $("pageContest")._rep=null;
+    $("contestKpi").innerHTML="";$("contestRace").innerHTML="";
+    $("contestEmpty").innerHTML=CONTEST_NO_ECOM_TEXT;
+    $("contestEmpty").style.display="";
+    $("subtitle").innerHTML='<span class="muted">Нет данных об онлайн-продажах</span>';
+    return;
+  }
+  if(!y||!m){
+    $("subtitle").innerHTML='<span class="muted">Выбери период</span>';
+    $("contestKpi").innerHTML="";$("contestRace").innerHTML="";
+    $("contestEmpty").style.display="none";return;
+  }
+  var rep=buildContestReport(y,m,st);
+  $("pageContest")._rep=rep;
+  var stLabel=st==="__all__"?"Вся сеть":st;
+  $("subtitle").innerHTML='<span class="muted">Период:</span> <strong>'+esc(monthNameRu(m))+' '+y
+    +'</strong> <span class="muted">· Магазин:</span> <strong>'+esc(stLabel)+'</strong>';
+  var lead=rep.leader?esc(rep.leader.seller):"—";
+  var leadStore=rep.leader?esc(rep.leader.store):"";
+  // Приз один на всю сеть. Когда выбран конкретный магазин, rep.leader — лидер этого
+  // магазина, и карточка призового фонда рядом с ним читалась бы как «он получит 50 000 ₸».
+  var allNet=(st==="__all__");
+  var cards=[kpi(allNet?"Лидер месяца":"Лидер магазина",lead,allNet?leadStore:"приз разыгрывается по всей сети")];
+  cards.push(kpi("Брендов у лидера",rep.maxBrands?intF(rep.maxBrands):"—",""));
+  if(allNet)cards.push(kpi("Призовой фонд",intF(CONTEST_PRIZE)+" ₸","лучшему продавцу"));
+  cards.push(kpi("Участников",intF(rep.participants),""));
+  $("contestKpi").innerHTML=cards.join("");
+  if(!rep.rows.length){$("contestRace").innerHTML="";$("contestEmpty").innerHTML=CONTEST_EMPTY_TEXT;$("contestEmpty").style.display="";return}
+  $("contestEmpty").style.display="none";
+  var max=rep.maxBrands||1;
+  $("contestRace").innerHTML=rep.rows.map(function(r,i){
+    var w=Math.max(2,Math.round(r.brands/max*100));
+    var medal=contestMedal(r.place);
+    return '<div class="raceRow'+(r.place<=3?' raceTop':'')+'" data-i="'+i+'">'
+      +'<span class="racePlace">'+medal+r.place+'</span>'
+      +'<span class="raceName">'+esc(r.seller)+'</span>'
+      +'<span class="raceStore">'+esc(r.store)+'</span>'
+      +'<span class="raceBarWrap"><span class="raceBar" style="width:'+w+'%"></span></span>'
+      +'<span class="raceVal">'+intF(r.brands)+'</span></div>';
+  }).join("");
+}
+function renderMatrix(){
+  var y=Number($("matrixYearSel").value||0),m=Number($("matrixMonthSel").value||0);
+  var st=$("matrixStoreSel").value||"__all__";
+  // Матрица считается по тем же правилам зачёта, значит без выгрузки онлайн-продаж
+  // она так же молча соврёт. Показываем причину, а не правдоподобные цифры.
+  if(contestEcomDataMissing()){
+    $("matrixHead").innerHTML="";$("matrixBody").innerHTML="";
+    $("matrixEmpty").innerHTML=CONTEST_NO_ECOM_TEXT;
+    $("matrixEmpty").style.display="";
+    $("subtitle").innerHTML='<span class="muted">Нет данных об онлайн-продажах</span>';
+    return;
+  }
+  if(!y||!m){
+    $("subtitle").innerHTML='<span class="muted">Выбери период</span>';
+    $("matrixHead").innerHTML="";$("matrixBody").innerHTML="";
+    $("matrixEmpty").style.display="none";return;
+  }
+  var mx=buildBrandMatrix(y,m,st);
+  var stLabel=st==="__all__"?"Вся сеть":st;
+  $("subtitle").innerHTML='<span class="muted">Период:</span> <strong>'+esc(monthNameRu(m))+' '+y
+    +'</strong> <span class="muted">· Магазин:</span> <strong>'+esc(stLabel)+'</strong>';
+  if(!mx.rows.length){
+    $("matrixHead").innerHTML="";$("matrixBody").innerHTML="";
+    $("matrixEmpty").innerHTML=CONTEST_EMPTY_TEXT;
+    $("matrixEmpty").style.display="";return;
+  }
+  $("matrixEmpty").style.display="none";
+  $("matrixHead").innerHTML='<th>Бренд</th>'
+    +mx.sellers.map(function(s){return'<th class="right">'+esc(s.seller)+'</th>'}).join("");
+  var body=mx.rows.map(function(r){
+    return '<tr><td>'+esc(r.brand)+'</td>'
+      +r.cells.map(function(c){
+        return c>0?'<td class="right">'+intF(c)+'</td>':'<td class="right zero">—</td>';
+      }).join("")+'</tr>';
+  }).join("");
+  // Итоговая строка считает БРЕНДЫ (совпадает с «Гонкой»), а ячейки выше — штуки.
+  // Общего числа по строке нет намеренно: сложить разные единицы нечем.
+  body+='<tr class="total-row"><td><strong>Всего брендов</strong></td>'
+    +mx.totals.map(function(t){return'<td class="right"><strong>'+intF(t)+'</strong></td>'}).join("")
+    +'</tr>';
+  $("matrixBody").innerHTML=body;
+}
+function toggleContestSeller(i,row){
+  var nx=row.nextElementSibling;
+  if(nx&&nx.classList.contains("raceDetail")){nx.parentNode.removeChild(nx);return}
+  var rep=$("pageContest")._rep;if(!rep||!rep.rows[i])return;
+  var chips=rep.rows[i].brandList.map(function(b){
+    return '<span class="raceChip">'+esc(b.brand)+'<b>'+intF(b.qty)+'</b></span>';
+  }).join("");
+  var d=document.createElement("div");
+  d.className="raceDetail";
+  d.innerHTML=chips||'<span class="muted">Нет брендов в зачёте</span>';
+  row.parentNode.insertBefore(d,row.nextSibling);
+}
+
+// ===== CONTEST CORE START =====
+// Конкурс продавцов по брендам. Спека:
+// docs/superpowers/specs/2026-07-25-bugatti-seller-brand-contest-design.md
+var CONTEST_PRIZE=50000;
+// Один человек, записанный в таблице по-разному
+var CONTEST_SELLER_ALIAS={"асемгуль астана":"Асемгуль Ж. Астана","жасмин астана":"Жасмин Е. Астана","феруза":"Феруза А.","данияр":"Данияр Т.","айлен":"Айлен А."};
+// Мусорная запись-продавец
+var CONTEST_SELLER_SKIP={"удаленный в":1};
+// Астана и Above Астана — одна команда
+var CONTEST_STORE_ALIAS={"above астана":"Астана"};
+
+function contestSeller(s){var n=norm(s);return CONTEST_SELLER_ALIAS[n]||String(s||"").trim()}
+function contestStore(s){var n=norm(s);return CONTEST_STORE_ALIAS[n]||String(s||"").trim()}
+
+// Бренд есть только в EMPL_RAW, флаг онлайн-продажи — только в STAFF_RAW.
+// Обе выгрузки читают одну таблицу, строки сходятся по этому ключу один-в-один.
+function contestRowKey(r){
+  return [String(r.checkNumber||"").trim(),norm(r.parent),norm(r.seller),
+    Math.round(Number(r.salesAmount)||0),Number(r.year),Number(r.monthNum),
+    String(r.operation||"").trim()].join("|");
+}
+function contestEcomKeys(){
+  var s={};
+  (typeof STAFF_RAW!=="undefined"?STAFF_RAW:[]).forEach(function(r){
+    if(Number(r.ecom))s[contestRowKey(r)]=1;
+  });
+  return s;
+}
+// Строки, участвующие в зачёте. Возвраты остаются — их вычитают дальше.
+function contestRows(y,m){
+  var ecom=contestEcomKeys();
+  return (typeof EMPL_RAW!=="undefined"?EMPL_RAW:[]).filter(function(r){
+    if(Number(r.year)!==y||Number(r.monthNum)!==m)return false;
+    if(norm(r.parent)==="сертификат")return false;
+    if(Number(r.sellersInCheck)>1)return false;
+    if(!String(r.brand||"").trim())return false;
+    if(CONTEST_SELLER_SKIP[norm(r.seller)])return false;
+    if(ecom[contestRowKey(r)])return false;
+    return true;
+  });
+}
+// Рейтинг конкурса. storeFilter: название магазина либо "__all__"/"" — вся сеть.
+function buildContestReport(y,m,storeFilter){
+  var agg={};
+  contestRows(y,m).forEach(function(r){
+    var s=contestSeller(r.seller),b=String(r.brand||"").trim(),st=contestStore(r.store);
+    var d=String(r.operation||"").trim()==="Продажа"?1:-1;
+    if(!agg[s])agg[s]={seller:s,brand:{},units:0,sum:0,stores:{}};
+    var a=agg[s];
+    a.brand[b]=(a.brand[b]||0)+d;
+    a.units+=d;
+    // salesAmount у возврата уже отрицательный в самой выгрузке — умножать на d нельзя,
+    // знак перевернётся второй раз и возврат станет прибавлять выручку.
+    a.sum+=(Number(r.salesAmount)||0);
+    if(d>0)a.stores[st]=(a.stores[st]||0)+1;
+  });
+  var list=Object.keys(agg).map(function(s){
+    var a=agg[s];
+    var bl=Object.keys(a.brand).filter(function(b){return a.brand[b]>0})
+      .map(function(b){return{brand:b,qty:a.brand[b]}})
+      .sort(function(x,z){return z.qty-x.qty||x.brand.localeCompare(z.brand,"ru")});
+    var st=Object.keys(a.stores).sort(function(x,z){return a.stores[z]-a.stores[x]})[0]||"—";
+    return{seller:a.seller,store:st,brands:bl.length,units:a.units,sum:Math.round(a.sum),brandList:bl};
+  }).filter(function(x){return x.brands>0});
+  if(storeFilter&&storeFilter!=="__all__"){
+    // x.store уже прошёл contestStore, фильтр приводим к тому же виду:
+    // иначе запрос по "Above Астана" не найдёт никого — там уже "Астана".
+    var sf=norm(contestStore(storeFilter));
+    list=list.filter(function(x){return norm(x.store)===sf});
+  }
+  list.sort(function(a,b){return b.brands-a.brands||b.units-a.units||b.sum-a.sum});
+  var place=0;
+  list.forEach(function(x,i){
+    if(i===0||x.brands!==list[i-1].brands)place=i+1;
+    x.place=place;
+  });
+  return{rows:list,participants:list.length,
+    maxBrands:list.length?list[0].brands:0,
+    leader:list.length?list[0]:null};
+}
+// Матрица бренды × продавцы. Столбцы и итоги берутся из рейтинга,
+// поэтому нижняя строка матрицы всегда сходится с «Гонкой».
+function buildBrandMatrix(y,m,storeFilter){
+  var rep=buildContestReport(y,m,storeFilter);
+  var sellers=rep.rows;
+  var brands={};
+  sellers.forEach(function(s,i){
+    s.brandList.forEach(function(b){
+      if(!brands[b.brand]){
+        var cells=[];for(var k=0;k<sellers.length;k++)cells.push(0);
+        brands[b.brand]={brand:b.brand,total:0,cells:cells};
+      }
+      brands[b.brand].cells[i]=b.qty;
+      brands[b.brand].total+=b.qty;
+    });
+  });
+  var rows=Object.keys(brands).map(function(b){return brands[b]})
+    .sort(function(a,b){return b.total-a.total||a.brand.localeCompare(b.brand,"ru")});
+  return{
+    sellers:sellers.map(function(s){return{seller:s.seller,brands:s.brands}}),
+    rows:rows,
+    totals:sellers.map(function(s){return s.brands})
+  };
+}
+// ===== CONTEST CORE END =====
 
 // ====== STAFF REPORT ======
 // Зачтённая продавцу сумма с учётом e-commerce (повторяет колонку «Окончательный остаток» в таблице):
@@ -1311,6 +1666,8 @@ function applyRoleUI(){
   if($("goMarketing"))$("goMarketing").style.display=canAccessReport("marketing")?"":"none";
   if($("goEmpl"))$("goEmpl").style.display=canAccessReport("empl")?"":"none";
   if($("goEcom"))$("goEcom").style.display=canAccessReport("ecom")?"":"none";
+  if($("goContest"))$("goContest").style.display=canAccessReport("contest")?"":"none";
+  if($("goMatrix"))$("goMatrix").style.display=canAccessReport("matrix")?"":"none";
 
   $("btnChangeCode").textContent="Профиль";
 
