@@ -1,0 +1,65 @@
+# Робот сборки данных для дашборда Bugatti Analytics.
+# Кладётся в репозиторий crm-miniapp по пути .github/workflows/build-data.yml
+#
+# Что делает: дважды в день забирает данные из шести Apps Script, режет по правам,
+# ужимает, шифрует кодами доступа и публикует сайт вместе с готовыми файлами.
+# Публикация — артефактом, а не коммитом: иначе за год двухразовые обновления
+# добавят в репозиторий тысячи мегабайтных файлов.
+
+name: Сборка данных дашборда
+
+on:
+  schedule:
+    # 11:00 и 16:00 по Астане (UTC+5)
+    - cron: '0 6 * * *'
+    - cron: '0 11 * * *'
+  workflow_dispatch:        # кнопка «запустить сейчас» на вкладке Actions
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Собрать файлы данных
+        env:
+          LEADER_CODE: ${{ secrets.LEADER_CODE }}
+          STORE_CODES: ${{ secrets.STORE_CODES }}
+        run: node tools/build_bundle.js --out build
+
+      # Сайт = дашборд плюс собранные данные. Если сборка выше упала, шага не будет
+      # и публикации не случится — на сайте останется прошлый, рабочий набор.
+      - name: Сложить сайт
+        run: |
+          mkdir -p site
+          cp index.html site/
+          cp -r build/data site/data
+          ls -la site site/data
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

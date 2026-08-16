@@ -259,7 +259,6 @@
 
   <!-- HOME -->
   <div class="page active" id="pageHome">
-    <div class="mini" id="dataThrough" style="margin:0 0 10px"></div>
     <div class="homeGrid5">
       <div class="homeCard blue" id="goSales"><span class="icon">📊</span><div class="cardTitle">Планы продаж</div><div class="cardDesc">Ежедневные и ежемесячные данные по магазинам</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="salesStatusDot"></span><span id="salesStatusText">Не загружено</span></div><div class="statusDetail" id="salesStatusDetail"></div></div></div>
       <div class="homeCard orange" id="goStaff"><span class="icon">👥</span><div class="cardTitle">Показатели магазина</div><div class="cardDesc">Сотрудники, чеки, возвраты, средний чек</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="staffStatusDot"></span><span id="staffStatusText">Не загружено</span></div><div class="statusDetail" id="staffStatusDetail"></div></div></div>
@@ -422,17 +421,9 @@ var EMPL_GAS_URL="https://script.google.com/macros/s/AKfycbyBFWHYkgFWineuAq4_4Ek
 var ACCESS_GAS_URL="https://script.google.com/macros/s/AKfycbxcVDO_bznrfao8gkQPDeUTHWQNp-suxxOXDCDt2SKHV6WlpDWDpErDg5FeRvIhGC93rQ/exec";
 
 var CACHE_TTL_MS=24*60*60*1000, ACCESS_CODE_STORAGE_KEY="bugatti_access_code_v7", THEME_STORAGE_KEY="bugatti_theme_v1";
-// Живой замер 16.08.2026: раздел «Сотрудники» приходит за 35,9 с. Порог ниже превратил бы
-// рабочую загрузку в ошибку, выше — вернул бы бесконечное ожидание.
-var FETCH_TIMEOUT_MS=45000;
 var USER_LOGIN_KEY="bugatti_user_login_v1",USER_NAME_KEY="bugatti_user_name_v1",USER_ROLE_KEY="bugatti_user_role_v1",USER_STORE_KEY="bugatti_user_store_v1";
 var MONTHS_RU=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
-var MONTHS_RU_GEN=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
 var $=function(id){return document.getElementById(id)};
-
-// Скачанный файл данных, его паспорт и список профилей. Объявлены здесь, а не рядом с
-// функциями загрузки: init() ниже по файлу стартует раньше, и там они были бы undefined.
-var BUNDLE=null,BUNDLE_META=null,LOGINS=[];
 
 var ROLE_CONFIG={
   leader:{reports:["sales","staff","finance","marketing","empl","ecom","contest","matrix"],allStores:true,salesMonthly:true,emplRank:true},
@@ -533,14 +524,10 @@ function wireUI(){
     if(c.length<3){$("codeDebug").textContent="Код слишком короткий.";return}
     $("codeDebug").textContent="Проверка…";
     try{
-      // Код проверяется тем, что им открывается файл данных: подошёл — значит верный.
-      var user=loginRecord(await loadLoginsFile(false),name);
-      if(!user){$("codeDebug").textContent="Профиль не найден";return}
-      var box=await fetchFile("data/"+user.file);
-      try{
-        var body=await decryptBundle(box,c);
-        BUNDLE=body;BUNDLE_META=body.meta||null;
-      }catch(bad){$("codeDebug").textContent="Код не подходит. Если код недавно меняли, данные обновятся в ближайшую сборку.";return}
+      var r=await fetch(ACCESS_GAS_URL,{method:"POST",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({entity:"auth",accessCode:c,loginName:name})});
+      var j=await r.json();
+      if(!j||j.ok!==true){$("codeDebug").textContent=j&&j.message||"Неверный код или профиль";return}
+      var user=j.user||{};
       ACCESS_CODE=c;
       USER_LOGIN=(user.loginName||name||"").trim();
       USER_NAME=(user.displayName||name||"").trim();
@@ -632,8 +619,6 @@ function updateHomeStatuses(){
   else if(hasEmplMeta())cd='<span class="st-warn">Нет данных об онлайн-продажах</span>';
   setStatus2("contest",$("contestStatusDot"),$("contestStatusText"),$("contestStatusDetail"),cok,EMPL_GAS_URL,cd);
   setStatus2("matrix",$("matrixStatusDot"),$("matrixStatusText"),$("matrixStatusDetail"),cok,EMPL_GAS_URL,cd);
-
-  $("dataThrough").textContent=freshnessLine();
 }
 function setStatus2(k,dot,txt,detail,loaded,url,dataInfo){
   // Loading state
@@ -645,9 +630,11 @@ function setStatus2(k,dot,txt,detail,loaded,url,dataInfo){
   // Cached / Not loaded. dataInfo здесь показываем, если он есть: у конкурса и матрицы
   // в этом состоянии заготовлено объяснение, чего именно не хватает. У остальных карточек
   // подпись заполняется только вместе с loaded=true, так что для них ничего не меняется.
+  if(hasCached(url,"meta")){dot.className="statusDot stale";txt.textContent="Кэш";detail.innerHTML=dataInfo||'<span class="st-warn">Данные из кэша</span>';return}
   // Not loaded
   dot.className="statusDot";txt.textContent="Не загружено";detail.innerHTML=dataInfo||"";
 }
+function hasCached(u,e){var k=cacheKey(u,e),r=lsGet(k);if(!r)return false;var c=safeJsonParse(r);return c&&c.ts&&c.data&&c.data.ok===true&&(Date.now()-c.ts)<CACHE_TTL_MS}
 function hasSalesMeta(){return SALES_META&&Array.isArray(SALES_META.stores)&&SALES_META.stores.length>0}
 function hasStaffMeta(){return STAFF_META&&Array.isArray(STAFF_META.stores)&&STAFF_META.stores.length>0}
 function hasFinanceMeta(){return FINANCE_META&&Array.isArray(FINANCE_META.years)}
@@ -659,14 +646,11 @@ function initTheme(){if(lsGet(THEME_STORAGE_KEY)==="light"){document.documentEle
 function toggleTheme(){var l=document.documentElement.classList.toggle("light");$("themeIcon").textContent=l?"☀️":"🌙";$("themeLabel").textContent=l?"Светлая":"Тёмная";lsSet(THEME_STORAGE_KEY,l?"light":"dark")}
 
 // LOAD
-// Все пять разделов берут данные из одного скачанного файла. Первый вызов качает и
-// расшифровывает, остальные достаются мгновенно.
-async function loadSection(key,apply){if(_loading[key])return;_loading[key]=true;_errors[key]=null;setGas("…","warn");updateHomeStatuses();try{var b=await loadBundle(false);apply(b);_errors[key]=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors[key]=e&&e.message||String(e);handleLoadError(e,"data");apply(null);updateHomeStatuses();throw e}finally{_loading[key]=false;updateHomeStatuses()}}
-async function loadSales(f){if(f)BUNDLE=null;await loadSection("sales",function(b){SALES_META=b?b.sales.meta:null;SALES_RAW=b?unpackRows(b.sales.raw):[];SALES_PLANS=b?unpackRows(b.sales.plans):[]})}
-async function loadStaff(f){if(f)BUNDLE=null;await loadSection("staff",function(b){STAFF_META=b?b.staff.meta:null;STAFF_RAW=b?unpackRows(b.staff.raw):[];STAFF_PLANS=b?unpackRows(b.staff.plans):[]})}
-async function loadFinance(f){if(f)BUNDLE=null;await loadSection("finance",function(b){var d=b&&b.finance;FINANCE_META=d?d.meta:null;FINANCE_SUMMARY=d?unpackRows(d.summary):[]})}
-async function loadMkt(f){if(f)BUNDLE=null;await loadSection("mkt",function(b){var d=b&&b.mkt;MKT_META=d?d.meta:null;MKT_RAW=d?unpackRows(d.raw):[]})}
-async function loadEmpl(f){if(f)BUNDLE=null;await loadSection("empl",function(b){EMPL_META=b?b.empl.meta:null;EMPL_RAW=b?unpackRows(b.empl.raw):[];EMPL_PLANS=b?unpackRows(b.empl.plans):[]})}
+async function loadSales(f){if(_loading.sales)return;_loading.sales=true;_errors.sales=null;setGas("…","warn");updateHomeStatuses();try{var r=await Promise.all([fetchCached(SALES_GAS_URL,"meta",f),fetchCached(SALES_GAS_URL,"raw",f),fetchCached(SALES_GAS_URL,"plans",f)]);SALES_META=r[0];SALES_RAW=arr(r[1]&&r[1].rows);SALES_PLANS=arr(r[2]&&r[2].rows);_errors.sales=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors.sales=e&&e.message||String(e);handleLoadError(e,SALES_GAS_URL);SALES_META=null;SALES_RAW=[];SALES_PLANS=[];updateHomeStatuses();throw e}finally{_loading.sales=false;updateHomeStatuses()}}
+async function loadStaff(f){if(_loading.staff)return;_loading.staff=true;_errors.staff=null;setGas("…","warn");updateHomeStatuses();try{var r=await Promise.all([fetchCached(STAFF_GAS_URL,"meta",f),fetchCached(STAFF_GAS_URL,"raw",f),fetchCached(STAFF_GAS_URL,"plans",f)]);STAFF_META=r[0];STAFF_RAW=arr(r[1]&&r[1].rows);STAFF_PLANS=arr(r[2]&&r[2].rows);_errors.staff=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors.staff=e&&e.message||String(e);handleLoadError(e,STAFF_GAS_URL);STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];updateHomeStatuses();throw e}finally{_loading.staff=false;updateHomeStatuses()}}
+async function loadFinance(f){if(_loading.finance)return;_loading.finance=true;_errors.finance=null;setGas("…","warn");updateHomeStatuses();try{var r=await Promise.all([fetchCached(FINANCE_GAS_URL,"meta",f),fetchCached(FINANCE_GAS_URL,"summary",f)]);FINANCE_META=r[0];FINANCE_SUMMARY=arr(r[1]&&r[1].rows);_errors.finance=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors.finance=e&&e.message||String(e);handleLoadError(e,FINANCE_GAS_URL);FINANCE_META=null;FINANCE_SUMMARY=[];updateHomeStatuses();throw e}finally{_loading.finance=false;updateHomeStatuses()}}
+async function loadMkt(f){if(_loading.mkt)return;_loading.mkt=true;_errors.mkt=null;setGas("…","warn");updateHomeStatuses();try{var r=await Promise.all([fetchCached(MKT_GAS_URL,"meta",f),fetchCached(MKT_GAS_URL,"raw",f)]);MKT_META=r[0];MKT_RAW=arr(r[1]&&r[1].rows);_errors.mkt=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors.mkt=e&&e.message||String(e);handleLoadError(e,MKT_GAS_URL);MKT_META=null;MKT_RAW=[];updateHomeStatuses();throw e}finally{_loading.mkt=false;updateHomeStatuses()}}
+async function loadEmpl(f){if(_loading.empl)return;_loading.empl=true;_errors.empl=null;setGas("…","warn");updateHomeStatuses();try{var r=await Promise.all([fetchCached(EMPL_GAS_URL,"meta",f),fetchCached(EMPL_GAS_URL,"raw",f),fetchCached(EMPL_GAS_URL,"plans",f)]);EMPL_META=r[0];EMPL_RAW=arr(r[1]&&r[1].rows);EMPL_PLANS=arr(r[2]&&r[2].rows);_errors.empl=null;setGas("OK","good");updateHomeStatuses()}catch(e){_errors.empl=e&&e.message||String(e);handleLoadError(e,EMPL_GAS_URL);EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];updateHomeStatuses();throw e}finally{_loading.empl=false;updateHomeStatuses()}}
 function arr(v){return Array.isArray(v)?v:[]}
 
 // SELECTORS
@@ -1653,18 +1637,15 @@ function renderEmplDash(){
 }
 
 // ====== ERRORS ======
-function handleLoadError(e,u){var code=e&&e.code;
-  if(code==="invalid_code"||code==="bad_code"||code==="no_profile"){setGas("LOCK","bad");lsRemove(ACCESS_CODE_STORAGE_KEY);ACCESS_CODE="";USER_LOGIN="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(USER_LOGIN_KEY);lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);openCodeModal("🔒 Нужен вход",code==="bad_code"?"Код не подходит к данным. Если код недавно меняли, дождитесь ближайшей сборки.":"Войдите заново.",e&&e.message||"");return}
-  if(code==="timeout"){setGas("ERR","bad");showError("⏳ Данные не пришли","Загрузка заняла больше "+Math.round(FETCH_TIMEOUT_MS/1000)+" секунд. Так бывает при слабом интернете. Нажмите «Проверить снова».","");return}
-  if(code==="no_file"){setGas("ERR","bad");showError("📄 Данные недоступны","Файл с данными не открылся. Возможно, идёт обновление — попробуйте через пару минут.","");return}
-  setGas("ERR","bad");showError("⚠️ Ошибка","Не удалось получить данные.",(e?e.message||String(e):""))}
+function handleLoadError(e,u){if(e&&e.code==="invalid_code"){setGas("LOCK","bad");lsRemove(ACCESS_CODE_STORAGE_KEY);ACCESS_CODE="";USER_LOGIN="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(USER_LOGIN_KEY);lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);openCodeModal("❌ Сессия недействительна","Войдите заново.",e.message||"");return}setGas("ERR","bad");showError("⚠️ Ошибка","Не удалось получить данные.","url="+u+"\n"+(e?e.message||String(e):""))}
 function openCodeModal(t,tx,d){$("codeTitle").textContent=t;$("codeText").textContent=tx;$("codeDebug").textContent=d||"";$("codeInput").value=ACCESS_CODE||"";$("overlayCode").classList.add("show");fetchLogins();setTimeout(function(){$("codeInput").focus()},100)}
 
 async function fetchLogins(){
   var sel=$("loginNameSel");sel.innerHTML='<option value="">Загрузка…</option>';
   try{
-    var j={logins:await loadLoginsFile(false)};
-    if(Array.isArray(j.logins)&&j.logins.length){
+    var r=await fetch(ACCESS_GAS_URL,{method:"POST",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({entity:"logins"})});
+    var j=await r.json();
+    if(j&&j.ok&&Array.isArray(j.logins)&&j.logins.length){
       sel.innerHTML=j.logins.map(function(n){
         var value=esc(n.loginName||"");
         var label=esc(n.displayName||n.loginName||"");
@@ -1699,49 +1680,10 @@ function applyRoleUI(){
 function showError(t,tx,d){$("errTitle").textContent=t;$("errText").textContent=tx;$("errDebug").textContent=d||"";$("overlayError").classList.add("show")}
 function setGas(t,m){$("gasStatus").textContent=t;$("gasDot").classList.remove("good","warn","bad");if(m)$("gasDot").classList.add(m)}
 
-// ====== ЗАГРУЗКА ДАННЫХ ======
-// Данные приходят готовым файлом, который робот собирает дважды в день (tools/build_bundle.js).
-// Apps Script в момент открытия не участвует: раньше он перечитывал листы по 10–36 секунд
-// на каждый запрос, и именно это люди называли «дашборд не грузит».
-// Сами переменные объявлены в начале файла: init() стартует раньше этого места.
-
-function mkErr(msg,code){var e=new Error(msg);e.code=code;return e}
-function timeoutError(){var te=new Error("Данные не пришли за "+Math.round(FETCH_TIMEOUT_MS/1000)+" секунд");te.code="timeout";return te}
-
-// Зеркало tools/pack.js: словарь значений и номера вместо повторов в каждой строке.
-function unpackRows(p){if(!p||!p.cols)return[];var out=[],i,j;for(i=0;i<p.rows.length;i++){var o={},row=p.rows[i];for(j=0;j<p.cols.length;j++){var c=p.cols[j],v=row[j];o[c]=(p.dict[c]&&typeof v==="number")?p.dict[c][v]:v}out.push(o)}return out}
-
-function b64ToBytes(s){var bin=atob(s),n=bin.length,a=new Uint8Array(n),i;for(i=0;i<n;i++)a[i]=bin.charCodeAt(i);return a}
-
-async function fetchFile(url){var ac=new AbortController(),tm=setTimeout(function(){ac.abort()},FETCH_TIMEOUT_MS);try{var r=await fetch(url,{cache:"no-cache",signal:ac.signal});if(!r.ok)throw mkErr("HTTP "+r.status,"no_file");return await r.json()}catch(e){if(e&&e.name==="AbortError")throw timeoutError();if(e&&e.code)throw e;throw mkErr("Не удалось скачать данные","no_file")}finally{clearTimeout(tm)}}
-
-// Тот же алгоритм, что в tools/crypto.js: PBKDF2 → AES-GCM, распаковка gzip.
-async function decryptBundle(box,code){
-  var base=await crypto.subtle.importKey("raw",new TextEncoder().encode(code),"PBKDF2",false,["deriveKey"]);
-  var key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:b64ToBytes(box.salt),iterations:box.iter||200000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["decrypt"]);
-  var plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64ToBytes(box.iv)},key,b64ToBytes(box.ct));
-  var bytes=new Uint8Array(plain);
-  if(box.gzip){var stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));bytes=new Uint8Array(await new Response(stream).arrayBuffer())}
-  return JSON.parse(new TextDecoder().decode(bytes));
-}
-
-async function loadLoginsFile(force){if(LOGINS.length&&!force)return LOGINS;var j=await fetchFile("data/logins.json");LOGINS=j.logins||[];if(j.meta&&!BUNDLE_META)BUNDLE_META=j.meta;return LOGINS}
-
-function loginRecord(list,name){for(var i=0;i<list.length;i++)if(String(list[i].loginName||"").trim()===String(name||"").trim())return list[i];return null}
-
-// Один файл на весь вход: раздел «Сотрудники» больше не ходит никуда отдельно.
-async function loadBundle(force){
-  if(BUNDLE&&!force)return BUNDLE;
-  if(!ACCESS_CODE||ACCESS_CODE.length<3)throw mkErr("Нужен код доступа","invalid_code");
-  var list=await loadLoginsFile(force);
-  var me=loginRecord(list,USER_LOGIN);
-  if(!me)throw mkErr("Профиль не найден в данных","no_profile");
-  var box=await fetchFile("data/"+me.file);
-  var body;
-  try{body=await decryptBundle(box,ACCESS_CODE)}catch(e){throw mkErr("Код не подходит к данным","bad_code")}
-  BUNDLE=body;BUNDLE_META=body.meta||BUNDLE_META;
-  return BUNDLE;
-}
+// ====== FETCH ======
+function cacheKey(u,e){return"bugatti_v7::"+u+"::"+e+"::"+(ACCESS_CODE||"").slice(0,10)}
+async function fetchCached(u,e,f){var k=cacheKey(u,e);if(!f){var cs=lsGet(k);if(cs){var c=safeJsonParse(cs);if(c&&c.ts&&c.data&&c.data.ok===true&&(Date.now()-c.ts)<CACHE_TTL_MS)return c.data;if(c&&(!c.data||c.data.ok!==true))lsRemove(k)}}var d=await fetchEntity(u,{entity:e,accessCode:ACCESS_CODE,loginName:USER_NAME});try{localStorage.setItem(k,JSON.stringify({ts:Date.now(),data:d}))}catch(x){}return d}
+async function fetchEntity(u,p){if(!ACCESS_CODE||ACCESS_CODE.length<3){var e=new Error("no_code");e.code="invalid_code";throw e}var r;try{r=await fetch(u,{method:"POST",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(p)})}catch(fe){var ne=new Error("Сетевая ошибка");ne.code="network_error";throw ne}if(!r.ok)throw new Error("HTTP "+r.status);var rt;try{rt=await r.text()}catch(x){throw new Error("Не удалось прочитать")}var j;try{j=JSON.parse(rt)}catch(x){var e2=new Error("Не JSON");e2.code="bad_response";throw e2}if(!j||j.ok!==true){var cd=(j&&j.error)||"bad_response";var er=new Error(cd);er.code=cd==="invalid_code"||cd==="unauthorized"?"invalid_code":cd;er.message=(j&&(j.message||j.details))||cd;throw er}return j}
 
 // ====== LS ======
 function lsGet(k){try{return localStorage.getItem(k)||""}catch(e){return""}}
@@ -1755,16 +1697,6 @@ function dedupStores(rs){var s={},r=[];rs.forEach(function(x){var n=String(x||""
 function netSales(r){return Math.max(0,Number(r.salesNew||0)+Number(r.salesOld||0)-Number(r.returns||0))}
 function shortStore(s){return String(s||"").trim().replace(/^магазин\s+/i,"").trim()}
 function maxDK(ks){if(!ks||!ks.length)return null;return ks.reduce(function(m,k){return(!m||k>m)?k:m},null)}
-// По какое число данные. Берётся из самих строк, а не из времени загрузки: таблицы
-// наполняют вручную, и «обновлено сейчас» обмануло бы — свежим является запрос, а не цифры.
-// Паспорт сборки знает дату среза сразу после входа, ещё до открытия разделов.
-// Если его нет (старый файл), считаем по строкам, как раньше.
-function dataThroughKey(){var meta=(typeof BUNDLE_META!=="undefined")?BUNDLE_META:null;if(meta&&String(meta.dataThrough||"").length===10)return meta.dataThrough;var ks=[];(SALES_RAW||[]).forEach(function(r){var k=String(r&&r.reportDateKey||"").trim();if(k.length===10)ks.push(k)});(STAFF_RAW||[]).forEach(function(r){var k=String(r&&r.dateKey||"").trim();if(k.length===10)ks.push(k)});return maxDK(ks)}
-function dataThroughLabel(){var k=dataThroughKey();if(!k)return"";var d=Number(k.slice(8,10)),m=Number(k.slice(5,7));if(!d||!m||m<1||m>12)return"";return"данные по "+d+" "+MONTHS_RU_GEN[m-1]}
-// Возраст сборки: если робот молчит вторые сутки, человек должен видеть это сам,
-// а не считать вчерашние цифры сегодняшними.
-function buildAgeLabel(){var meta=(typeof BUNDLE_META!=="undefined")?BUNDLE_META:null;if(!meta||!meta.builtAt)return"";var t=Date.parse(meta.builtAt);if(!t)return"";var h=(Date.now()-t)/3600000;if(h<0)return"";if(h<24)return"обновлено сегодня";var d=Math.floor(h/24);var word=(d%10===1&&d%100!==11)?"день":((d%10>=2&&d%10<=4&&(d%100<10||d%100>=20))?"дня":"дней");return"⚠️ не обновлялось "+d+" "+word}
-function freshnessLine(){var a=dataThroughLabel(),b=buildAgeLabel();return a&&b?a+" · "+b:(a||b)}
 function shortD(dk){return dk.slice(8,10)+"."+dk.slice(5,7)}
 function money(v){var n=Math.round(Number(v||0));return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")+" ₸"}
 function signedMoney(v){var n=Math.round(Number(v||0));return(n<0?"-":"")+Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")+" ₸"}
