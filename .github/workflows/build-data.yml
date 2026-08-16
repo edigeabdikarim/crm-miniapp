@@ -47,6 +47,9 @@ jobs:
         run: |
           mkdir -p site
           cp index.html site/
+          # Прежняя версия остаётся рядом как запасной путь: она ходит в Apps Script
+          # напрямую и работает, даже если со сборкой данных что-то не так.
+          if [ -f old.html ]; then cp old.html site/; fi
           cp -r build/data site/data
           ls -la site site/data
 
