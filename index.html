@@ -536,11 +536,14 @@ function wireUI(){
       // Код проверяется тем, что им открывается файл данных: подошёл — значит верный.
       var user=loginRecord(await loadLoginsFile(false),name);
       if(!user){$("codeDebug").textContent="Профиль не найден";return}
-      var box=await fetchFile("data/"+user.file);
+      var wrong="Код не подходит. Если код недавно меняли, данные обновятся в ближайшую сборку.";
+      var box;
+      try{box=await fetchFile("data/"+await fileNameFor(name,c))}
+      catch(nf){$("codeDebug").textContent=wrong;return}
       try{
         var body=await decryptBundle(box,c);
         BUNDLE=body;BUNDLE_META=body.meta||null;
-      }catch(bad){$("codeDebug").textContent="Код не подходит. Если код недавно меняли, данные обновятся в ближайшую сборку.";return}
+      }catch(bad){$("codeDebug").textContent=wrong;return}
       ACCESS_CODE=c;
       USER_LOGIN=(user.loginName||name||"").trim();
       USER_NAME=(user.displayName||name||"").trim();
@@ -1729,6 +1732,12 @@ async function loadLoginsFile(force){if(LOGINS.length&&!force)return LOGINS;var 
 
 function loginRecord(list,name){for(var i=0;i<list.length;i++)if(String(list[i].loginName||"").trim()===String(name||"").trim())return list[i];return null}
 
+// Имя файла считается из кода доступа: не зная кода, файл не найти и не скачать,
+// поэтому подобрать код у себя на компьютере нельзя — только через сеть, запрос за
+// запросом. Та же формула в tools/build_bundle.js.
+var NAME_SALT="bugatti-analytics-v8";
+async function fileNameFor(login,code){var buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(NAME_SALT+":"+login+":"+code));var a=new Uint8Array(buf),s="",i;for(i=0;i<8;i++){var h=a[i].toString(16);s+=(h.length<2?"0":"")+h}return s+".enc"}
+
 // Один файл на весь вход: раздел «Сотрудники» больше не ходит никуда отдельно.
 async function loadBundle(force){
   if(BUNDLE&&!force)return BUNDLE;
@@ -1736,7 +1745,9 @@ async function loadBundle(force){
   var list=await loadLoginsFile(force);
   var me=loginRecord(list,USER_LOGIN);
   if(!me)throw mkErr("Профиль не найден в данных","no_profile");
-  var box=await fetchFile("data/"+me.file);
+  var box;
+  try{box=await fetchFile("data/"+await fileNameFor(USER_LOGIN,ACCESS_CODE))}
+  catch(e){if(e&&e.code==="no_file")throw mkErr("Код не подходит к данным","bad_code");throw e}
   var body;
   try{body=await decryptBundle(box,ACCESS_CODE)}catch(e){throw mkErr("Код не подходит к данным","bad_code")}
   BUNDLE=body;BUNDLE_META=body.meta||BUNDLE_META;

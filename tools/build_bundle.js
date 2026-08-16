@@ -117,12 +117,15 @@ function dataThrough(data) {
   return keys.length ? keys.reduce((m, k) => (k > m ? k : m)) : null;
 }
 
-function slug(login) {
-  // Русские названия в имени файла — источник неприятностей на пути от Actions до Pages.
-  let h = 0;
-  const s = String(login);
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  return 'u' + h.toString(36);
+// Имя файла считается из кода доступа, а не из названия магазина. Смысл: не зная кода,
+// файл нельзя даже скачать, а значит нельзя и подбирать код у себя на компьютере —
+// перебор снова упирается в сеть, как было во времена Apps Script.
+// Та же формула в index.html (fileNameFor) — менять только в обоих местах сразу.
+const NAME_SALT = 'bugatti-analytics-v8';
+
+async function fileNameFor(login, code) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(NAME_SALT + ':' + login + ':' + code));
+  return Array.from(new Uint8Array(buf)).slice(0, 8).map((b) => b.toString(16).padStart(2, '0')).join('') + '.enc';
 }
 
 async function main() {
@@ -168,13 +171,14 @@ async function main() {
     if (!code) { missing.push(login.loginName); continue; }
     const body = Object.assign({ meta }, bundleFor(login, data));
     const box = await encryptJson(body, code);
-    const file = slug(login.loginName) + '.enc';
+    const file = await fileNameFor(login.loginName, code);
     fs.writeFileSync(path.join(dataOut, file), JSON.stringify(box));
     const kb = Math.round(fs.statSync(path.join(dataOut, file)).size / 1024);
-    console.log('  ' + login.loginName + ' → ' + file + ', ' + kb + ' КБ');
+    console.log('  ' + login.loginName + ' → ' + kb + ' КБ');
+    // Имени файла в списке нет намеренно: дашборд считает его сам из введённого кода.
     index.push({
       loginName: login.loginName, displayName: login.displayName || login.loginName,
-      role: login.role, store: login.store || '', file,
+      role: login.role, store: login.store || '',
     });
   }
 
