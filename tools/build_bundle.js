@@ -22,6 +22,10 @@ const { encryptJson } = require('./crypto.js');
 const ROOT = path.join(__dirname, '..');
 const TIMEOUT_MS = 120000;
 const RETRIES = 3;
+// Паузы перед 2-й и 3-й попыткой. 404 от Apps Script идёт полосами: 29.09.2026 mkt.raw
+// отказал трижды за 80 секунд, пока попытки шли подряд. 30 + 90 с переживают такую полосу,
+// а сборку в худшем случае удлиняют на две минуты при лимите в 30.
+const RETRY_PAUSES_MS = [30000, 90000];
 
 function urlsFromIndexHtml() {
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
@@ -44,8 +48,10 @@ function loginsProblem(j) {
 // opts.check(j) — вернуть текст проблемы, и ответ считается неудачной попыткой.
 async function askGas(url, payload, label, opts = {}) {
   const doFetch = opts.fetch || fetch;
+  const sleep = opts.sleep || ((ms) => new Promise((res) => setTimeout(res, ms)));
   let lastErr = null;
   for (let attempt = 1; attempt <= RETRIES; attempt++) {
+    if (attempt > 1) await sleep(RETRY_PAUSES_MS[attempt - 2]);
     const ac = new AbortController();
     const timer = setTimeout(() => ac.abort(), TIMEOUT_MS);
     try {
