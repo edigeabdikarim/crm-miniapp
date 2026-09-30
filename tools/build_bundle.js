@@ -34,13 +34,22 @@ function urlsFromIndexHtml() {
   return out;
 }
 
-async function askGas(url, payload, label) {
+// Пустой список профилей не бывает правдой: 29.09.2026 Apps Script дважды ответил
+// {ok:true, logins:[]}, и сборка опубликовала пустой список поверх рабочего — у всех
+// на экране входа стало «Нет профилей». Такой ответ считается сбоем и переспрашивается.
+function loginsProblem(j) {
+  return (Array.isArray(j.logins) && j.logins.length) ? null : 'пустой список профилей';
+}
+
+// opts.check(j) — вернуть текст проблемы, и ответ считается неудачной попыткой.
+async function askGas(url, payload, label, opts = {}) {
+  const doFetch = opts.fetch || fetch;
   let lastErr = null;
   for (let attempt = 1; attempt <= RETRIES; attempt++) {
     const ac = new AbortController();
     const timer = setTimeout(() => ac.abort(), TIMEOUT_MS);
     try {
-      const r = await fetch(url, {
+      const r = await doFetch(url, {
         method: 'POST', redirect: 'follow', signal: ac.signal,
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload),
@@ -48,10 +57,12 @@ async function askGas(url, payload, label) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const j = JSON.parse(await r.text());
       if (!j || j.ok !== true) throw new Error(j && (j.error || j.message) || 'ответ без ok');
+      const problem = opts.check && opts.check(j);
+      if (problem) throw new Error(problem);
       return j;
     } catch (e) {
       lastErr = e;
-      console.log('  попытка ' + attempt + ' из ' + RETRIES + ' не удалась (' + label + '): ' + e.message);
+      if (!opts.quiet) console.log('  попытка ' + attempt + ' из ' + RETRIES + ' не удалась (' + label + '): ' + e.message);
     } finally {
       clearTimeout(timer);
     }
@@ -145,7 +156,7 @@ async function main() {
   } else {
     if (!leaderCode) throw new Error('нет LEADER_CODE — без него Apps Script не отдаст данные');
     console.log('Забираю список профилей…');
-    logins = (await askGas(urls.ACCESS, { entity: 'logins' }, 'logins')).logins || [];
+    logins = (await askGas(urls.ACCESS, { entity: 'logins' }, 'logins', { check: loginsProblem })).logins;
     console.log('  профилей: ' + logins.length);
     console.log('Забираю данные (это несколько минут — Apps Script перечитывает листы)…');
     data = await pullAll(urls, leaderCode);
@@ -187,8 +198,16 @@ async function main() {
       '. Добавьте их в секрет — иначе люди останутся без файла.');
   }
 
+  // Последний рубеж: при любом пути сюда пустой список не публикуется — упавшая сборка
+  // оставляет на сайте прошлый рабочий набор, а пустой закрыл бы вход всем.
+  if (!index.length) throw new Error('профилей 0 — публиковать нечего');
+
   fs.writeFileSync(path.join(dataOut, 'logins.json'), JSON.stringify({ meta, logins: index }));
   console.log('Готово: ' + index.length + ' файлов в ' + dataOut);
 }
 
-main().catch((e) => { console.error('СБОРКА НЕ УДАЛАСЬ: ' + e.message); process.exit(1); });
+if (require.main === module) {
+  main().catch((e) => { console.error('СБОРКА НЕ УДАЛАСЬ: ' + e.message); process.exit(1); });
+}
+
+module.exports = { askGas, loginsProblem };
