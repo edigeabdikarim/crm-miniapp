@@ -45,6 +45,26 @@ function loginsProblem(j) {
   return (Array.isArray(j.logins) && j.logins.length) ? null : 'пустой список профилей';
 }
 
+// 06.10.2026 Apps Script продаж на запрос meta ответил заглушкой {ok:true, status:"alive"}
+// без лет и магазинов — в «Планах продаж» опустели фильтры и отчёт перестал строиться.
+// Мета проверяется теми же признаками, что hasSalesMeta/hasStaffMeta/… в index.html,
+// строки — наличием rows (у заглушки его нет, и `j.rows || []` превращало её в «0 строк»).
+const META_NEEDS = {
+  sales: ['years', 'stores'], staff: ['stores'], empl: ['years'], mkt: ['years'], finance: [],
+};
+function answerProblem(key, entity, j) {
+  if (entity === 'meta') {
+    if (key === 'finance' && !Array.isArray(j.years)) return 'в мете нет years';
+    for (const f of META_NEEDS[key] || []) {
+      if (!Array.isArray(j[f]) || !j[f].length) return 'в мете нет ' + f + (j.status ? ' (ответ «' + j.status + '»)' : '');
+    }
+    return null;
+  }
+  if (!Array.isArray(j.rows)) return 'в ответе нет rows' + (j.status ? ' (ответ «' + j.status + '»)' : '');
+  if (entity === 'raw' && !j.rows.length) return 'пустой raw';
+  return null;
+}
+
 // opts.check(j) — вернуть текст проблемы, и ответ считается неудачной попыткой.
 async function askGas(url, payload, label, opts = {}) {
   const doFetch = opts.fetch || fetch;
@@ -89,7 +109,8 @@ async function pullAll(urls, code) {
     data[key] = {};
     for (const e of entities) {
       const started = Date.now();
-      const j = await askGas(urls[urlKey], { entity: e, accessCode: code, loginName: 'сборка' }, key + '.' + e);
+      const j = await askGas(urls[urlKey], { entity: e, accessCode: code, loginName: 'сборка' }, key + '.' + e,
+        { check: (a) => answerProblem(key, e, a) });
       data[key][e] = (e === 'meta') ? j : (j.rows || []);
       const n = Array.isArray(data[key][e]) ? data[key][e].length + ' строк' : 'мета';
       console.log('  ' + key + '.' + e + ': ' + n + ', ' + Math.round((Date.now() - started) / 1000) + ' с');
@@ -216,4 +237,4 @@ if (require.main === module) {
   main().catch((e) => { console.error('СБОРКА НЕ УДАЛАСЬ: ' + e.message); process.exit(1); });
 }
 
-module.exports = { askGas, loginsProblem };
+module.exports = { askGas, loginsProblem, answerProblem };
