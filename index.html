@@ -3,10 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <!-- Тема до первой отрисовки: светлая, если тёмную не выбирали кнопкой (initTheme дальше синхронизирует кнопку). -->
+  <script>(function(){var r=document.documentElement,d=false;try{d=localStorage.getItem("bugatti_theme_v1")==="dark"}catch(e){}if(!d)r.classList.add("light")})()</script>
   <title>Bugatti Analytics</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
       --bg0:#060913;--bg1:#0a0f1f;--bg2:#0d1228;
@@ -197,6 +200,72 @@
        поэтому фон шапки ей нужно вернуть отдельно. z-index выше обоих — угол перекрывает всё. */
     .matrixTable thead th:first-child{z-index:3;background:var(--thead-bg)}
     .matrixTable td.zero{color:var(--muted2)}
+    /* ===== Конкурс магазинов (#pageTeamc). Вид — одобренный документ tools/build_teamc_html.js:
+       правила tc-* оттуда, ограничены страницей; токены с префиксом --tc-: по умолчанию тёмные, в html.light — светлые. */
+    #pageTeamc{--tc-page:#0e1320;--tc-card:#161d2e;--tc-ink:#e9eef8;--tc-ink2:#a6b0c6;--tc-ink3:#77819a;--tc-line:#27314a;--tc-line2:#1f2740;--tc-accent:#7aa2ff;--tc-accent-bg:rgba(122,162,255,.16);--tc-accent-ink:#0e1320;--tc-ok:#5be08f;--tc-ok-bg:rgba(74,222,128,.15);--tc-al:#fbbf24;--tc-al-bg:rgba(251,191,36,.17);--tc-track:#232c42;--tc-bar:#6d93ff;--tc-bar-lead:#3fcf7d;--tc-gold:#e0b341;--tc-silver:#aab3c2;--tc-bronze:#d08a5c;--tc-sec:#1b2336;--tc-shadow:none;font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums;color:var(--tc-ink)}
+    html.light #pageTeamc{--tc-page:#eef1f5;--tc-card:#ffffff;--tc-ink:#18202e;--tc-ink2:#4a5468;--tc-ink3:#7d8698;--tc-line:#dde2ea;--tc-line2:#eceff4;--tc-accent:#1d4ed8;--tc-accent-bg:#e6edfd;--tc-accent-ink:#ffffff;--tc-ok:#146c38;--tc-ok-bg:#d9f2e2;--tc-al:#8a4f00;--tc-al-bg:#ffe9bd;--tc-track:#e6eaf0;--tc-bar:#3b6fe0;--tc-bar-lead:#1e9e55;--tc-gold:#c08a12;--tc-silver:#8c95a3;--tc-bronze:#b06a3b;--tc-sec:#f5f7fa;--tc-shadow:0 1px 2px rgba(24,32,46,.06),0 4px 16px rgba(24,32,46,.05)}
+    /* общие правила таблиц сайта (table, thead th, tbody td) внутри страницы гасим — вид задают tc-* */
+    #pageTeamc table{min-width:0}
+    #pageTeamc thead th{position:static;backdrop-filter:none;text-transform:none;letter-spacing:normal;background:none}
+    #pageTeamc tbody td{font-size:15px;font-weight:400;color:var(--tc-ink);white-space:normal}
+    #pageTeamc tbody tr:hover td{background:transparent}
+    #pageTeamc .card:hover{transform:none}
+    #pageTeamc .tc-info{display:inline-block;max-width:100%;background:var(--tc-card);border:1px solid var(--tc-line);border-radius:10px;padding:8px 14px;color:var(--tc-ink);font-size:14px;font-weight:500;margin:0 0 16px}
+    #pageTeamc .tc-seg{display:inline-flex;background:var(--tc-card);border:1px solid var(--tc-line);border-radius:999px;padding:4px;margin:0 0 16px}
+    #pageTeamc .tc-seg button{background:none;border:0;color:var(--tc-ink2);font-family:inherit;font-weight:600;font-size:15px;padding:8px 22px;border-radius:999px;cursor:pointer}
+    #pageTeamc .tc-seg button.active{background:var(--tc-accent);color:var(--tc-accent-ink)}
+    #pageTeamc .tc-lead{color:var(--tc-ink2);font-size:14px;margin:0 0 14px;max-width:70ch}
+    #pageTeamc .tc-res,#pageTeamc .tc-mx{border-collapse:collapse;width:100%}
+    #pageTeamc .tc-res th,#pageTeamc .tc-mx th{font-size:13px;color:var(--tc-ink3);font-weight:500;text-align:left;padding:8px 12px;border-bottom:1px solid var(--tc-line)}
+    #pageTeamc .tc-res td{padding:12px;border-bottom:1px solid var(--tc-line2);vertical-align:middle}
+    #pageTeamc .tc-res tbody tr:last-child td{border-bottom:0}
+    #pageTeamc .tc-place{width:64px}
+    #pageTeamc .tc-badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;font-weight:700;font-size:16px;background:var(--tc-track);color:var(--tc-ink2)}
+    #pageTeamc .tc-badge.p1{background:var(--tc-gold);color:#fff}
+    #pageTeamc .tc-badge.p2{background:var(--tc-silver);color:#fff}
+    #pageTeamc .tc-badge.p3{background:var(--tc-bronze);color:#fff}
+    #pageTeamc .tc-store{font-size:16px;font-weight:600}
+    #pageTeamc .tc-you{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--tc-accent);color:var(--tc-accent-ink);font-size:12px;font-weight:600;vertical-align:2px}
+    #pageTeamc .tc-share{width:96px;font-weight:700;font-size:20px;white-space:nowrap}
+    #pageTeamc .tc-barw{width:34%}
+    #pageTeamc .tc-taken{white-space:nowrap;color:var(--tc-ink2)}
+    #pageTeamc .tc-taken b{color:var(--tc-ink);font-weight:600}
+    #pageTeamc .tc-almost{white-space:nowrap}
+    #pageTeamc .tc-chip{display:inline-block;min-width:28px;text-align:center;padding:2px 9px;border-radius:999px;background:var(--tc-al-bg);color:var(--tc-al);font-weight:700}
+    #pageTeamc .tc-chip.zero{background:transparent;color:var(--tc-ink3);font-weight:500}
+    #pageTeamc .tc-bar{height:12px;border-radius:99px;background:var(--tc-track);position:relative;overflow:hidden}
+    #pageTeamc .tc-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--tc-bar)}
+    #pageTeamc .tc-bar.lead i{background:var(--tc-bar-lead)}
+    #pageTeamc .tc-res tr.me td{background:var(--tc-accent-bg)}
+    #pageTeamc .tc-res tr.me td:first-child{box-shadow:inset 3px 0 0 var(--tc-accent)}
+    #pageTeamc .tc-scroll{overflow-x:auto}
+    #pageTeamc .tc-wrap{overflow:auto;max-height:72vh;border-radius:10px;border:1px solid var(--tc-line);background:var(--tc-card)}
+    #pageTeamc .tc-mx{min-width:900px}
+    #pageTeamc .tc-mx th,#pageTeamc .tc-mx td{text-align:center;white-space:nowrap}
+    #pageTeamc .tc-mx td{padding:7px 10px;border-bottom:1px solid var(--tc-line2);font-size:14px}
+    #pageTeamc .tc-mx tbody tr:not(.tc-sec):hover td{background:var(--tc-sec)}
+    #pageTeamc .tc-mx tbody tr:not(.tc-sec):hover td.tc-ok{background:var(--tc-ok-bg)}
+    #pageTeamc .tc-mx tbody tr:not(.tc-sec):hover td.tc-al{background:var(--tc-al-bg)}
+    #pageTeamc .tc-mx th:first-child,#pageTeamc .tc-mx td:first-child{text-align:left;position:sticky;left:0;background:var(--tc-card);z-index:1;font-weight:600;color:var(--tc-ink);border-right:1px solid var(--tc-line2)}
+    #pageTeamc .tc-mx thead th{position:sticky;top:0;background:var(--tc-card);z-index:2;color:var(--tc-ink2);font-weight:600;font-size:13px}
+    #pageTeamc .tc-mx thead th:first-child{z-index:3}
+    #pageTeamc .tc-mx thead th.me{color:var(--tc-accent)}
+    #pageTeamc .tc-mx .me{box-shadow:inset 2px 0 0 var(--tc-accent),inset -2px 0 0 var(--tc-accent)}
+    #pageTeamc .tc-ok{background:var(--tc-ok-bg);color:var(--tc-ok);font-weight:700}
+    #pageTeamc .tc-mx td.tc-ok::before{content:"✓ "}
+    #pageTeamc .tc-al{background:var(--tc-al-bg);color:var(--tc-al);font-weight:700}
+    #pageTeamc .tc-no{color:var(--tc-ink2)}
+    #pageTeamc .tc-na{color:var(--tc-ink3)}
+    #pageTeamc .tc-sec td{background:var(--tc-sec)!important;color:var(--tc-ink);font-size:14px;font-weight:700;text-align:left!important;padding:10px 12px;border-bottom:1px solid var(--tc-line)}
+    #pageTeamc .tc-tools{display:flex;justify-content:space-between;align-items:center;gap:12px 20px;margin-bottom:14px;flex-wrap:wrap}
+    #pageTeamc .tc-legend{display:flex;gap:8px 18px;flex-wrap:wrap;align-items:center;font-size:14px;color:var(--tc-ink2)}
+    #pageTeamc .tc-legend .sw{display:inline-block;padding:2px 10px;border-radius:6px;margin-right:6px}
+    #pageTeamc .tc-check{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--tc-ink);cursor:pointer;background:var(--tc-al-bg);padding:6px 14px;border-radius:999px}
+    #pageTeamc .tc-check input{width:16px;height:16px;accent-color:var(--tc-al);margin:0}
+    #pageTeamc .tc-rules summary{cursor:pointer;font-weight:600;font-size:16px}
+    #pageTeamc .tc-rules h4{margin:16px 0 4px;font-size:15px}
+    #pageTeamc .tc-rules p{margin:0 0 8px;color:var(--tc-ink2);max-width:75ch}
+    @media(max-width:700px){#pageTeamc .tc-almost,#pageTeamc .tc-res th:last-child,#pageTeamc .tc-barw{display:none}#pageTeamc .tc-res th{padding:8px}#pageTeamc .tc-res td{padding:10px 8px}#pageTeamc .tc-share{font-size:17px;width:auto}}
     @media(max-width:900px){.raceName{flex-basis:120px}.raceStore{display:none}}
     .ecom-store{cursor:pointer}
     .ecom-store:hover{background:rgba(255,255,255,.03)}
@@ -252,7 +321,7 @@
   <div class="top">
     <div><h1 id="pageTitle">Bugatti Analytics</h1><div class="sub" id="subtitle"></div></div>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <button class="themeToggle" id="themeToggle" type="button"><span id="themeIcon">🌙</span><span class="label" id="themeLabel">Тёмная</span></button>
+      <button class="themeToggle" id="themeToggle" type="button"><span id="themeIcon">☀️</span><span class="label" id="themeLabel">Светлая</span></button>
       <div class="pill"><span class="dot" id="gasDot"></span><span>API • <strong id="gasStatus">…</strong></span><button class="pillBtn" id="btnChangeCode" type="button">Код</button></div>
     </div>
   </div>
@@ -269,6 +338,7 @@
       <div class="homeCard amber" id="goEcom"><span class="icon">🛒</span><div class="cardTitle">E-commerce</div><div class="cardDesc">Онлайн-продажи по магазинам: сумма, доля, чеки</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="ecomStatusDot"></span><span id="ecomStatusText">Не загружено</span></div><div class="statusDetail" id="ecomStatusDetail"></div></div></div>
       <div class="homeCard rose" id="goContest"><span class="icon">🏆</span><div class="cardTitle">Конкурс продавцов</div><div class="cardDesc">Гонка за брендами: кто продал товары наибольшего числа разных брендов</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="contestStatusDot"></span><span id="contestStatusText">Не загружено</span></div><div class="statusDetail" id="contestStatusDetail"></div></div></div>
       <div class="homeCard cyan" id="goMatrix"><span class="icon">📋</span><div class="cardTitle">Бренды × продавцы</div><div class="cardDesc">Матрица: кто какие бренды продавал, по магазинам</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="matrixStatusDot"></span><span id="matrixStatusText">Не загружено</span></div><div class="statusDetail" id="matrixStatusDetail"></div></div></div>
+      <div class="homeCard rose" id="goTeamc"><span class="icon">🏬</span><div class="cardTitle">Конкурс магазинов</div><div class="cardDesc">Места магазинов по доле взятых брендов и групп, приз 200 000 ₸</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="teamcStatusDot"></span><span id="teamcStatusText">Не загружено</span></div><div class="statusDetail" id="teamcStatusDetail"></div></div></div>
     </div>
   </div>
 
@@ -366,6 +436,22 @@
     <div id="matrixEmpty" class="emptyState" style="display:none">За выбранный месяц нет продаж, попадающих в зачёт.</div>
   </div>
 
+  <!-- TEAM CONTEST (конкурс магазинов) -->
+  <div class="page" id="pageTeamc">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="teamcBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
+    <div class="controls"><select id="teamcMonthSel" class="sel"></select><select id="teamcMe" class="sel"><option value="">Мой магазин: не выбран</option></select><button class="btn accent-rose" id="teamcRefreshBtn">Обновить</button></div>
+    <div class="tc-info" id="teamcInfo"></div>
+    <div><div class="tc-seg"><button type="button" id="teamcTabRes" class="active">Результаты</button><button type="button" id="teamcTabMx">Матрица</button></div></div>
+    <div class="section" id="teamcRes"></div>
+    <div class="section card" id="teamcMx" style="display:none">
+      <div class="tc-tools"><div class="tc-legend"><span><span class="sw tc-ok">✓ 5 / 5</span>взято</span><span><span class="sw tc-al">8 / 9</span>не хватает 1 шт</span><span><span class="sw tc-no">3 / 10</span>продано / порог</span><span><span class="tc-na">—</span> нет в списке магазина</span></div>
+      <label class="tc-check"><input type="checkbox" id="teamcOnlyAlmost"> Показать только «почти взято»</label></div>
+      <div class="tc-wrap" id="teamcMxBody"></div>
+    </div>
+    <div id="teamcEmpty" class="emptyState" style="display:none"></div>
+    <details class="section card tc-rules"><summary>Как считается</summary><div id="teamcRules"><h4>Какой у магазина список</h4><p>Астана, Мира, Абайка и Есентай — один общий список и одинаковые пороги на всех четверых. Аутлет — свой список. Above &amp; Beyond и Above Астана — общий список на двоих.</p><p>В список входят все бренды, которые есть на остатке вашей группы магазинов на 1-е число месяца, и зачётные группы: носки, трусы, майки, колготки, ремни, аксессуары, головные уборы, рубашки д/р Olimp. Группа попадает в список магазина, если на 1-е число её в магазине было хотя бы 3 шт.</p><p>Список составляется на 1-е число и до конца месяца не меняется.</p><h4>Когда позиция засчитана</h4><p>Магазин продал за месяц не меньше порога — позиция взята. Считаем в штуках, возвраты вычитаются.</p><p>Онлайн-продажи, оформленные на интернет-магазин полностью, не засчитываются; наполовину — засчитываются магазину. Если в чеке несколько продавцов, вещь всё равно считается одной штукой.</p><h4>Пороги</h4><p>По части брендов и по зачётным группам пороги устанавливает руководство. По остальным брендам порог — 3 шт. Если товара на 1-е число мало, порог ниже.</p><p>Пороги тоже определяются на 1-е число и в течение месяца не меняются.</p><p>Если бренда с порогом руководства в вашем магазине на 1-е число не было совсем, этот бренд у вас не считается — ни во «взято», ни во «всего».</p><h4>Как определяется победитель</h4><p>Место — по доле взятых позиций: взято ÷ всего в списке. Пример: в списке 80 позиций, взято 28 → 35 %. Побеждает магазин с самой большой долей.</p></div></details>
+  </div>
+
   <!-- EMPLOYEE ANALYTICS -->
   <div class="page" id="pageEmpl">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><button class="backBtn" id="emplBack" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Назад</button></div>
@@ -435,9 +521,9 @@ var $=function(id){return document.getElementById(id)};
 var BUNDLE=null,BUNDLE_META=null,LOGINS=[];
 
 var ROLE_CONFIG={
-  leader:{reports:["sales","staff","finance","marketing","empl","ecom","contest","matrix"],allStores:true,salesMonthly:true,emplRank:true},
-  rop:{reports:["sales","staff","empl","contest","matrix"],allStores:true,salesMonthly:true,emplRank:true},
-  store:{reports:["sales","staff","empl","contest","matrix"],allStores:false,salesMonthly:false,emplRank:false}
+  leader:{reports:["sales","staff","finance","marketing","empl","ecom","contest","teamc","matrix"],allStores:true,salesMonthly:true,emplRank:true},
+  rop:{reports:["sales","staff","empl","contest","teamc","matrix"],allStores:true,salesMonthly:true,emplRank:true},
+  store:{reports:["sales","staff","empl","contest","teamc","matrix"],allStores:false,salesMonthly:false,emplRank:false}
 };
 
 // State
@@ -459,11 +545,15 @@ var STAFF_META=null,STAFF_RAW=[],STAFF_PLANS=[];
 var FINANCE_META=null,FINANCE_SUMMARY=[];
 var MKT_META=null,MKT_RAW=[];
 var EMPL_META=null,EMPL_RAW=[],EMPL_PLANS=[];
+// Конкурс магазинов: пороги и остаток на 1-е (раздел b.teamc файла данных), вкладка страницы
+// и «Мой магазин», выбранный руками (null — не выбирали, берётся магазин профиля).
+// TEAMC_LOADED — loadTeamc уже отрабатывал: до этого плитка не судит, есть ли данные конкурса.
+var TEAMC_THR=[],TEAMC_STOCK=[],TEAMC_TAB="res",TEAMC_ME=null,TEAMC_LOADED=false;
 var emplViewMode="card";
 // contest и matrix своей выгрузки не имеют: их состояние выводится из empl и staff
 // в updateHomeStatuses(). Ключи держим здесь, чтобы setStatus2 читал их, а не undefined.
-var _loading={sales:false,staff:false,finance:false,mkt:false,empl:false,contest:false,matrix:false};
-var _errors={sales:null,staff:null,finance:null,mkt:null,empl:null,contest:null,matrix:null};
+var _loading={sales:false,staff:false,finance:false,mkt:false,empl:false,contest:false,matrix:false,teamc:false};
+var _errors={sales:null,staff:null,finance:null,mkt:null,empl:null,contest:null,matrix:null,teamc:null};
 
 init();
 
@@ -485,6 +575,14 @@ function wireUI(){
   $("goEcom").onclick=function(){navigateTo("ecom")};
   $("goContest").onclick=function(){navigateTo("contest")};
   $("goMatrix").onclick=function(){navigateTo("matrix")};
+  $("goTeamc").onclick=function(){navigateTo("teamc")};
+  $("teamcBack").onclick=function(){navigateTo("home")};
+  $("teamcMonthSel").onchange=renderTeamc;
+  $("teamcMe").onchange=teamcMeChanged;
+  $("teamcOnlyAlmost").onchange=renderTeamc;
+  $("teamcTabRes").onclick=function(){TEAMC_TAB="res";renderTeamc()};
+  $("teamcTabMx").onclick=function(){TEAMC_TAB="mx";renderTeamc()};
+  $("teamcRefreshBtn").onclick=async function(){try{await loadEmpl(true);await loadStaff(true);await loadTeamc(false)}catch(e){}renderTeamc()};
   $("salesBack").onclick=$("staffBack").onclick=$("financeBack").onclick=$("mktBack").onclick=$("emplBack").onclick=$("ecomBack").onclick=$("contestBack").onclick=$("matrixBack").onclick=function(){navigateTo("home")};
 
   $("tabDaily").onclick=function(){activeView="daily";renderSales()};$("tabMonthly").onclick=function(){activeView="monthly";renderSales()};
@@ -551,12 +649,12 @@ function wireUI(){
       USER_STORE=(user.store||"").trim();
       lsSet(ACCESS_CODE_STORAGE_KEY,c);lsSet(USER_LOGIN_KEY,USER_LOGIN);lsSet(USER_NAME_KEY,USER_NAME);lsSet(USER_ROLE_KEY,USER_ROLE);lsSet(USER_STORE_KEY,USER_STORE);
       $("overlayCode").classList.remove("show");
-      SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null,contest:null,matrix:null};
+      SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];TEAMC_THR=[];TEAMC_STOCK=[];TEAMC_ME=null;TEAMC_LOADED=false;_errors={sales:null,staff:null,finance:null,mkt:null,empl:null,contest:null,matrix:null,teamc:null};
       clearAllCache();$("subtitle").innerHTML='<span class="muted">Добро пожаловать,</span> <strong>'+esc(USER_NAME)+'</strong> <span class="muted">· Роль:</span> <strong>'+esc(roleLabel())+'</strong>'+(USER_STORE?' <span class="muted">· Магазин:</span> <strong>'+esc(USER_STORE)+'</strong>':'');setGas("OK","");applyRoleUI();navigateTo("home");updateHomeStatuses();
     }catch(ex){$("codeDebug").textContent="Ошибка сети: "+String(ex.message||ex).substring(0,50)}
   };
   $("btnCancelCode").onclick=function(){$("overlayCode").classList.remove("show")};
-  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];_errors={sales:null,staff:null,finance:null,mkt:null,empl:null,contest:null,matrix:null};ACCESS_CODE="";USER_LOGIN="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(ACCESS_CODE_STORAGE_KEY);lsRemove(USER_LOGIN_KEY);lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);$("codeDebug").textContent="Кэш и сессия очищены.";updateHomeStatuses()};
+  $("btnClearCache").onclick=function(){clearAllCache();SALES_META=null;SALES_RAW=[];SALES_PLANS=[];STAFF_META=null;STAFF_RAW=[];STAFF_PLANS=[];FINANCE_META=null;FINANCE_SUMMARY=[];MKT_META=null;MKT_RAW=[];EMPL_META=null;EMPL_RAW=[];EMPL_PLANS=[];TEAMC_THR=[];TEAMC_STOCK=[];TEAMC_ME=null;TEAMC_LOADED=false;_errors={sales:null,staff:null,finance:null,mkt:null,empl:null,contest:null,matrix:null,teamc:null};ACCESS_CODE="";USER_LOGIN="";USER_NAME="";USER_ROLE="";USER_STORE="";lsRemove(ACCESS_CODE_STORAGE_KEY);lsRemove(USER_LOGIN_KEY);lsRemove(USER_NAME_KEY);lsRemove(USER_ROLE_KEY);lsRemove(USER_STORE_KEY);$("codeDebug").textContent="Кэш и сессия очищены.";updateHomeStatuses()};
   $("btnRetry").onclick=async function(){$("overlayError").classList.remove("show");try{
     if(activePage==="sales"){await loadSales(true);buildSalesSel(true);renderSales()}
     else if(activePage==="staff"){await loadStaff(true);buildStaffSel(true);renderStaff()}
@@ -566,6 +664,7 @@ function wireUI(){
     else if(activePage==="ecom"){await loadStaff(true);buildEcomSel(!!$("ecomYearSel").value);renderEcom()}
     else if(activePage==="contest"){await loadEmpl(true);await loadStaff(true);buildContestSel(!!$("contestYearSel").value);renderContest()}
     else if(activePage==="matrix"){await loadEmpl(true);await loadStaff(true);buildMatrixSel(!!$("matrixYearSel").value);renderMatrix()}
+    else if(activePage==="teamc"){await loadEmpl(true);await loadStaff(true);await loadTeamc(false);renderTeamc()}
   }catch(e){}};
   $("btnCloseErr").onclick=function(){$("overlayError").classList.remove("show")};
   $("codeInput").onkeydown=function(e){if(e.key==="Enter")$("btnSaveCode").click()};
@@ -573,7 +672,7 @@ function wireUI(){
 }
 
 // NAV
-function pageToReportKey(p){return({sales:"sales",staff:"staff",finance:"finance",marketing:"marketing",empl:"empl",ecom:"ecom",contest:"contest",matrix:"matrix"})[p]||""}
+function pageToReportKey(p){return({sales:"sales",staff:"staff",finance:"finance",marketing:"marketing",empl:"empl",ecom:"ecom",contest:"contest",matrix:"matrix",teamc:"teamc"})[p]||""}
 function guardPageAccess(p){
   var reportKey=pageToReportKey(p);
   if(!reportKey)return true;
@@ -584,7 +683,7 @@ function guardPageAccess(p){
 async function navigateTo(p){
   if(p!=="home"&&!guardPageAccess(p)){p="home"}
   activePage=p;
-  ["pageHome","pageSales","pageStaff","pageFinance","pageMarketing","pageEmpl","pageEcom","pageContest","pageMatrix"].forEach(function(id){$(id).classList.remove("active")});
+  ["pageHome","pageSales","pageStaff","pageFinance","pageMarketing","pageEmpl","pageEcom","pageContest","pageMatrix","pageTeamc"].forEach(function(id){$(id).classList.remove("active")});
   $("salesTabs").style.display="none";
   if(p==="home"){$("pageHome").classList.add("active");$("pageTitle").textContent="Bugatti Analytics";$("subtitle").innerHTML='<span class="muted">Профиль:</span> <strong>'+esc(USER_NAME||"—")+'</strong> <span class="muted">· Роль:</span> <strong>'+esc(roleLabel())+'</strong>'+(USER_STORE?' <span class="muted">· Магазин:</span> <strong>'+esc(USER_STORE)+'</strong>':'');applyRoleUI();updateHomeStatuses();return}
   if(p==="sales"){$("pageSales").classList.add("active");$("salesTabs").style.display=canUseSalesMonthly()?"":"none";$("pageTitle").textContent="Планы продаж";if(!canUseSalesMonthly())activeView="daily";if(!hasSalesMeta()){try{await loadSales(false);buildSalesSel(false)}catch(e){}}renderSales();return}
@@ -595,6 +694,7 @@ async function navigateTo(p){
   if(p==="ecom"){$("pageEcom").classList.add("active");$("pageTitle").textContent="E-commerce";if(!hasStaffMeta()){try{await loadStaff(false)}catch(e){}}buildEcomSel(!!$("ecomYearSel").value);renderEcom();return}
   if(p==="contest"){$("pageContest").classList.add("active");$("pageTitle").textContent="Конкурс продавцов";if(!hasEmplMeta()){try{await loadEmpl(false)}catch(e){}}if(!hasStaffMeta()){try{await loadStaff(false)}catch(e){}}buildContestSel(!!$("contestYearSel").value);renderContest();return}
   if(p==="matrix"){$("pageMatrix").classList.add("active");$("pageTitle").textContent="Бренды × продавцы";if(!hasEmplMeta()){try{await loadEmpl(false)}catch(e){}}if(!hasStaffMeta()){try{await loadStaff(false)}catch(e){}}buildMatrixSel(!!$("matrixYearSel").value);renderMatrix();return}
+  if(p==="teamc"){$("pageTeamc").classList.add("active");$("pageTitle").textContent="Конкурс магазинов";if(!hasEmplMeta()){try{await loadEmpl(false)}catch(e){}}if(!hasStaffMeta()){try{await loadStaff(false)}catch(e){}}try{await loadTeamc(false)}catch(e){}renderTeamc();return}
 }
 
 function updateHomeStatuses(){
@@ -635,6 +735,14 @@ function updateHomeStatuses(){
   else if(hasEmplMeta())cd='<span class="st-warn">Нет данных об онлайн-продажах</span>';
   setStatus2("contest",$("contestStatusDot"),$("contestStatusText"),$("contestStatusDetail"),cok,EMPL_GAS_URL,cd);
   setStatus2("matrix",$("matrixStatusDot"),$("matrixStatusText"),$("matrixStatusDetail"),cok,EMPL_GAS_URL,cd);
+  // Конкурс магазинов: своя часть файла данных (остаток на 1-е и пороги).
+  // Места считаются ещё и по продажам с онлайн-продажами — без них карточка, как и страница, не рапортует «Загружено».
+  // Пороги — только действующие в текущем месяце.
+  var tnow=new Date(),tmk=teamMonthKey(tnow.getFullYear(),tnow.getMonth()+1);
+  var tthr=TEAMC_THR.filter(function(t){return String(t.from)<=tmk&&tmk<=String(t.to)}).length;
+  var tstock=TEAMC_STOCK.length>0,tok=TEAMC_LOADED&&tstock&&EMPL_RAW.length>0&&!contestEcomDataMissing();
+  var td=!TEAMC_LOADED?'':!tstock?'<span class="st-warn">нет данных конкурса</span>':!EMPL_RAW.length?'<span class="st-warn">Нет данных о продажах</span>':contestEcomDataMissing()?'<span class="st-warn">Нет данных об онлайн-продажах</span>':'<span class="st-ok">'+teamMonths(TEAMC_STOCK).length+' мес.</span> · порогов руководства: '+tthr;
+  setStatus2("teamc",$("teamcStatusDot"),$("teamcStatusText"),$("teamcStatusDetail"),tok,EMPL_GAS_URL,td);
 
   $("dataThrough").textContent=freshnessLine();
 }
@@ -658,7 +766,8 @@ function hasMktMeta(){return MKT_META&&Array.isArray(MKT_META.years)&&MKT_META.y
 function hasEmplMeta(){return EMPL_META&&Array.isArray(EMPL_META.years)&&EMPL_META.years.length>0}
 
 // THEME
-function initTheme(){if(lsGet(THEME_STORAGE_KEY)==="light"){document.documentElement.classList.add("light");$("themeIcon").textContent="☀️";$("themeLabel").textContent="Светлая"}}
+// По умолчанию тема светлая; тёмная — только если её выбрали кнопкой (toggleTheme пишет "dark").
+function initTheme(){var l=lsGet(THEME_STORAGE_KEY)!=="dark";document.documentElement.classList.toggle("light",l);$("themeIcon").textContent=l?"☀️":"🌙";$("themeLabel").textContent=l?"Светлая":"Тёмная"}
 function toggleTheme(){var l=document.documentElement.classList.toggle("light");$("themeIcon").textContent=l?"☀️":"🌙";$("themeLabel").textContent=l?"Светлая":"Тёмная";lsSet(THEME_STORAGE_KEY,l?"light":"dark")}
 
 // LOAD
@@ -670,6 +779,7 @@ async function loadStaff(f){if(f)BUNDLE=null;await loadSection("staff",function(
 async function loadFinance(f){if(f)BUNDLE=null;await loadSection("finance",function(b){var d=b&&b.finance;FINANCE_META=d?d.meta:null;FINANCE_SUMMARY=d?unpackRows(d.summary):[]})}
 async function loadMkt(f){if(f)BUNDLE=null;await loadSection("mkt",function(b){var d=b&&b.mkt;MKT_META=d?d.meta:null;MKT_RAW=d?unpackRows(d.raw):[]})}
 async function loadEmpl(f){if(f)BUNDLE=null;await loadSection("empl",function(b){EMPL_META=b?b.empl.meta:null;EMPL_RAW=b?unpackRows(b.empl.raw):[];EMPL_PLANS=b?unpackRows(b.empl.plans):[]})}
+async function loadTeamc(f){if(f)BUNDLE=null;await loadSection("teamc",function(b){TEAMC_LOADED=true;var d=b&&b.teamc;TEAMC_THR=d?unpackRows(d.thr):[];TEAMC_STOCK=d?unpackRows(d.stock):[]})}
 function arr(v){return Array.isArray(v)?v:[]}
 
 // SELECTORS
@@ -1080,6 +1190,39 @@ var CONTEST_NO_ECOM_TEXT="Не загрузились данные об онла
 // Проверяем именно строки, а не hasStaffMeta(): мета может прийти из кэша без строк,
 // и проверка по мете такую поломку пропустит.
 function contestEcomDataMissing(){return !STAFF_RAW.length}
+// ===== Конкурс магазинов: страница. Расчёт и вид — блоки TEAM CONTEST CORE/VIEW
+// (копии teamc/*.js, вставляет tools/sync_teamc_into_index.js). «Мой магазин» по умолчанию —
+// магазин профиля; выбор руками держится до перезагрузки страницы (TEAMC_ME).
+var TEAMC_NO_SALES_TEXT="Не загрузились данные о продажах. Без них места посчитать нельзя. Нажмите «Обновить», чтобы загрузить данные заново.";
+// Пустая строка свежести не показывается пустой плашкой.
+function teamcSetInfo(t){$("teamcInfo").textContent=t;$("teamcInfo").style.display=t?"":"none"}
+function teamcMeChanged(){TEAMC_ME=$("teamcMe").value;renderTeamc()}
+function renderTeamc(){
+  var months=teamMonths(TEAMC_STOCK),sel=$("teamcMonthSel"),now=new Date();
+  var cur=teamMonthKey(now.getFullYear(),now.getMonth()+1);
+  if(months.indexOf(cur)<0&&cur>=TEAM_FIRST_MONTH){months.push(cur);months.sort()}
+  var prev=sel.value;
+  sel.innerHTML=months.map(function(k){return'<option value="'+esc(k)+'">'+esc(MONTHS_RU[Number(k.slice(5,7))-1]+' '+k.slice(0,4))+'</option>'}).join("");
+  sel.value=months.indexOf(prev)>=0?prev:(months.indexOf(cur)>=0?cur:months[months.length-1]||"");
+  var meSel=$("teamcMe");
+  meSel.innerHTML='<option value="">Мой магазин: не выбран</option>'+TEAM_STORES.map(function(s){return'<option value="'+esc(s)+'">Мой магазин: '+esc(s)+'</option>'}).join("");
+  meSel.value=TEAMC_ME!==null?TEAMC_ME:teamStoreName(USER_STORE);
+  var mk=sel.value,me=meSel.value;
+  $("teamcTabRes").classList.toggle("active",TEAMC_TAB==="res");$("teamcTabMx").classList.toggle("active",TEAMC_TAB==="mx");
+  if(!TEAMC_STOCK.length||!mk){teamcSetInfo("");$("teamcRes").style.display=$("teamcMx").style.display="none";$("teamcEmpty").style.display="";$("teamcEmpty").textContent="Нет данных конкурса: остаток на 1-е ещё не загружен.";return}
+  var lists=teamBuildLists(TEAMC_STOCK,TEAMC_THR,mk);
+  if(lists.empty){teamcSetInfo(teamcInfoLine(mk,null,0,now));$("teamcRes").style.display=$("teamcMx").style.display="none";$("teamcEmpty").style.display="none";return}
+  // Без продаж все нули выглядели бы настоящим итогом, без онлайн-продаж полностью онлайн-чеки
+  // засчитались бы магазинам — места были бы правдоподобными, но неверными. Как у личного конкурса.
+  if(!EMPL_RAW.length||contestEcomDataMissing()){teamcSetInfo("");$("teamcRes").style.display=$("teamcMx").style.display="none";$("teamcEmpty").style.display="";$("teamcEmpty").textContent=!EMPL_RAW.length?TEAMC_NO_SALES_TEXT:CONTEST_NO_ECOM_TEXT;return}
+  var sales=teamNetSales(EMPL_RAW,STAFF_RAW,Number(mk.slice(0,4)),Number(mk.slice(5,7)));
+  var R=teamResult(lists,sales);
+  $("teamcEmpty").style.display="none";
+  teamcSetInfo(teamcInfoLine(mk,R,sales.lastDay,new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()))));
+  $("teamcRes").style.display=TEAMC_TAB==="res"?"":"none";$("teamcMx").style.display=TEAMC_TAB==="mx"?"":"none";
+  $("teamcRes").innerHTML='<div class="card">'+teamcHtmlResults(R,me)+'</div>';
+  $("teamcMxBody").innerHTML=teamcHtmlMatrix(R,$("teamcOnlyAlmost").checked,me);
+}
 function renderContest(){
   var y=Number($("contestYearSel").value||0),m=Number($("contestMonthSel").value||0);
   var st=$("contestStoreSel").value||"__all__";
@@ -1285,6 +1428,214 @@ function buildBrandMatrix(y,m,storeFilter){
   };
 }
 // ===== CONTEST CORE END =====
+// ===== TEAM CONTEST CORE START =====
+// Конкурс магазинов, новый формат с октября 2026. Спека:
+// docs/superpowers/specs/2026-10-14-konkurs-magazinov-otchet-design.md
+// Разбор категорий и брендов перенесён из tools/team_contest_core.js без изменения
+// логики — менять только в обоих местах сразу.
+// teamNorm = norm из index.html, teamRowKey = contestRowKey — менять вместе.
+function teamNorm(s){return String(s||"").trim().toLowerCase().replace(/ё/g,"е").replace(/\s+/g," ")}
+function teamRowKey(r){return [String(r.checkNumber||"").trim(),teamNorm(r.parent),teamNorm(r.seller),Math.round(Number(r.salesAmount)||0),Number(r.year),Number(r.monthNum),String(r.operation||"").trim()].join("|")}
+var TEAM_PRIZE=200000;
+var TEAM_FIRST_MONTH="2026-10";
+var TEAM_STORES=["Есентай","Абайка","Астана","Мира","Аутлет","Above&Beyond","Above Астана"];
+var TEAM_GROUPS=[
+  {key:"four",title:"Четвёрка",stores:["Есентай","Абайка","Астана","Мира"]},
+  {key:"outlet",title:"Аутлет",stores:["Аутлет"]},
+  {key:"above",title:"Above",stores:["Above&Beyond","Above Астана"]}
+];
+var TEAM_LIST_MIN=3,TEAM_BRAND_MAX=3,TEAM_GROUP_DEFAULT=5;
+var TEAM_DIVIDE=true;   // строки чека с N продавцами весят 1/N
+var TEAM_GKEYS=["socks","briefs","tees","tights","belt","acc","head","shirtOlimp"];
+var TEAM_GTITLE={socks:"Носки",briefs:"Трусы",tees:"Майки",tights:"Колготки",belt:"Ремни",acc:"Аксессуары",head:"Головные уборы",shirtOlimp:"Рубашка д/р Olimp"};
+function teamSet(a){var o={};for(var i=0;i<a.length;i++)o[a[i]]=1;return o}
+var TEAM_SYN={"джогеры":"джоггеры","мокасы":"мокасины","шлепанцы женские":"шлепки женские"};
+var TEAM_SOCKS=teamSet(["носки","следики","следики женские"]);
+var TEAM_BRIEFS=teamSet(["трусы","кальсоны"]);
+var TEAM_TEES=teamSet(["майки","футболки нижнее белье"]);
+var TEAM_TIGHTS=teamSet(["колготки"]);
+var TEAM_BELTS=teamSet(["ремень","ремень женский","ремень+портмоне","портмоне","портмоне женский","картхолдер"]);
+var TEAM_ACC=teamSet(["ремень","ремень женский","ремень+портмоне","портмоне","портмоне женский","картхолдер","сумки","сумка женская","барсетка","рюкзак","очки","часы","брелок","платок","шарфы","шарфы женские","бабочки","косметичка","чемодан","полотенце","термос"]);
+var TEAM_HEAD=teamSet(["бейсболка","бейсболка женская","панама","панама женская","кепи","докер кепка","шляпа женская","шапка","шапка женская"]);
+var TEAM_NOT_GOODS=teamSet(["сертификат","задаток"]);
+var TEAM_BRAND_FIX={"brooskfield":"BROOKSFIELD"};
+var TEAM_SABO=teamSet(["сабо","сабо женские"]);
+var TEAM_SHOES_MAIN=teamSet(["кроссовки","кроссовки женские","кеды","кеды женские"]);
+var TEAM_SHOES_OTHER=teamSet(["балетки","босоножки","ботинки","ботинки женские","брогги","казачки","лоферы","лоферы зима жен","мокасины","мюли","полусапоги женские","сандали","сандалии женские","сланцы","слипоны","сникерсы","туфли","туфли женские","туфли зима женские","уги женские","шлепки","шлепки женские","эспадрильи"]);
+
+function teamCleanCat(raw){var c=String(raw||"").trim().toLowerCase().replace(/\s+/g," ").replace(/[\\\/]/g,"/").replace(/ё/g,"е");return TEAM_SYN[c]||c}
+function teamGroupOfRaw(raw,brand){
+  var c=teamCleanCat(raw);
+  if(TEAM_SOCKS[c])return"socks";if(TEAM_BRIEFS[c])return"briefs";if(TEAM_TEES[c])return"tees";if(TEAM_TIGHTS[c])return"tights";
+  if(TEAM_BELTS[c])return"belt";if(TEAM_ACC[c])return"acc";if(TEAM_HEAD[c])return"head";
+  if(c==="рубашка д/р"&&String(brand||"").trim().toLowerCase()==="olimp")return"shirtOlimp";
+  return null;
+}
+function teamBrandOf(rawBrand,rawCat){
+  var b=String(rawBrand||"").trim();b=TEAM_BRAND_FIX[b.toLowerCase()]||b;
+  if(!b||/^(INST-\d+|\d+)$/i.test(b))return null;
+  if(!/^premiate1?$/i.test(b))return b;
+  var c=teamCleanCat(rawCat);
+  if(TEAM_SABO[c])return null;
+  if(TEAM_SHOES_MAIN[c])return"Premiate обувь";
+  if(TEAM_SHOES_OTHER[c])return"Premiate обувь (1 линия)";
+  return"Premiate одежда";
+}
+function teamStoreName(s){var n=teamNorm(s).replace(/^магазин\s+/,"");for(var i=0;i<TEAM_STORES.length;i++)if(teamNorm(TEAM_STORES[i])===n)return TEAM_STORES[i];return""}
+function teamGroupOf(store){for(var i=0;i<TEAM_GROUPS.length;i++)if(TEAM_GROUPS[i].stores.indexOf(store)>=0)return TEAM_GROUPS[i].key;return""}
+function teamMonthKey(y,m){return y+"-"+(m<10?"0":"")+m}
+function teamMonths(stock){var o={},out=[];(stock||[]).forEach(function(r){var k=String(r.month||"");if(k>=TEAM_FIRST_MONTH&&!o[k]){o[k]=1;out.push(k)}});return out.sort()}
+function teamOwnerThr(thr,mk,pos,type,gkey){
+  for(var i=0;i<(thr||[]).length;i++){var t=thr[i];
+    if(String(t.type)!==type||teamNorm(t.pos)!==teamNorm(pos))continue;
+    if(mk<String(t.from)||mk>String(t.to))continue;
+    var v=t[gkey];if(v===""||v==null)return null;var n=Number(v);return n>=1?n:null}
+  return null;
+}
+function teamBuildLists(stock,thr,mk){
+  var rows=(stock||[]).filter(function(r){return String(r.month)===mk});
+  var res={groups:{},storeGroups:{},empty:!rows.length};
+  TEAM_GROUPS.forEach(function(g){
+    var sum={},names={},per={};
+    rows.forEach(function(r){if(r.type!=="бренд"||g.stores.indexOf(r.store)<0)return;var k=teamNorm(r.pos),q=Number(r.qty||0);sum[k]=(sum[k]||0)+q;names[k]=names[k]||String(r.pos);(per[k]=per[k]||{})[r.store]=((per[k]||{})[r.store]||0)+q});
+    var brands=[],dropped=[];
+    Object.keys(sum).sort(function(a,b){return names[a].localeCompare(names[b],"ru")}).forEach(function(k){
+      var st=sum[k];if(!(st>0))return;
+      var cap=Math.floor(st/g.stores.length),own=teamOwnerThr(thr,mk,names[k],"бренд",g.key);
+      if(own!=null){var b={pos:names[k],thr:own,owner:true,stock:st,over:own>cap},none=g.stores.filter(function(s){return!(per[k][s]>0)});if(none.length)b.none=none;brands.push(b);return}
+      var t=Math.min(TEAM_BRAND_MAX,cap);
+      if(t<1)dropped.push(names[k]);else brands.push({pos:names[k],thr:t,owner:false,stock:st,over:false});
+    });
+    res.groups[g.key]={brands:brands,dropped:dropped};
+    g.stores.forEach(function(s){
+      var list=[];
+      TEAM_GKEYS.forEach(function(gk){
+        var title=TEAM_GTITLE[gk],have=0;
+        rows.forEach(function(r){if(r.type==="группа"&&r.store===s&&teamNorm(r.pos)===teamNorm(title))have+=Number(r.qty||0)});
+        if(have<TEAM_LIST_MIN)return;
+        var own=teamOwnerThr(thr,mk,title,"группа",g.key);
+        list.push({pos:title,thr:own!=null?own:TEAM_GROUP_DEFAULT,owner:own!=null,have:have});
+      });
+      res.storeGroups[s]=list;
+    });
+  });
+  return res;
+}
+function teamEcomShare(staff){var o={};(staff||[]).forEach(function(r){var v=Number(r.ecom)||0;if(v)o[teamRowKey(r)]=v});return o}
+function teamNetSales(empl,staff,y,m){
+  var ecom=teamEcomShare(staff),sellers={},rows=[],last=0,sold={};
+  (empl||[]).forEach(function(r){
+    if(Number(r.year)!==y||Number(r.monthNum)!==m)return;
+    var st=teamStoreName(r.store);if(!st)return;
+    rows.push({r:r,st:st});
+    var k=String(r.checkNumber||"")+"~"+st+"~"+r.day;
+    (sellers[k]=sellers[k]||{})[teamNorm(r.seller)]=1;
+  });
+  rows.forEach(function(x){
+    var r=x.r,st=x.st;
+    if(TEAM_NOT_GOODS[teamCleanCat(r.parent)])return;
+    if(ecom[teamRowKey(r)]===100)return;
+    var ret=String(r.operation||"").trim()==="Возврат";
+    if(!ret&&Math.abs(Number(r.priceDiscount)||0)===1)return;
+    var brand=teamBrandOf(r.brand,r.parent);if(!brand)return;
+    var n=TEAM_DIVIDE?Object.keys(sellers[String(r.checkNumber||"")+"~"+st+"~"+r.day]||{}).length||1:1;
+    var d=(ret?-1:1)/n;
+    var gk=teamGroupOfRaw(r.parent,brand),pos=gk?TEAM_GTITLE[gk]:brand;
+    var o=sold[st]=sold[st]||{},pk=teamNorm(pos);o[pk]=(o[pk]||0)+d;
+    var dy=Number(r.day)||0;if(dy>last)last=dy;
+  });
+  Object.keys(sold).forEach(function(st){Object.keys(sold[st]).forEach(function(k){sold[st][k]=Math.round(sold[st][k]*100)/100})});
+  return{sold:sold,lastDay:last};
+}
+function teamPlaces(stores){
+  var ks=Object.keys(stores),out={};
+  ks.forEach(function(s){var better=0;ks.forEach(function(t){if(stores[t].share>stores[s].share+1e-9)better++});out[s]=better+1});
+  return out;
+}
+function teamResult(lists,sales){
+  var sold=(sales&&sales.sold)||{},stores={},rowsMap={},order=[];
+  function cellState(v,t){if(v>=t-1e-6)return"ok";if(t-v<=1+1e-6)return"almost";return"no"}
+  function addRow(pos,type,block){var k=type+"|"+teamNorm(pos);if(!rowsMap[k]){rowsMap[k]={pos:pos,type:type,block:block,cells:{}};order.push(k)}else if(block==="owner")rowsMap[k].block="owner";return rowsMap[k]}
+  TEAM_GROUPS.forEach(function(g){
+    var L=lists.groups[g.key]||{brands:[]};
+    g.stores.forEach(function(s){
+      var my=sold[s]||{},taken=0,total=0,almost=0;
+      function judge(it,type,block){
+        var v=Number(my[teamNorm(it.pos)]||0),st=cellState(v,it.thr);
+        total++;if(st==="ok")taken++;if(st==="almost")almost++;
+        addRow(it.pos,type,block).cells[s]={sold:v,thr:it.thr,state:st};
+      }
+      // порог руководства: магазин без остатка бренда в позиции не участвует
+      L.brands.forEach(function(b){if(b.none&&b.none.indexOf(s)>=0)return;judge(b,"бренд",b.owner?"owner":"base")});
+      (lists.storeGroups[s]||[]).forEach(function(it){judge(it,"группа","group")});
+      stores[s]={taken:taken,total:total,share:total?taken/total:0,almost:almost};
+    });
+  });
+  var pl=teamPlaces(stores);Object.keys(stores).forEach(function(s){stores[s].place=pl[s]});
+  var rows=order.map(function(k){var r=rowsMap[k];TEAM_STORES.forEach(function(s){if(!r.cells[s])r.cells[s]={sold:Number((sold[s]||{})[teamNorm(r.pos)]||0),thr:0,state:"na"}});return r});
+  var bo={owner:0,base:1,group:2};
+  rows.sort(function(a,b){
+    if(bo[a.block]!==bo[b.block])return bo[a.block]-bo[b.block];
+    if(a.block==="group")return TEAM_GKEYS.indexOf(teamGKeyOf(a.pos))-TEAM_GKEYS.indexOf(teamGKeyOf(b.pos));
+    return a.pos.localeCompare(b.pos,"ru");
+  });
+  var leaders=Object.keys(stores).filter(function(s){return stores[s].place===1&&stores[s].taken>0});
+  return{stores:stores,rows:rows,leaders:leaders};
+}
+function teamGKeyOf(title){for(var i=0;i<TEAM_GKEYS.length;i++)if(TEAM_GTITLE[TEAM_GKEYS[i]]===title)return TEAM_GKEYS[i];return""}
+// ===== TEAM CONTEST CORE END =====
+// ===== TEAM CONTEST VIEW START =====
+function teamcPct(x){return(Math.round(x*1000)/10).toFixed(1).replace(".",",")+" %"}
+function teamcNum(v){var n=Math.round(Number(v||0)*100)/100;return String(n).replace(".",",")}
+function teamcHtmlResults(R,myStore){
+  var h='<p class="tc-lead">Место зависит от доли: сколько позиций из своего списка магазин уже взял. «Почти взято» — позиции, где до порога не хватает одной штуки.</p>'+
+    '<div class="tc-scroll"><table class="tc-res"><thead><tr><th>Место</th><th>Магазин</th><th>Доля</th><th class="tc-barw"></th><th>Взято позиций</th><th>Почти взято</th></tr></thead><tbody>';
+  // от первого места к последнему; равные места — в постоянном порядке магазинов
+  TEAM_STORES.filter(function(s){return R.stores[s]}).sort(function(a,b){return R.stores[a].place-R.stores[b].place||TEAM_STORES.indexOf(a)-TEAM_STORES.indexOf(b)}).forEach(function(s){
+    var r=R.stores[s];
+    var lead=r.place===1&&r.taken>0,medal=r.taken>0&&r.place<=3?" p"+r.place:"";
+    h+='<tr'+(s===myStore?' class="me"':'')+'><td class="tc-place"><span class="tc-badge'+medal+'">'+r.place+'</span></td><td class="tc-store">'+esc(s)+(s===myStore?'<span class="tc-you">вы</span>':'')+'</td><td class="tc-share">'+teamcPct(r.share)+'</td>'+
+      '<td class="tc-barw"><div class="tc-bar'+(lead?" lead":"")+'"><i style="width:'+Math.round(r.share*1000)/10+'%"></i></div></td>'+
+      '<td class="tc-taken"><b>'+r.taken+' из '+r.total+'</b></td><td class="tc-almost"><span class="tc-chip'+(r.almost?"":" zero")+'">'+r.almost+'</span></td></tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+var TEAMC_BLOCK_TITLE={owner:"Пороги руководства",base:"Остальные бренды · порог 3 (или меньше, если товара мало)",group:"Зачётные группы"};
+function teamcHtmlMatrix(R,onlyAlmost,myStore){
+  var h='<table class="tc-mx"><thead><tr><th>Позиция</th>';
+  TEAM_STORES.forEach(function(s){h+='<th'+(s===myStore?' class="me"':'')+'>'+esc(s)+'</th>'});
+  h+='</tr></thead><tbody>';
+  var blk="";
+  R.rows.forEach(function(r){
+    if(onlyAlmost){var any=false;TEAM_STORES.forEach(function(s){if(r.cells[s].state==="almost")any=true});if(!any)return}
+    if(r.block!==blk){blk=r.block;if(!onlyAlmost)h+='<tr class="tc-sec"><td colspan="'+(TEAM_STORES.length+1)+'">'+TEAMC_BLOCK_TITLE[blk]+'</td></tr>'}
+    h+='<tr><td>'+esc(r.pos)+'</td>';
+    TEAM_STORES.forEach(function(s){
+      var c=r.cells[s],me=s===myStore?" me":"";
+      if(c.state==="na"){h+='<td class="tc-na'+me+'">—</td>';return}
+      var cls=c.state==="ok"?"tc-ok":c.state==="almost"?"tc-al":"tc-no";
+      h+='<td class="'+cls+me+'">'+teamcNum(c.sold)+' / '+c.thr+'</td>';
+    });
+    h+='</tr>';
+  });
+  return h+'</tbody></table>';
+}
+function teamcInfoLine(mk,R,lastDay,now){
+  var y=Number(mk.slice(0,4)),m=Number(mk.slice(5,7));
+  if(!R)return"Список "+MONTHS_RU_GEN[m-1]+" появится после загрузки остатка на 01."+mk.slice(5,7);
+  var ny=now.getUTCFullYear(),nm=now.getUTCMonth()+1;
+  if(ny>y||(ny===y&&nm>m)){
+    var w=TEAM_STORES.filter(function(s){return R.leaders.indexOf(s)>=0});
+    if(w.length>1)return"Итог месяца · первое место делят: "+w.join(", ")+" (правило ничьей не решено)";
+    return w.length?"Итог месяца · победитель — "+w.join(", "):"Итог месяца · победителя нет";
+  }
+  var dim=new Date(Date.UTC(y,m,0)).getUTCDate(),left=dim-now.getUTCDate();
+  var d=lastDay?new Date((lastDay-25569)*86400000):null;
+  var dd=d?("0"+d.getUTCDate()).slice(-2)+"."+("0"+(d.getUTCMonth()+1)).slice(-2):"—";
+  return"Данные по "+dd+" · до конца месяца "+left+" "+teamcDays(left)+" · приз "+String(TEAM_PRIZE).replace(/\B(?=(\d{3})+(?!\d))/g," ")+" ₸";
+}
+function teamcDays(n){var a=n%10,b=n%100;if(a===1&&b!==11)return"день";if(a>=2&&a<=4&&(b<12||b>14))return"дня";return"дней"}
+// ===== TEAM CONTEST VIEW END =====
 
 // ====== STAFF REPORT ======
 // Зачтённая продавцу сумма с учётом e-commerce (повторяет колонку «Окончательный остаток» в таблице):
@@ -1690,6 +2041,7 @@ function applyRoleUI(){
   if($("goEcom"))$("goEcom").style.display=canAccessReport("ecom")?"":"none";
   if($("goContest"))$("goContest").style.display=canAccessReport("contest")?"":"none";
   if($("goMatrix"))$("goMatrix").style.display=canAccessReport("matrix")?"":"none";
+  if($("goTeamc"))$("goTeamc").style.display=canAccessReport("teamc")?"":"none";
 
   $("btnChangeCode").textContent="Профиль";
 

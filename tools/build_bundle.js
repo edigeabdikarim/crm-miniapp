@@ -65,6 +65,108 @@ function answerProblem(key, entity, j) {
   return null;
 }
 
+// Конкурс магазинов: пороги руководства и остаток на 1-е (листы книги исходников,
+// свой Apps Script главы 7). Источник необязателен: пока секреты не заведены,
+// сборка идёт как раньше и страница пишет «нет данных конкурса». Но если он
+// настроен, пустой лист «Остаток» — сбой: публиковать пустой конкурс нельзя.
+function teamcConfig() {
+  if (process.env.CONTEST_GAS_URL && process.env.CONTEST_GAS_KEY) {
+    return { endpoint: process.env.CONTEST_GAS_URL, key: process.env.CONTEST_GAS_KEY };
+  }
+  const local = path.join(ROOT, 'gas-sources.local.json');
+  if (fs.existsSync(local)) {
+    const c = JSON.parse(fs.readFileSync(local, 'utf8'));
+    if (c.endpoint && c.key) return c;
+  }
+  return null;
+}
+function teamcProblem(j) {
+  if (!j || !j.data) return 'нет data' + (j && j.status ? ' (ответ «' + j.status + '»)' : '');
+  if (!j.data.stock || !Array.isArray(j.data.stock.rows) || !j.data.stock.rows.length) return 'лист «Остаток» пуст';
+  if (!j.data.thresholds || !Array.isArray(j.data.thresholds.rows)) return 'нет листа «Пороги»';
+  return null;
+}
+// Число из ячейки листа: пробелы и неразрывные пробелы (разделители тысяч) убираются, запятая — точка.
+function teamcNum(v) {
+  const s = String(v == null ? '' : v).replace(/[\s\u00a0]/g, '');
+  return s === '' ? '' : Number(s.replace(',', '.'));
+}
+// Листы правят руками: кривая строка порога или остатка молча испортила бы места.
+// Сборку останавливаем с понятным текстом, где именно ошибка (номер строки — как в листе, шапка — строка 1).
+const TEAMC_MONTH = /^\d{4}-\d{2}$/;
+const TEAMC_TYPES = ['бренд', 'группа'];
+function teamcRowsProblem(rows) {
+  const bad = [];
+  rows.thr.forEach((t, i) => {
+    const at = 'лист «Пороги», строка ' + (i + 2) + ' (' + (t.pos || 'без позиции') + '): ';
+    if (!TEAMC_TYPES.includes(t.type)) bad.push(at + 'Тип «' + t.type + '» — нужно «бренд» или «группа»');
+    for (const [f, col] of [['four', 'Четвёрка'], ['outlet', 'Аутлет'], ['above', 'Above']]) {
+      const v = t[f];
+      if (v !== '' && !(Number.isInteger(v) && v >= 1)) bad.push(at + col + ' «' + v + '» — нужно целое число от 1 или пусто');
+    }
+    if (!TEAMC_MONTH.test(t.from)) bad.push(at + 'С месяца «' + t.from + '» — нужно ГГГГ-ММ');
+    if (!TEAMC_MONTH.test(t.to)) bad.push(at + 'По месяц «' + t.to + '» — нужно ГГГГ-ММ');
+    if (TEAMC_MONTH.test(t.from) && TEAMC_MONTH.test(t.to) && t.from > t.to) bad.push(at + 'С месяца ' + t.from + ' позже, чем По месяц ' + t.to);
+  });
+  rows.stock.forEach((r, i) => {
+    const at = 'лист «Остаток», строка ' + (i + 2) + ' (' + (r.store || '?') + ', ' + (r.pos || 'без позиции') + '): ';
+    if (!TEAMC_MONTH.test(r.month)) bad.push(at + 'Месяц «' + r.month + '» — нужно ГГГГ-ММ');
+    if (!TEAMC_TYPES.includes(r.type)) bad.push(at + 'Тип «' + r.type + '» — нужно «бренд» или «группа»');
+    if (r.qty === '' || !Number.isFinite(r.qty)) bad.push(at + 'Штук «' + r.qty + '» — нужно число');
+  });
+  if (!bad.length) return null;
+  return bad.slice(0, 10).join('; ') + (bad.length > 10 ? '; и ещё ' + (bad.length - 10) : '');
+}
+function teamcRows(data) {
+  const num = teamcNum;
+  const objs = (part, map) => part.rows.map((row) => {
+    const o = {};
+    for (const [field, col, isNum] of map) {
+      const i = part.header.indexOf(col);
+      const v = i >= 0 ? row[i] : '';
+      o[field] = isNum ? num(v) : String(v || '').trim();
+    }
+    return o;
+  });
+  return {
+    thr: objs(data.thresholds, [['pos', 'Позиция'], ['type', 'Тип'], ['four', 'Четвёрка', 1], ['outlet', 'Аутлет', 1],
+      ['above', 'Above', 1], ['from', 'С месяца'], ['to', 'По месяц']]),
+    stock: objs(data.stock, [['month', 'Месяц'], ['store', 'Магазин'], ['pos', 'Позиция'], ['type', 'Тип'], ['qty', 'Штук', 1]]),
+  };
+}
+async function pullTeamc() {
+  const c = teamcConfig();
+  if (!c) { console.log('  teamc: источник не настроен — пропускаю'); return null; }
+  const url = c.endpoint + '?' + new URLSearchParams({ key: c.key, action: 'teamc' });
+  let lastErr;
+  for (let attempt = 1; attempt <= RETRIES; attempt++) {
+    const ac = new AbortController();
+    const timer = setTimeout(() => ac.abort(), TIMEOUT_MS);
+    try {
+      const r = await fetch(url, { redirect: 'follow', signal: ac.signal });
+      if (r.status !== 200) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'ok:false');
+      const p = teamcProblem(j);
+      if (p) throw new Error(p);
+      const rows = teamcRows(j.data);
+      // Ошибка в листе — не сбой связи: повтор её не исправит, останавливаем сборку сразу.
+      const bad = teamcRowsProblem(rows);
+      if (bad) { const err = new Error('teamc: ошибка в данных конкурса — ' + bad); err.fatal = true; throw err; }
+      console.log('  teamc: порогов ' + rows.thr.length + ', строк остатка ' + rows.stock.length);
+      return rows;
+    } catch (e) {
+      if (e.fatal) throw e;
+      lastErr = e;
+      console.log('  попытка ' + attempt + ' из ' + RETRIES + ' не удалась (teamc): ' + e.message);
+      if (attempt < RETRIES) await new Promise((res) => setTimeout(res, RETRY_PAUSES_MS[attempt - 1]));
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw new Error('не удалось получить teamc: ' + lastErr.message);
+}
+
 // opts.check(j) — вернуть текст проблемы, и ответ считается неудачной попыткой.
 async function askGas(url, payload, label, opts = {}) {
   const doFetch = opts.fetch || fetch;
@@ -145,6 +247,7 @@ function bundleFor(login, data) {
     b.finance = { meta: data.finance.meta, summary: pack(data.finance.summary) };
     b.mkt = { meta: data.mkt.meta, raw: pack(data.mkt.raw) };
   }
+  if (data.teamc) b.teamc = { thr: pack(data.teamc.thr), stock: pack(data.teamc.stock) };
   return b;
 }
 
@@ -180,6 +283,8 @@ async function main() {
     console.log('Беру сохранённые выгрузки из ' + fromDir);
     data = JSON.parse(fs.readFileSync(path.join(fromDir, 'data.json'), 'utf8'));
     logins = JSON.parse(fs.readFileSync(path.join(fromDir, 'logins.json'), 'utf8'));
+    const teamcFile = path.join(fromDir, 'teamc.json');
+    data.teamc = fs.existsSync(teamcFile) ? teamcRows(JSON.parse(fs.readFileSync(teamcFile, 'utf8'))) : null;
   } else {
     if (!leaderCode) throw new Error('нет LEADER_CODE — без него Apps Script не отдаст данные');
     console.log('Забираю список профилей…');
@@ -187,6 +292,7 @@ async function main() {
     console.log('  профилей: ' + logins.length);
     console.log('Забираю данные (это несколько минут — Apps Script перечитывает листы)…');
     data = await pullAll(urls, leaderCode);
+    data.teamc = await pullTeamc();
   }
 
   const through = dataThrough(data);
@@ -237,4 +343,4 @@ if (require.main === module) {
   main().catch((e) => { console.error('СБОРКА НЕ УДАЛАСЬ: ' + e.message); process.exit(1); });
 }
 
-module.exports = { askGas, loginsProblem, answerProblem };
+module.exports = { askGas, loginsProblem, answerProblem, teamcProblem, teamcRows, teamcRowsProblem, teamcNum };

@@ -39,6 +39,8 @@ jobs:
         env:
           LEADER_CODE: ${{ secrets.LEADER_CODE }}
           STORE_CODES: ${{ secrets.STORE_CODES }}
+          CONTEST_GAS_URL: ${{ secrets.CONTEST_GAS_URL }}
+          CONTEST_GAS_KEY: ${{ secrets.CONTEST_GAS_KEY }}
         run: node tools/build_bundle.js --out build
 
       # Сайт = дашборд плюс собранные данные. Если сборка выше упала, шага не будет
