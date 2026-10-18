@@ -339,7 +339,7 @@
       <div class="homeCard rose" id="goContest"><span class="icon">🏆</span><div class="cardTitle">Конкурс продавцов</div><div class="cardDesc">Гонка за брендами: кто продал товары наибольшего числа разных брендов</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="contestStatusDot"></span><span id="contestStatusText">Не загружено</span></div><div class="statusDetail" id="contestStatusDetail"></div></div></div>
       <div class="homeCard cyan" id="goMatrix"><span class="icon">📋</span><div class="cardTitle">Бренды × продавцы</div><div class="cardDesc">Матрица: кто какие бренды продавал, по магазинам</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="matrixStatusDot"></span><span id="matrixStatusText">Не загружено</span></div><div class="statusDetail" id="matrixStatusDetail"></div></div></div>
       <div class="homeCard rose" id="goTeamc"><span class="icon">🏬</span><div class="cardTitle">Конкурс магазинов</div><div class="cardDesc">Места магазинов по доле взятых брендов и групп, приз 200 000 ₸</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="teamcStatusDot"></span><span id="teamcStatusText">Не загружено</span></div><div class="statusDetail" id="teamcStatusDetail"></div></div></div>
-      <div class="homeCard teal" id="goOldc"><span class="icon">🗂️</span><div class="cardTitle">Старые коллекции</div><div class="cardDesc">Продажи и остатки старых коллекций: что продано, что осталось, где лежит</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="oldcStatusDot"></span><span id="oldcStatusText">Откроется в новой вкладке</span></div></div></div>
+      <div class="homeCard teal" id="goOldc"><span class="icon">🗂️</span><div class="cardTitle">Товарная аналитика</div><div class="cardDesc">Продажи и остатки старых коллекций: что продано, что осталось, где лежит</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="oldcStatusDot"></span><span id="oldcStatusText">Откроется в новой вкладке</span></div></div></div>
     </div>
   </div>
 
@@ -2093,7 +2093,7 @@ function loginRecord(list,name){for(var i=0;i<list.length;i++)if(String(list[i].
 var NAME_SALT="bugatti-analytics-v8";
 async function fileNameFor(login,code){var buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(NAME_SALT+":"+login+":"+code));var a=new Uint8Array(buf),s="",i;for(i=0;i<8;i++){var h=a[i].toString(16);s+=(h.length<2?"0":"")+h}return s+".enc"}
 
-// «Старые коллекции» (глава 23) — отдельная страница, открывается в новой вкладке.
+// «Товарная аналитика» (отчёт главы 23 по старым коллекциям) — отдельная страница, открывается в новой вкладке.
 // Ссылка лежит в зашифрованном файле профиля: у магазина она личная (код магазина
 // в хвосте «#s=…» запирает страницу на свой магазин), поэтому в коде сайта её нет.
 // Вкладку открываем сразу по нажатию, а адрес вписываем потом: открытую после
