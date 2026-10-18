@@ -39,6 +39,8 @@ jobs:
         env:
           LEADER_CODE: ${{ secrets.LEADER_CODE }}
           STORE_CODES: ${{ secrets.STORE_CODES }}
+          # Ссылки на «Старые коллекции» (глава 23): у магазина личная, с кодом магазина.
+          OLDC_LINKS: ${{ secrets.OLDC_LINKS }}
           CONTEST_GAS_URL: ${{ secrets.CONTEST_GAS_URL }}
           CONTEST_GAS_KEY: ${{ secrets.CONTEST_GAS_KEY }}
         run: node tools/build_bundle.js --out build

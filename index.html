@@ -339,6 +339,7 @@
       <div class="homeCard rose" id="goContest"><span class="icon">🏆</span><div class="cardTitle">Конкурс продавцов</div><div class="cardDesc">Гонка за брендами: кто продал товары наибольшего числа разных брендов</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="contestStatusDot"></span><span id="contestStatusText">Не загружено</span></div><div class="statusDetail" id="contestStatusDetail"></div></div></div>
       <div class="homeCard cyan" id="goMatrix"><span class="icon">📋</span><div class="cardTitle">Бренды × продавцы</div><div class="cardDesc">Матрица: кто какие бренды продавал, по магазинам</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="matrixStatusDot"></span><span id="matrixStatusText">Не загружено</span></div><div class="statusDetail" id="matrixStatusDetail"></div></div></div>
       <div class="homeCard rose" id="goTeamc"><span class="icon">🏬</span><div class="cardTitle">Конкурс магазинов</div><div class="cardDesc">Места магазинов по доле взятых брендов и групп, приз 200 000 ₸</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="teamcStatusDot"></span><span id="teamcStatusText">Не загружено</span></div><div class="statusDetail" id="teamcStatusDetail"></div></div></div>
+      <div class="homeCard teal" id="goOldc"><span class="icon">🗂️</span><div class="cardTitle">Старые коллекции</div><div class="cardDesc">Продажи и остатки старых коллекций: что продано, что осталось, где лежит</div><div class="cardStatus"><div class="statusLine"><span class="statusDot" id="oldcStatusDot"></span><span id="oldcStatusText">Откроется в новой вкладке</span></div></div></div>
     </div>
   </div>
 
@@ -521,9 +522,9 @@ var $=function(id){return document.getElementById(id)};
 var BUNDLE=null,BUNDLE_META=null,LOGINS=[];
 
 var ROLE_CONFIG={
-  leader:{reports:["sales","staff","finance","marketing","empl","ecom","contest","teamc","matrix"],allStores:true,salesMonthly:true,emplRank:true},
-  rop:{reports:["sales","staff","empl","contest","teamc","matrix"],allStores:true,salesMonthly:true,emplRank:true},
-  store:{reports:["sales","staff","empl","contest","teamc","matrix"],allStores:false,salesMonthly:false,emplRank:false}
+  leader:{reports:["sales","staff","finance","marketing","empl","ecom","contest","teamc","matrix","oldc"],allStores:true,salesMonthly:true,emplRank:true},
+  rop:{reports:["sales","staff","empl","contest","teamc","matrix","oldc"],allStores:true,salesMonthly:true,emplRank:true},
+  store:{reports:["sales","staff","empl","contest","teamc","matrix","oldc"],allStores:false,salesMonthly:false,emplRank:false}
 };
 
 // State
@@ -576,6 +577,7 @@ function wireUI(){
   $("goContest").onclick=function(){navigateTo("contest")};
   $("goMatrix").onclick=function(){navigateTo("matrix")};
   $("goTeamc").onclick=function(){navigateTo("teamc")};
+  $("goOldc").onclick=openOldc;
   $("teamcBack").onclick=function(){navigateTo("home")};
   $("teamcMonthSel").onchange=renderTeamc;
   $("teamcMe").onchange=teamcMeChanged;
@@ -2042,6 +2044,7 @@ function applyRoleUI(){
   if($("goContest"))$("goContest").style.display=canAccessReport("contest")?"":"none";
   if($("goMatrix"))$("goMatrix").style.display=canAccessReport("matrix")?"":"none";
   if($("goTeamc"))$("goTeamc").style.display=canAccessReport("teamc")?"":"none";
+  if($("goOldc"))$("goOldc").style.display=canAccessReport("oldc")?"":"none";
 
   $("btnChangeCode").textContent="Профиль";
 
@@ -2089,6 +2092,29 @@ function loginRecord(list,name){for(var i=0;i<list.length;i++)if(String(list[i].
 // запросом. Та же формула в tools/build_bundle.js.
 var NAME_SALT="bugatti-analytics-v8";
 async function fileNameFor(login,code){var buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(NAME_SALT+":"+login+":"+code));var a=new Uint8Array(buf),s="",i;for(i=0;i<8;i++){var h=a[i].toString(16);s+=(h.length<2?"0":"")+h}return s+".enc"}
+
+// «Старые коллекции» (глава 23) — отдельная страница, открывается в новой вкладке.
+// Ссылка лежит в зашифрованном файле профиля: у магазина она личная (код магазина
+// в хвосте «#s=…» запирает страницу на свой магазин), поэтому в коде сайта её нет.
+// Вкладку открываем сразу по нажатию, а адрес вписываем потом: открытую после
+// ожидания вкладку браузер считает всплывающим окном и не пускает.
+async function openOldc(){
+  var tg=window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.openLink?window.Telegram.WebApp:null;
+  var ready=BUNDLE&&BUNDLE.links&&BUNDLE.links.oldc;
+  if(ready&&!tg){window.open(ready,"_blank","noopener");return}
+  var w=null;
+  if(!tg){try{w=window.open("","_blank")}catch(e){w=null}}
+  var url="";
+  try{var b=await loadBundle(false);url=(b&&b.links&&b.links.oldc)||""}catch(e){}
+  if(!url){
+    if(w)w.close();
+    $("oldcStatusDot").className="statusDot error";
+    $("oldcStatusText").textContent=ACCESS_CODE?"Ссылка ещё не пришла — обновится со следующей сборкой":"Сначала войдите в профиль";
+    return;
+  }
+  if(tg){tg.openLink(url);return}
+  if(w){w.opener=null;w.location.href=url}else{location.href=url}
+}
 
 // Один файл на весь вход: раздел «Сотрудники» больше не ходит никуда отдельно.
 async function loadBundle(force){

@@ -11,6 +11,7 @@
 // Окружение:
 //   LEADER_CODE  — код доступа руководителя, им забираются все данные
 //   STORE_CODES  — JSON {"логин":"код", ...} для всех, кому собираем файл
+//   OLDC_LINKS   — JSON {"логин":"ссылка", ...} на «Старые коллекции» (глава 23), для всех
 //
 // Коды нигде не печатаются и в собранные файлы не попадают.
 
@@ -227,9 +228,43 @@ function sameStore(row, store) {
   return norm(row.store) === target || norm(row.shortStore) === target;
 }
 
+// Ссылки на отчёты других глав: { loginName: { oldc: url } }. Ссылка на «Старые коллекции»
+// (глава 23) у магазина ЛИЧНАЯ — в хвосте «#s=КОД» его код, по нему страница запирается
+// на свой магазин. Поэтому она едет только в зашифрованном файле профиля, а не в index.html.
+// Источник — секрет OLDC_LINKS: JSON {"логин":"ссылка", …} на КАЖДЫЙ профиль.
+const OLDC_HOST = 'https://edigeabdikarim.github.io/oldc-b52e92e0/';
+function oldcLinks(raw, logins) {
+  let map;
+  try { map = JSON.parse(raw || ''); } catch (e) { map = null; }
+  if (!map || typeof map !== 'object' || Array.isArray(map)) throw new Error('секрет OLDC_LINKS пуст или не JSON');
+  const bad = [];
+  const out = {};
+  for (const login of logins) {
+    const name = login.loginName;
+    const url = String(map[name] || '');
+    const isStore = normRole(login.role) === 'store';
+    if (!url) { bad.push(name + ': нет ссылки'); continue; }
+    if (url.indexOf(OLDC_HOST) !== 0) { bad.push(name + ': ссылка не на страницу главы 23'); continue; }
+    // Магазин без кода увидел бы «откройте через главу 7»; сеть с кодом — только один магазин.
+    if (isStore && !/#s=[A-Za-z0-9_-]{16,128}$/.test(url)) { bad.push(name + ': у магазина в ссылке нет кода #s=…'); continue; }
+    if (!isStore && url.indexOf('#') >= 0) { bad.push(name + ': у сети ссылка без кода, а в этой есть «#»'); continue; }
+    out[name] = { oldc: url };
+  }
+  const extra = Object.keys(map).filter((n) => !logins.some((l) => l.loginName === n));
+  if (extra.length) bad.push('ссылки для профилей, которых нет: ' + extra.join(', '));
+  // Сами ссылки не печатаются: в магазинных лежит код.
+  if (bad.length) throw new Error('OLDC_LINKS: ' + bad.join('; '));
+  return out;
+}
+
+function normRole(role) {
+  const r = String(role || 'store').toLowerCase();
+  return (r === 'leader' || r === 'admin') ? 'leader' : (r === 'rop' ? 'rop' : 'store');
+}
+
 // Конкурс и матрица считаются по всей сети — их данные (staff, empl) нужны каждому,
 // включая продавца. Режется только то, что раздел показывает по своему магазину.
-function bundleFor(login, data) {
+function bundleFor(login, data, links) {
   const role = String(login.role || 'store').toLowerCase();
   const isLeader = role === 'leader' || role === 'admin';
   const isNetwork = isLeader || role === 'rop';
@@ -248,6 +283,7 @@ function bundleFor(login, data) {
     b.mkt = { meta: data.mkt.meta, raw: pack(data.mkt.raw) };
   }
   if (data.teamc) b.teamc = { thr: pack(data.teamc.thr), stock: pack(data.teamc.stock) };
+  if (links) b.links = links[login.loginName];
   return b;
 }
 
@@ -295,6 +331,8 @@ async function main() {
     data.teamc = await pullTeamc();
   }
 
+  const links = oldcLinks(process.env.OLDC_LINKS, logins);
+
   const through = dataThrough(data);
   if (!through) throw new Error('в данных нет ни одной даты — собирать нечего');
   const meta = {
@@ -313,7 +351,7 @@ async function main() {
   for (const login of logins) {
     const code = codes[login.loginName];
     if (!code) { missing.push(login.loginName); continue; }
-    const body = Object.assign({ meta }, bundleFor(login, data));
+    const body = Object.assign({ meta }, bundleFor(login, data, links));
     const box = await encryptJson(body, code);
     const file = await fileNameFor(login.loginName, code);
     fs.writeFileSync(path.join(dataOut, file), JSON.stringify(box));
@@ -343,4 +381,4 @@ if (require.main === module) {
   main().catch((e) => { console.error('СБОРКА НЕ УДАЛАСЬ: ' + e.message); process.exit(1); });
 }
 
-module.exports = { askGas, loginsProblem, answerProblem, teamcProblem, teamcRows, teamcRowsProblem, teamcNum };
+module.exports = { askGas, loginsProblem, answerProblem, teamcProblem, teamcRows, teamcRowsProblem, teamcNum, oldcLinks, bundleFor };
