@@ -422,7 +422,7 @@
     <div class="controls"><select id="contestYearSel" class="sel"></select><select id="contestMonthSel" class="sel"></select><select id="contestStoreSel" class="sel"></select><button class="btn accent-rose" id="contestRefreshBtn">Обновить</button></div>
     <div class="grid" id="contestKpi"></div>
     <div class="section"><h2>Рейтинг по числу разных брендов</h2><div id="contestRace"></div>
-      <p class="muted" style="font-size:12px;margin-top:8px">В зачёт идут только личные продажи, где в чеке один продавец. Возвраты вычитаются, онлайн-продажи и сертификаты не учитываются. Нажмите на строку, чтобы увидеть бренды продавца.</p>
+      <p class="muted" style="font-size:12px;margin-top:8px">В зачёт идут только личные продажи, где в чеке один продавец. Возвраты вычитаются, онлайн-продажи и сертификаты не учитываются. С ноября 2026 нижнее бельё считается не по брендам, а четырьмя группами — носки (со следиками), трусы (с кальсонами), майки (с футболками нижнего белья), колготки: каждая группа — одна позиция, любого бренда. Ремни, аксессуары и головные уборы — по брендам, как раньше. Нажмите на строку, чтобы увидеть бренды продавца.</p>
     </div>
     <div id="contestEmpty" class="emptyState" style="display:none">За выбранный месяц нет продаж, попадающих в зачёт.</div>
   </div>
@@ -1338,6 +1338,22 @@ var CONTEST_STORE_ALIAS={"above астана":"Астана"};
 
 function contestSeller(s){var n=norm(s);return CONTEST_SELLER_ALIAS[n]||String(s||"").trim()}
 function contestStore(s){var n=norm(s);return CONTEST_STORE_ALIAS[n]||String(s||"").trim()}
+// С ноября 2026 (решение владельца 11.11.2026) нижнее бельё считается не по брендам, а четырьмя
+// группами — каждая одна позиция, любого бренда. Состав групп — как TEAM_SOCKS/BRIEFS/TEES/TIGHTS
+// конкурса магазинов: менять вместе (тест сверяет). Октябрь и раньше — по брендам, как были.
+var CONTEST_UW_FROM=2026*12+11;
+var CONTEST_UW={"носки":"Носки","следики":"Носки","следики женские":"Носки",
+  "трусы":"Трусы","кальсоны":"Трусы",
+  "майки":"Майки","футболки нижнее белье":"Майки",
+  "колготки":"Колготки"};
+var CONTEST_UW_SUFFIX=" (все бренды)";
+// Позиция зачёта для строки: бренд, а с ноября 2026 у белья — его группа.
+function contestPos(r,y,m){
+  var b=String(r.brand||"").trim();
+  if(y*12+m<CONTEST_UW_FROM)return b;
+  var g=CONTEST_UW[norm(r.parent)];
+  return g?g+CONTEST_UW_SUFFIX:b;
+}
 
 // Бренд есть только в EMPL_RAW, флаг онлайн-продажи — только в STAFF_RAW.
 // Обе выгрузки читают одну таблицу, строки сходятся по этому ключу один-в-один.
@@ -1370,7 +1386,7 @@ function contestRows(y,m){
 function buildContestReport(y,m,storeFilter){
   var agg={};
   contestRows(y,m).forEach(function(r){
-    var s=contestSeller(r.seller),b=String(r.brand||"").trim(),st=contestStore(r.store);
+    var s=contestSeller(r.seller),b=contestPos(r,y,m),st=contestStore(r.store);
     var d=String(r.operation||"").trim()==="Продажа"?1:-1;
     if(!agg[s])agg[s]={seller:s,brand:{},units:0,sum:0,stores:{}};
     var a=agg[s];
